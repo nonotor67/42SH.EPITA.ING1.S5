@@ -26,12 +26,11 @@ build:
   stage: build
   script:
     - apt-get update && apt-get install -y cmake libcriterion-dev  # Installer Criterion si nécessaire
-    - make  # Compiler ton projet
 
 # Étape de test
 test:
   image: gcc:latest
   stage: test
   script:
-    - make test
+    - make check
   when: on_success
