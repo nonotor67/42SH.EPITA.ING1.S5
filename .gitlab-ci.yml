@@ -17,21 +17,13 @@
 # https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Getting-Started.gitlab-ci.yml
 
 stages:
-  - build
   - test
-
-# Étape de compilation
-build:
-  image: gcc:latest  # Image Docker avec GCC, tu peux l'ajuster selon ton environnement
-  stage: build
-  script:
-    - apt-get update && apt-get install -y cmake libcriterion-dev  # Installer Criterion si nécessaire
-    - make  # Compiler ton projet
 
 # Étape de test
 test:
   image: gcc:latest
   stage: test
   script:
-    - make test
+    - apt-get update && apt-get install -y libcriterion-dev
+    - make check
   when: on_success
