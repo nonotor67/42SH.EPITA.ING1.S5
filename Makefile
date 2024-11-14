@@ -1,13 +1,16 @@
-CFLAGS = -Wall -g
+CC= gcc
+CFLAGS = -std=c99 -pedantic -Werror -Wall -Wextra -Wvla -Isrc
+SRC = $(wildcard src/*/*.c src/*.c)
+OBJ = $(SRC:.c=.o)
 
-SRC = src/test.c
+all: 42sh
 
-all:
-	gcc test.c -o test
+42sh: $(OBJ)
+	$(CC) $(OBJ) -o 42sh
 
-check: 
-	gcc $(CFLAGS) tests/test.c $(SRC) -o test -lcriterion
-	./test
+debug: $(SRC)
+	$(CC) $(CFLAGS) -g -fsanitize=address,undefined $(SRC) -o debug
 
 clean:
-	rm -rf test
+	rm -f $(wildcard $(OBJ)
+	rm -f $(wildcard src/*/*.gc* src/*.gc*)
