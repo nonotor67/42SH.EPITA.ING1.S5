@@ -26,3 +26,18 @@ Test(addition_tests, test_add_large_numbers) {
     int result = add(1000000, 2000000);
     cr_assert_eq(result, 3000000, "Expected 1000000 + 2000000 to be 3000000, but got %d", result);
 }
+
+Test(mul_tests, test_mul_positive_numbers) {
+    int result = mul(3, 5);
+    cr_assert_eq(result, 15, "Expected 3 * 5 to be 15, but got %d", result);
+}
+
+Test(mul_tests, test_mul_negative_numbers) {
+    int result = mul(-3, -5);
+    cr_assert_eq(result, 15, "Expected -3 * -5 to be 15, but got %d", result);
+}
+
+Test(mul_tests, test_mul_zero_numbers) {
+    int result = mul(0, -5);
+    cr_assert_eq(result, 0, "Expected -3 * -5 to be 15, but got %d", result);
+}
