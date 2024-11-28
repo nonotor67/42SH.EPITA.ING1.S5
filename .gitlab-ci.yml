@@ -18,6 +18,7 @@
 
 stages:
   - test
+  - clang-format
 
 # Étape de test
 test:
@@ -26,4 +27,12 @@ test:
   script:
     - apt-get update && apt-get install -y libcriterion-dev
     - make check
+  when: on_success
+
+clang-format:
+  image: gcc:latest
+  stage: clang-format
+  script:
+    - apt-get update && apt-get install -y clang-format
+    - make format
   when: on_success

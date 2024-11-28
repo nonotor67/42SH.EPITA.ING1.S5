@@ -17,6 +17,9 @@ check:
 	$(CC) $(CFLAGS) $(DEBUG_FLAGS) $(TEST) -o testsuite
 	./testsuite
 
+format:
+	./tests/clang-check/clang-check.sh
+
 clean:
 	rm -f 42sh debug testsuite
 	rm -f $(wildcard $(OBJ))
