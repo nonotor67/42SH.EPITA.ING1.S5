@@ -43,7 +43,7 @@ git push origin "$BRANCH_NAME"
 GIT_API_URL="https://gitlab.cri.epita.fr/api/v4/projects/22408/merge_requests"
 
 # https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html
-TOKEN="YOUR_TOKEN"
+TOKEN="Aq_E53AWvMn7YWiqfV5E"
 
 antoine=7744
 jules=6277
