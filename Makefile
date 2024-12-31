@@ -1,5 +1,5 @@
 CC= gcc
-CFLAGS = -std=c99 -pedantic -Werror -Wall -Wextra -Wvla -Isrc
+CFLAGS = -std=c99 -Werror -Wall -Wextra -Wvla -Isrc
 DEBUG_FLAGS = -g -fsanitize=address,undefined -lcriterion
 SRC = $(wildcard src/*/*.c src/*.c)
 TEST = $(wildcard src/[!main]*/*.c src/[!main]*.c test/*.c)
