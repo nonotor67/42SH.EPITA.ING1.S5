@@ -21,6 +21,10 @@ stages:
   - clang-format
   - coverage
 
+variables:
+  BUILD_DIR: build
+  COVERAGE_INFO: coverage.info
+
 test:
   image: gcc:latest
   stage: test
