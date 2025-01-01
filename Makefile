@@ -1,6 +1,6 @@
 CC= gcc
 CFLAGS = -std=c99 -Werror -Wall -Wextra -Wvla -Isrc
-DEBUG_FLAGS = -g -fsanitize=address,undefined -lcriterion
+DEBUG_FLAGS = -g -fsanitize=address,undefined -lcriterion 
 SRC = $(wildcard src/*/*.c src/*.c)
 TEST = $(wildcard src/[!main]*/*.c src/[!main]*.c test/*.c)
 OBJ = $(SRC:.c=.o)
@@ -14,7 +14,7 @@ debug:
 	$(CC) $(CFLAGS) $(DEBUG_FLAGS) $(SRC) -o debug
 
 check: 
-	$(CC) $(CFLAGS) $(DEBUG_FLAGS) $(TEST) -o testsuite
+	$(CC) $(CFLAGS) $(DEBUG_FLAGS) $(TEST) --coverage -o testsuite
 	./testsuite
 
 format:
