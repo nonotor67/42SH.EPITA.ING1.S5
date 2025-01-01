@@ -21,7 +21,6 @@ stages:
   - clang-format
   - coverage
 
-# Étape de test
 test:
   image: gcc:latest
   stage: test
@@ -39,19 +38,23 @@ clang-format:
   when: on_success
 
 coverage:
-  stage: coverage-check
+  image: gcc:latest
+  stage: coverage
   script:
+    - apt-get update && apt-get install -y lcov bc
     - echo "Generating coverage report..."
+    - mkdir -p $BUILD_DIR
     - cd $BUILD_DIR
     - lcov --capture --directory . --output-file $COVERAGE_INFO
     - lcov --remove $COVERAGE_INFO '/usr/*' '*/test/*' --output-file $COVERAGE_INFO
     - lcov --list $COVERAGE_INFO
     - echo "Checking coverage threshold..."
-    - COVERAGE=$(lcov --summary $COVERAGE_INFO | grep -Po 'lines.*\K\d+\.\d+')
-    - echo "Coverage: $COVERAGE%"
-    - if (( $(echo "$COVERAGE < 80.0" | bc -l) )); then
-        echo "Coverage is below 80%!";
-        exit 1;
+    - |
+      COVERAGE=$(lcov --summary $COVERAGE_INFO | grep -Po 'lines.*\K\d+\.\d+')
+      echo "Coverage: $COVERAGE%"
+      if (( $(echo "$COVERAGE < 80.0" | bc -l) )); then
+        echo "Coverage is below 80%!"
+        exit 1
       fi
   dependencies:
     - test
