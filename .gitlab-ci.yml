@@ -41,6 +41,8 @@ coverage:
   image: gcc:latest
   stage: coverage
   script:
+    - apt-get update && apt-get install -y libcriterion-dev
+    - make CFLAGS="--coverage" LDFLAGS="--coverage" check
     - apt-get update && apt-get install -y lcov bc
     - echo "Generating coverage report..."
     - lcov --capture --directory . --output-file coverage.info
