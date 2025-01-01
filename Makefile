@@ -14,7 +14,7 @@ debug:
 	$(CC) $(CFLAGS) $(DEBUG_FLAGS) $(SRC) -o debug
 
 check: 
-	$(CC) $(CFLAGS) $(DEBUG_FLAGS) $(TEST) --coverage -o testsuite
+	$(CC) $(CFLAGS) $(DEBUG_FLAGS) $(TEST) -o testsuite
 	./testsuite
 
 format:
