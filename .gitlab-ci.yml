@@ -38,7 +38,7 @@ clang-format:
     - make format
   when: on_success
 
-  coverage:
+coverage:
   stage: coverage-check
   script:
     - echo "Generating coverage report..."
