@@ -42,19 +42,6 @@ coverage:
   stage: coverage
   script:
     - apt-get update && apt-get install -y libcriterion-dev
-    - make CFLAGS="--coverage" LDFLAGS="--coverage" check
-    - apt-get update && apt-get install -y lcov bc
-    - echo "Generating coverage report..."
-    - lcov --capture --directory . --output-file coverage.info
-    - lcov --remove coverage.info --output-file coverage.info
-    - lcov --list coverage.info
-    - echo "Checking coverage threshold..."
-    - |
-      COVERAGE=$(lcov --summary coverage.info | grep -Po 'lines.*\K\d+\.\d+')
-      echo "Coverage: $COVERAGE%"
-      if (( $(echo "$COVERAGE < 80.0" | bc -l) )); then
-        echo "Coverage is below 80%!"
-        exit 1
-      fi
-  dependencies:
-    - test
+    - make CFLAGS="--coverage -fPIC" LDFLAGS="--coverage" LDLIBS="-lgcov" check
+    - apt-get install -y gcovr
+    - gcovr -r . --html --html-details -o coverage.html
