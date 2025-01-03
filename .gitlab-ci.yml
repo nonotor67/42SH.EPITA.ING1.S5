@@ -17,13 +17,11 @@
 # https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Getting-Started.gitlab-ci.yml
 
 stages:
-  - test
-  - clang-format
-  - coverage
+  - all
 
 test:
   image: gcc:latest
-  stage: test
+  stage: all
   script:
     - apt-get update && apt-get install -y libcriterion-dev
     - make CFLAGS="--coverage" LDFLAGS="--coverage" check
@@ -31,7 +29,7 @@ test:
 
 clang-format:
   image: gcc:latest
-  stage: clang-format
+  stage: all
   script:
     - apt-get update && apt-get install -y clang-format
     - make format
@@ -39,7 +37,7 @@ clang-format:
 
 coverage:
   image: gcc:latest
-  stage: coverage
+  stage: all
   script:
     - apt-get update && apt-get install -y libcriterion-dev gcovr bc
     - make CFLAGS="--coverage -fPIC" LDFLAGS="--coverage" LDLIBS="-lgcov" check
