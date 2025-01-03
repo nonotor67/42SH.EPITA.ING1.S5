@@ -44,11 +44,10 @@ coverage:
     - apt-get update && apt-get install -y libcriterion-dev gcovr bc
     - make CFLAGS="--coverage -fPIC" LDFLAGS="--coverage" LDLIBS="-lgcov" check
     - gcovr -r . --html --html-details -o coverage.html
-    - coverage=$(gcovr -r . --html --html-details -o coverage.html | grep -oP '(?<=lines: )\d+\.\d+')
-    - echo "Coverage: $coverage%"
     - |
+      coverage=$(gcovr -r . --html --html-details -o coverage.html | grep -oP '(?<=lines: )\d+\.\d+')
+      echo "Coverage: $coverage%"
       if (( $(echo "$coverage < 80" | bc -l) )); then
         exit 1
       fi
   when: on_success
-
