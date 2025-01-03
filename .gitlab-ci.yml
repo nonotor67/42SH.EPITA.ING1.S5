@@ -44,8 +44,7 @@ coverage:
     - apt-get update && apt-get install -y libcriterion-dev gcovr bc
     - make CFLAGS="--coverage -fPIC" LDFLAGS="--coverage" LDLIBS="-lgcov" check
     - gcovr -r . --html --html-details -o coverage.html
-    - sed -n '51p' coverage.html | sed -n 's/.*>\([0-9.]\+\)%.*/\1/p' > coverage.txt
-    - coverage=$(cat coverage.txt)
+    - coverage=$(gcovr -r . --html --html-details -o coverage.html | grep -oP '(?<=lines: )\d+\.\d+')
     - echo "Coverage: $coverage%"
-    - if [ "$(echo "$coverage < 80" | bc)" -eq 1 ]; then exit 1; fi
+    - if (( $(echo "$coverage < 80" | bc -l) )); then exit 1; fi
   when: on_success
