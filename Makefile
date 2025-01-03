@@ -15,7 +15,7 @@ debug:
 
 check: 
 	$(CC) $(CFLAGS) $(TEST) --coverage -fPIC -lgcov -lcriterion -o testsuite
-	./testsuite
+	GCC_COLLECT_GCOV=1 ./testsuite
 
 format:
 	./tests/clang-check/clang-check.sh

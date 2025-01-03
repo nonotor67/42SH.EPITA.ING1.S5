@@ -42,8 +42,9 @@ coverage:
   stage: coverage
   script:
     - apt-get update && apt-get install -y libcriterion-dev
-    - apt-get install tree -y
-    - tree
     - make CFLAGS="--coverage -fPIC" LDFLAGS="--coverage" LDLIBS="-lgcov" check
     - apt-get install -y gcovr
     - gcovr -r . --html --html-details -o coverage.html
+    - coverage=$(sed -n '51p' coverage.html | sed -n 's/.*>\([0-9.]\+\)%.*/\1/p')
+    - echo "Coverage: $coverage%"
+    - if [ $(echo "$coverage < 80" | bc) -eq 1 ]; then exit 1; fi
