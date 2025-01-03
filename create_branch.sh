@@ -36,6 +36,9 @@ fi
 git fetch origin
 git checkout main
 
+# Ajout des dernières modifications de la branche main
+git pull origin main
+
 # Création de la nouvelle branche à partir de main
 git checkout -b "$BRANCH_NAME"
 git push origin "$BRANCH_NAME"
