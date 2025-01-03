@@ -19,14 +19,14 @@
 stages:
   - test
   - clang-format
+  - coverage
 
-# Étape de test
 test:
   image: gcc:latest
   stage: test
   script:
     - apt-get update && apt-get install -y libcriterion-dev
-    - make check
+    - make CFLAGS="--coverage" LDFLAGS="--coverage" check
   when: on_success
 
 clang-format:
@@ -35,4 +35,19 @@ clang-format:
   script:
     - apt-get update && apt-get install -y clang-format
     - make format
+  when: on_success
+
+coverage:
+  image: gcc:latest
+  stage: coverage
+  script:
+    - apt-get update && apt-get install -y libcriterion-dev gcovr bc
+    - make CFLAGS="--coverage -fPIC" LDFLAGS="--coverage" LDLIBS="-lgcov" check
+    - gcovr -r . --html --html-details -o coverage.html --gcov-ignore-parse-errors
+    - |
+      coverage=$(sed -n '51{s/.*>\([0-9.]\+\).*/\1/p}' coverage.html)
+      echo "Coverage: $coverage%"
+      if (( $(echo "$coverage < 80" | bc -l) )); then
+        exit 1
+      fi
   when: on_success
