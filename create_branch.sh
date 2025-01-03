@@ -65,7 +65,7 @@ fi
 
 # Création de la merge request vers la branche develop
 curl --request POST "$GIT_API_URL" --header "PRIVATE-TOKEN: $TOKEN" \
-  --data "source_branch=$BRANCH_NAME&target_branch=develop&title=Draft: DEV: $BRANCH_NAME&assignee_id=$jules"
+  --data "source_branch=$BRANCH_NAME&target_branch=develop&title=Draft: DEV: $BRANCH_NAME&assignee_id=$USER"
 
 # Création de la merge request vers la branche main
 curl --request POST "$GIT_API_URL" --header "PRIVATE-TOKEN: $TOKEN" \
