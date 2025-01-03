@@ -45,7 +45,7 @@ coverage:
     - make CFLAGS="--coverage -fPIC" LDFLAGS="--coverage" LDLIBS="-lgcov" check
     - gcovr -r . --html --html-details -o coverage.html --gcov-ignore-parse-errors
     - |
-      coverage=$(gcovr -r . --html --html-details -o coverage.html --gcov-ignore-parse-errors | grep -oP '(?<=lines: )\d+\.\d+')
+      coverage=$(sed -n '51{s/.*>\([0-9.]\+\).*/\1/p}' coverage.html)
       echo "Coverage: $coverage%"
       if (( $(echo "$coverage < 80" | bc -l) )); then
         exit 1
