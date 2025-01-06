@@ -11,4 +11,4 @@ char *read_from_file(char *filename);
 
 char *read_from_stdin();
 
-#endif // * IO_H //
+#endif /* ! IO_H */
