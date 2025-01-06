@@ -1,8 +1,8 @@
 #include "io.h"
 
-#include <string.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 char *read_input(int argc, char *argv[])
 {
@@ -35,7 +35,6 @@ static char *my_strdup(const char *s)
     memcpy(dup, s, len);
     return dup;
 }
-
 
 char *read_from_string(char *argv[])
 {
