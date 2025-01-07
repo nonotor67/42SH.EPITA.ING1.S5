@@ -23,9 +23,10 @@ build:
     image: gcc:latest
     stage: all
     script:
-        - autoreconf --install
-        - ./configure
-        - make
+      -  apt-get update && apt-get install -y autoconf-archive
+      - autoreconf --install
+      - ./configure
+      - make
     when: on_success
 
 test:
