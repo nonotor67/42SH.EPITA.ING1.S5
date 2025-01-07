@@ -6,6 +6,6 @@ libio_a_SOURCES =  \
 
 libio_a_CPPFLAGS = -I$(top_srcdir)/src
 
-libio_a_CFLAGS = -std=c99 -Werror -Wall -Wextra -Wvla -pedantic
+libio_a_CFLAGS = -std=c99 -Werror -Wall -Wextra -Wvla -pedantic -g3 -fsanitize=address,undefined
 
 noinst_LIBRARIES = libio.a
