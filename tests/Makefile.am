@@ -1,9 +1,10 @@
+# Exécutable pour les tests
 check_PROGRAMS = unit_tests
 
-unit_tests_SOURCES = test_ast.c test_lexer.c test_parser.c
+# Sources des tests
+unit_tests_SOURCES = test_io.c
 
+# Flags de compilation et de lien
 unit_tests_CFLAGS = -std=c99 -Wall -Wextra -Werror -pedantic
-unit_tests_LDADD = -lcriterion -L$(abs_top_builddir)/src -last -llexer -lparser -lexecution -lio -lutils
+unit_tests_LDADD = -lcriterion -L$(abs_top_builddir)/src/io -lio
 unit_tests_CPPFLAGS = -I$(abs_top_srcdir)/src
-
-EXTRA_DIST = $(unit_tests_SOURCES)

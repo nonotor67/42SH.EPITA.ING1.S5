@@ -33,8 +33,13 @@ test:
   image: gcc:latest
   stage: all
   script:
-    - apt-get update && apt-get install -y libcriterion-dev
-    - make CFLAGS="--coverage" LDFLAGS="--coverage" check
+    -  apt-get update && apt-get install -y autoconf-archive
+    - autoreconf --install
+    - ./configure
+    - make
+    - make check
+    - cd tests
+    - ./unit_tests
   when: on_success
 
 clang-format:
