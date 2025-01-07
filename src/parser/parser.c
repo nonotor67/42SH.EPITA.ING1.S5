@@ -1,3 +1,4 @@
-int tkt5(void) {
+int tkt5(void)
+{
     return 0;
 }
