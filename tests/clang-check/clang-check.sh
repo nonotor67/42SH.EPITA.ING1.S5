@@ -36,4 +36,4 @@ check_all_files_in_src() {
 
 # Appel de la fonction avec le dossier src
 check_all_files_in_src "./src"
-
+check_all_files_in_src "./tests"
