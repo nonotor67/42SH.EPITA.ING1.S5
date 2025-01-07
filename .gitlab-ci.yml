@@ -33,7 +33,7 @@ test:
   image: gcc:latest
   stage: all
   script:
-    -  apt-get update && apt-get install -y autoconf-archive
+    -  apt-get update && apt-get install -y autoconf-archive libcriterion-dev
     - autoreconf --install
     - ./configure
     - make
