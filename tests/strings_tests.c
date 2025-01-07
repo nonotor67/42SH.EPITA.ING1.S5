@@ -1,7 +1,7 @@
-#include "../src/utils/strings.h"
-
 #include <criterion/criterion.h>
 #include <unistd.h>
+
+#include "../src/utils/strings.h"
 
 Test(strings, test_string_push)
 {
@@ -23,7 +23,8 @@ Test(strings, test_string_push)
     string_push(string, '!');
     string_push(string, '\n');
 
-    cr_assert_str_eq(string->data, "Hello, World!\n", "Expected Hello, World!\n, but got %s", string->data);
+    cr_assert_str_eq(string->data, "Hello, World!\n",
+                     "Expected Hello, World!\n, but got %s", string->data);
 
     string_free(string);
 }
@@ -37,7 +38,8 @@ Test(strings, test_string_append)
     string_append(string, "World! This string has to be a bit longer...");
     string_append(string, "\n");
 
-    cr_assert_str_eq(string->data, "Hello, World!\n", "Expected Hello, World!\n, but got %s", string->data);
+    cr_assert_str_eq(string->data, "Hello, World!\n",
+                     "Expected Hello, World!\n, but got %s", string->data);
 
     string_free(string);
 }
@@ -47,7 +49,8 @@ Test(strings, test_string_from)
     struct string *string = string_from("Hello, World!\n");
     cr_assert_not_null(string, "Expected a non-null string, but got NULL");
 
-    cr_assert_str_eq(string->data, "Hello, World!\n", "Expected Hello, World!\n, but got %s", string->data);
+    cr_assert_str_eq(string->data, "Hello, World!\n",
+                     "Expected Hello, World!\n, but got %s", string->data);
 
     string_free(string);
 }
@@ -57,7 +60,8 @@ Test(strings, test_string_from_empty)
     struct string *string = string_from("");
     cr_assert_not_null(string, "Expected a non-null string, but got NULL");
 
-    cr_assert_str_eq(string->data, "", "Expected an empty string, but got %s", string->data);
+    cr_assert_str_eq(string->data, "", "Expected an empty string, but got %s",
+                     string->data);
 
     string_free(string);
 }
