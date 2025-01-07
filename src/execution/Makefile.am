@@ -5,7 +5,9 @@ libexecution_a_SOURCES =  \
   execution.h \
   exec_false.c \
   exec_true.c \
-  builtins_bool.h
+  builtins_bool.h \
+  exec_echo.c \
+  builtins_echo.h
 
 libexecution_a_CPPFLAGS = -I$(top_srcdir)/src
 
