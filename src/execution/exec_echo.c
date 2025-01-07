@@ -45,6 +45,8 @@ bool exec_echo(int argc, char **argv)
         putchar('\n');
     }
 
+    fflush(stdout);
+
     return true;
 }
 
