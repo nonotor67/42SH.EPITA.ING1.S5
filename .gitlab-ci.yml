@@ -54,8 +54,13 @@ coverage:
   image: gcc:latest
   stage: all
   script:
-    - apt-get update && apt-get install -y libcriterion-dev gcovr bc
+    -  apt-get update && apt-get install -y autoconf-archive libcriterion-dev
+    - autoreconf --install
+    - ./configure
+    - make
     - make CFLAGS="--coverage -fPIC" LDFLAGS="--coverage" LDLIBS="-lgcov" check
+    - cd tests
+    - ./unit_tests
     - gcovr -r . --html --html-details -o coverage.html --gcov-ignore-parse-errors
     - |
       coverage=$(sed -n '51{s/.*>\([0-9.]\+\).*/\1/p}' coverage.html)
