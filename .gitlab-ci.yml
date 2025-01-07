@@ -19,6 +19,15 @@
 stages:
   - all
 
+build:
+    image: gcc:latest
+    stage: all
+    script:
+        - autoreconf --install
+        - ./configure
+        - make
+    when: on_success
+
 test:
   image: gcc:latest
   stage: all
