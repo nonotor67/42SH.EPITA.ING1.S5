@@ -45,7 +45,6 @@ bool exec_echo(int argc, char **argv)
         idx++;
     }
 
-
     for (int i = idx; i < argc; i++)
     {
         print_argument(argv[i], eflag);
