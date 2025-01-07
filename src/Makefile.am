@@ -3,7 +3,7 @@ SUBDIRS = ast execution io lexer parser utils
 
 bin_PROGRAMS = 42sh
 
-42sh_SOURCES = 42sh.c main.c
+42sh_SOURCES = 42sh.c
 
 42sh_CPPFLAGS = -I%D%
 
