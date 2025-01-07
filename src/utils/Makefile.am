@@ -2,7 +2,9 @@ lib_LIBRARIES = libutils.a
 
 libutils_a_SOURCES =  \
   utils.c \
-  utils.h
+  utils.h \
+  strings.c \
+  strings.h
 
 libutils_a_CPPFLAGS = -I$(top_srcdir)/src
 
