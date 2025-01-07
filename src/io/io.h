@@ -18,7 +18,7 @@ struct reader
     {
         FILE *file;
         char *string;
-    };
+    } input;
 };
 
 // initializes a reader struct
@@ -26,7 +26,7 @@ struct reader* reader_new(int argc, char *argv[]);
 // frees a reader struct
 void reader_free(struct reader *reader);
 // returns 1 if the input is stdin, 0 otherwise
-int reader_is_stdin(struct reader *reader);
+int reader_is_stdin(const struct reader *reader);
 
 /*
  Returns the next character from the input.

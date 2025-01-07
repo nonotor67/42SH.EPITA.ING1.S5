@@ -19,13 +19,13 @@ struct reader* reader_new(const int argc, char *argv[])
     if (argc == 2)
     {
         reader->type = INPUT_FILE;
-        reader->file = fopen(argv[1], "r");
-        EXIT_ON_NULL(reader->file, "Error: Could not open file\n");
+        reader->input.file = fopen(argv[1], "r");
+        EXIT_ON_NULL(reader->input.file, "Error: Could not open file\n");
     }
     else if (argc == 3 && strcmp(argv[1], "-c") == 0)
     {
         reader->type = INPUT_STRING;
-        reader->string = argv[2];
+        reader->input.string = argv[2];
     }
     else if (argc == 1)
         reader->type = INPUT_STDIN;
@@ -42,7 +42,7 @@ struct reader* reader_new(const int argc, char *argv[])
 void reader_free(struct reader *reader)
 {
     if (reader->type == INPUT_FILE)
-        fclose(reader->file);
+        fclose(reader->input.file);
     free(reader);
 }
 
@@ -56,10 +56,10 @@ int reader_next(struct reader *reader)
     reader->current++;
     if (reader->type == INPUT_STRING)
     {
-        const char c = reader->string[reader->current];
+        const char c = reader->input.string[reader->current];
         return c != '\0' ? c : EOF;
     }
 
-    FILE *input = reader->type == INPUT_FILE ? reader->file : stdin;
+    FILE *input = reader->type == INPUT_FILE ? reader->input.file : stdin;
     return fgetc(input);
 }

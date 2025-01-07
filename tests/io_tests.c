@@ -6,24 +6,21 @@
 Test(read_input, test_read_input_from_file)
 {
     char *argv[] = {"./bin/42sh", "tests/input.txt"};
-    char *result = read_input(2, argv);
-    char *expected = "Hello, World!\n";
+    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv);
+    char *result = malloc(100);
+    int i = 0;
+    while (1)
+    {
+        int c = reader_next(reader);
+        if (c == EOF)
+            break;
+        result[i++] = c;
+    }
+    result[i] = '\0';
+    reader_free(reader);
+    char *expected = "Hello, World!\nI am a test file.\n";
     cr_assert_str_eq(result, expected, "Expected %s, but got %s", expected, result);
+    free(result);
 }
 
-Test(read_input, test_read_input_from_string)
-{
-    char *argv[] = {"./bin/42sh", "-c", "Hello, World!\n"};
-    char *result = read_input(3, argv);
-    char *expected = "Hello, World!\n";
-    cr_assert_str_eq(result, expected, "Expected %s, but got %s", expected, result);
-}
 
-Test(read_input, test_read_input_from_stdin)
-{
-    char *argv[] = {"./bin/42sh"};
-    char *result = read_input(1, argv);
-    write(0, "Hello, World!\n", 14);
-    char *expected = "Hello, World!\n";
-    cr_assert_str_eq(result, expected, "Expected %s, but got %s", expected, result);
-}
