@@ -4,3 +4,20 @@ create_branch.sh
 .vscode
 *.json
 *.o
+# Autotools
+Makefile
+*/Makefile
+Makefile.in
+*/Makefile.in
+missing
+install-sh
+depcomp
+configure
+config.status
+config.log
+compile
+ar-lib
+aclocal.m4
+autom4te.cache
+*/.deps
+*/*/.deps
