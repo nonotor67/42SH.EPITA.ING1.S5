@@ -1,7 +1,8 @@
-#include "builtins_bool.h"
-
 #include <stdbool.h>
 
-bool exec_true(void) {
+#include "builtins_bool.h"
+
+bool exec_true(void)
+{
     return true;
 }
