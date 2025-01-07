@@ -9,29 +9,44 @@ static void print_argument(const char *arg, bool eflag);
 
 bool exec_echo(int argc, char **argv)
 {
-    int opt;
+    int idx = 1;
     bool nflag = false;
     bool eflag = false;
 
-    while ((opt = getopt(argc, argv, "neE")) != -1)
+    while (idx < argc)
     {
-        switch (opt)
+        if (argv[idx][0] != '-')
         {
-        case 'n':
-            nflag = true;
             break;
-        case 'e':
-            eflag = true;
-            break;
-        case 'E':
-            eflag = false;
-            break;
-        default:
-            return false;
         }
+
+        if (argv[idx][1] == '\0')
+        {
+            break;
+        }
+
+        if (argv[idx][1] == 'n')
+        {
+            nflag = true;
+        }
+        else if (argv[idx][1] == 'e')
+        {
+            eflag = true;
+        }
+        else if (argv[idx][1] == 'E')
+        {
+            eflag = false;
+        }
+        else
+        {
+            break;
+        }
+
+        idx++;
     }
 
-    for (int i = optind; i < argc; i++)
+
+    for (int i = idx; i < argc; i++)
     {
         print_argument(argv[i], eflag);
         if (i < argc - 1)
