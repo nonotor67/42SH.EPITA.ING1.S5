@@ -11,6 +11,6 @@ libexecution_a_SOURCES =  \
 
 libexecution_a_CPPFLAGS = -I$(top_srcdir)/src
 
-libexecution_a_CFLAGS = -std=c99 -Werror -Wall -Wextra -Wvla -pedantic
+libexecution_a_CFLAGS = -std=c99 -Werror -Wall -Wextra -Wvla -pedantic -g3 -fsanitize=address,undefined
 
 noinst_LIBRARIES = libexecution.a
