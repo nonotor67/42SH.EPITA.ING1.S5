@@ -4,114 +4,62 @@
 #include <stdlib.h>
 #include <string.h>
 
-char *read_input(int argc, char *argv[])
+#define EXIT_ON_NULL(ptr, message) \
+    if (ptr == NULL)               \
+    {                              \
+        fprintf(stderr, message);  \
+        exit(1);                   \
+    }
+
+struct reader* reader_new(const int argc, char *argv[])
 {
+    struct reader *reader = malloc(sizeof(struct reader));
+    EXIT_ON_NULL(reader, "Error: Could not allocate reader\n");
+
     if (argc == 2)
     {
-        return read_from_file(argv[1]);
+        reader->type = INPUT_FILE;
+        reader->file = fopen(argv[1], "r");
+        EXIT_ON_NULL(reader->file, "Error: Could not open file\n");
     }
     else if (argc == 3 && strcmp(argv[1], "-c") == 0)
     {
-        return read_from_string(argv);
+        reader->type = INPUT_STRING;
+        reader->string = argv[2];
     }
     else if (argc == 1)
-    {
-        return read_from_stdin();
-    }
+        reader->type = INPUT_STDIN;
     else
     {
         fprintf(stderr, "Usage: %s [-c command] [file]\n", argv[0]);
         exit(1);
     }
+
+    reader->current = 0;
+    return reader;
 }
 
-// strdup is not standard C, to avoid portability issues, we implement our own
-static char *my_strdup(const char *s)
+void reader_free(struct reader *reader)
 {
-    size_t len = strlen(s) + 1;
-    char *dup = malloc(len);
-    if (dup == NULL)
-        return NULL;
-    memcpy(dup, s, len);
-    return dup;
+    if (reader->type == INPUT_FILE)
+        fclose(reader->file);
+    free(reader);
 }
 
-char *read_from_string(char *argv[])
+int reader_is_stdin(const struct reader *reader)
 {
-    // Strdup to allow freeing the memory
-    return my_strdup(argv[2]);
+    return reader->type == INPUT_STDIN;
 }
 
-char *read_from_file(char *filename)
+int reader_next(struct reader *reader)
 {
-    FILE *file = fopen(filename, "r");
-    if (file == NULL)
+    reader->current++;
+    if (reader->type == INPUT_STRING)
     {
-        fprintf(stderr, "Error: Could not open file %s\n", filename);
-        exit(1);
+        const char c = reader->string[reader->current];
+        return c != '\0' ? c : EOF;
     }
 
-    size_t total_size = BUFFER_SIZE;
-    size_t current_size = 0;
-    char *input = malloc(total_size);
-    if (input == NULL)
-    {
-        fprintf(stderr, "Error: Could not allocate input\n");
-        exit(1);
-    }
-    input[0] = '\0';
-
-    char buffer[BUFFER_SIZE];
-    while (fgets(buffer, BUFFER_SIZE, file) != NULL)
-    {
-        size_t buffer_len = strlen(buffer);
-        if (current_size + buffer_len + 1 > total_size)
-        {
-            total_size *= 2;
-            input = realloc(input, total_size);
-            if (input == NULL)
-            {
-                fprintf(stderr, "Error: Could not reallocate input\n");
-                exit(1);
-            }
-        }
-        strcat(input, buffer);
-        current_size += buffer_len;
-    }
-
-    fclose(file);
-    return input;
-}
-
-char *read_from_stdin()
-{
-    size_t total_size = BUFFER_SIZE;
-    size_t current_size = 0;
-    char *input = malloc(total_size);
-    if (input == NULL)
-    {
-        fprintf(stderr, "Error: Could not allocate input\n");
-        exit(1);
-    }
-    input[0] = '\0';
-
-    char buffer[BUFFER_SIZE];
-    while (fgets(buffer, BUFFER_SIZE, stdin) != NULL)
-    {
-        size_t buffer_len = strlen(buffer);
-        if (current_size + buffer_len + 1 > total_size)
-        {
-            total_size *= 2;
-            input = realloc(input, total_size);
-            if (input == NULL)
-            {
-                fprintf(stderr, "Error: Could not reallocate input\n");
-                exit(1);
-            }
-        }
-        strcat(input, buffer);
-        current_size += buffer_len;
-    }
-
-    return input;
+    FILE *input = reader->type == INPUT_FILE ? reader->file : stdin;
+    return fgetc(input);
 }
