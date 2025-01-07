@@ -38,8 +38,6 @@ test:
     - ./configure
     - make
     - make check
-    - cd tests
-    - ./unit_tests
   when: on_success
 
 clang-format:
@@ -59,8 +57,6 @@ coverage:
     - ./configure
     - make
     - make CFLAGS="--coverage -fPIC" LDFLAGS="--coverage" LDLIBS="-lgcov" check
-    - cd tests
-    - ./unit_tests
     - gcovr -r . --html --html-details -o coverage.html --gcov-ignore-parse-errors
     - |
       coverage=$(sed -n '51{s/.*>\([0-9.]\+\).*/\1/p}' coverage.html)
