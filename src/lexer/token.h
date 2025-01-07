@@ -1,9 +1,9 @@
 #ifndef TOKEN_H
 #define TOKEN_H
 
-#include <unistd.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
 enum token_type
 {
