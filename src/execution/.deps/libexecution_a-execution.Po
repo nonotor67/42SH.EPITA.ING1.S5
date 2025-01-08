@@ -1,2 +1,0 @@
-libexecution_a-execution.o: execution.c /usr/include/stdc-predef.h
-/usr/include/stdc-predef.h:
