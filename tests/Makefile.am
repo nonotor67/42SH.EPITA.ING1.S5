@@ -2,7 +2,7 @@
 check_PROGRAMS = unit_tests
 
 # Sources des tests
-unit_tests_SOURCES = test_io.c test_execution.c
+unit_tests_SOURCES = test_io.c test_execution.c test_parser.c
 
 # Flags de compilation et de lien
 unit_tests_CFLAGS = -std=c99 -Wall -Wextra -Werror -pedantic -g3 -fsanitize=address,undefined
