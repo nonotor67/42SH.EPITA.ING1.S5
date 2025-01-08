@@ -1,8 +1,8 @@
 #ifndef PARSE_REDIR_H
 #define PARSE_REDIR_H
 
-#include "parser_struct.h"
 #include "ast/ast.h"
 #include "lexer/lexer.h"
+#include "parser_struct.h"
 
 #endif // !PARSE_REDIR_H

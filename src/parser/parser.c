@@ -1,4 +1,5 @@
 #include "parser.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -11,21 +12,22 @@ struct ast *simple_command(enum parser_status *status, struct lexer *lexer)
     struct token token = lexer_pop(lexer);
     if (token.type == TOKEN_WORD)
     {
-       struct ast *node = ast_new(SIMPLE_COMMAND);
-       int buffer_size = 16;
-       node->values = malloc(sizeof(char *) * buffer_size);
-         if (!node->values)
-         {
-              fprintf(stderr, "Failed allocating memory for values\n");
-              *status = PARSER_UNEXPECTED_TOKEN;
-              return NULL;
-         }
-        while(token.type == TOKEN_WORD)
+        struct ast *node = ast_new(SIMPLE_COMMAND);
+        int buffer_size = 16;
+        node->values = malloc(sizeof(char *) * buffer_size);
+        if (!node->values)
+        {
+            fprintf(stderr, "Failed allocating memory for values\n");
+            *status = PARSER_UNEXPECTED_TOKEN;
+            return NULL;
+        }
+        while (token.type == TOKEN_WORD)
         {
             if (node->size >= buffer_size - 1)
             {
                 buffer_size *= 2;
-                node->values = realloc(node->values, sizeof(char *) * buffer_size);
+                node->values =
+                    realloc(node->values, sizeof(char *) * buffer_size);
                 if (!node->values)
                 {
                     fprintf(stderr, "Failed reallocating memory for values\n");

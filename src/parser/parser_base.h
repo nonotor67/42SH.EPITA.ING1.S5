@@ -1,9 +1,9 @@
 #ifndef PARSER_BASE_H
 #define PARSER_BASE_H
 
-#include "parser_struct.h"
 #include "ast/ast.h"
 #include "lexer/lexer.h"
+#include "parser_struct.h"
 
 struct ast *simple_command(enum parser_status *status, struct lexer *lexer);
 
