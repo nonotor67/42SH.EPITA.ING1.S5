@@ -4,14 +4,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define EXIT_ON_NULL(ptr, message) \
-    if (ptr == NULL)               \
-    {                              \
-        fprintf(stderr, message);  \
-        exit(1);                   \
+#define EXIT_ON_NULL(ptr, message)                                             \
+    if (ptr == NULL)                                                           \
+    {                                                                          \
+        fprintf(stderr, message);                                              \
+        exit(1);                                                               \
     }
 
-struct reader* reader_new(const int argc, char *argv[])
+struct reader *reader_new(const int argc, char *argv[])
 {
     struct reader *reader = malloc(sizeof(struct reader));
     EXIT_ON_NULL(reader, "Error: Could not allocate reader\n");

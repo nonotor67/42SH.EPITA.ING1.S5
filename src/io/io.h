@@ -22,7 +22,7 @@ struct reader
 };
 
 // initializes a reader struct
-struct reader* reader_new(int argc, char *argv[]);
+struct reader *reader_new(int argc, char *argv[]);
 // frees a reader struct
 void reader_free(struct reader *reader);
 // returns 1 if the input is stdin, 0 otherwise
