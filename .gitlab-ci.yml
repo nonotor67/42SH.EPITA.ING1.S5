@@ -18,6 +18,7 @@
 
 stages:
   - all
+  - update_git
 
 build:
     image: gcc:latest
@@ -65,3 +66,14 @@ coverage:
         exit 1
       fi
   when: on_success
+
+update_git:
+    image: alpine:latest
+    stage: update_git
+    script:
+        - apk add git
+        - git config --global user.email "jules.ladaigue@epita.fr"
+        - git config --global user.name "jules.ladaigue"
+        - cd ..
+        - ls
+        - git clone jules.ladaigue@git.forge.epita.fr:p/epita-ing-assistants-acu/42sh-2027/epita-ing-assistants-acu-42sh-2027-strasbourg-07.git
