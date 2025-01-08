@@ -1,8 +1,14 @@
-#include <stdbool.h>
+#include <stdio.h>
 
 #include "builtins_bool.h"
 
-bool exec_false(void)
+int exec_false(int argc, __attribute__((unused)) char **argv)
 {
-    return false;
+    if (argc > 1)
+    {
+        fprintf(stderr, "false: too many arguments\n");
+        return 1;
+    }
+
+    return 1;
 }

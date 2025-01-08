@@ -7,12 +7,36 @@
 
 Test(exec_true, test_exec_true)
 {
-    cr_assert(exec_true(), "Expected true return false");
+    int argc = 1;
+    char *argv[] = { "true", NULL };
+    cr_assert(exec_true(argc, argv) == 0, "Expected true return false");
 }
 
 Test(exec_false, test_exec_false)
 {
-    cr_assert_not(exec_false(), "Expected false return true");
+    int argc = 1;
+    char *argv[] = { "false", NULL };
+    cr_assert(exec_false(argc, argv) == 1, "Expected false return true");
+}
+
+Test(exec_true_too_many_args, test_exec_true_too_many_args)
+{
+    cr_redirect_stderr();
+
+    char *argv[] = { "true", "arg", NULL };
+
+    cr_assert_not(exec_true(2, argv), "Expected true return false");
+    cr_assert_stderr_eq_str("true: too many arguments\n");
+}
+
+Test(exec_false_too_many_args, test_exec_false_too_many_args)
+{
+    cr_redirect_stderr();
+
+    char *argv[] = { "false", "arg", NULL };
+
+    cr_assert(exec_false(2, argv), "Expected false return true");
+    cr_assert_stderr_eq_str("false: too many arguments\n");
 }
 
 Test(exec_echo_no_args, test_exec_echo_simple)
