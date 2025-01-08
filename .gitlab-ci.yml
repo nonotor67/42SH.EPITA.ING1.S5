@@ -18,7 +18,6 @@
 
 stages:
   - all
-  - update_git
 
 build:
     image: gcc:latest
