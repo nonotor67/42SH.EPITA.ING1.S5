@@ -72,6 +72,7 @@ update_git:
     stage: update_git
     script:
         - apk add git
+        - apk add openssh
         - git config --global user.email "jules.ladaigue@epita.fr"
         - git config --global user.name "jules.ladaigue"
         - git clone jules.ladaigue@git.forge.epita.fr:p/epita-ing-assistants-acu/42sh-2027/epita-ing-assistants-acu-42sh-2027-strasbourg-07.git
