@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-bool exec_true(void);
-bool exec_false(void);
+int exec_true(int argc, char **argv);
+int exec_false(int argc, char **argv);
 
 #endif /* !BUILTINS_BOOL_H */
