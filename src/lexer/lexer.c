@@ -43,6 +43,7 @@ static struct token lexer_next_handle_key(struct token token)
         token.type = TOKEN_FI;
 
     free(token.value);
+    token.value = NULL;
     return token;
 }
 
