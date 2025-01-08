@@ -74,6 +74,4 @@ update_git:
         - apk add git
         - git config --global user.email "jules.ladaigue@epita.fr"
         - git config --global user.name "jules.ladaigue"
-        - cd ..
-        - ls
         - git clone jules.ladaigue@git.forge.epita.fr:p/epita-ing-assistants-acu/42sh-2027/epita-ing-assistants-acu-42sh-2027-strasbourg-07.git
