@@ -42,6 +42,7 @@ static struct token lexer_next_handle_key(struct token token)
     else if (strcmp(token.value, "fi") == 0)
         token.type = TOKEN_FI;
 
+    free(token.value);
     return token;
 }
 
