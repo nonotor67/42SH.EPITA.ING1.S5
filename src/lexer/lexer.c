@@ -28,22 +28,42 @@ static int lexer_is_alphanum(struct lexer *lexer)
     return isalnum(lexer->data[lexer->pos]);
 }
 
+static void token_nuke(struct token token)
+{
+    if (token.value)
+        free(token.value);
+    token.value = NULL;
+}
+
 // Handle the words corresponding to keywords
 static struct token lexer_next_handle_key(struct token token)
 {
     if (strcmp(token.value, "if") == 0)
+    {
         token.type = TOKEN_IF;
+        token_nuke(token);
+    }
     else if (strcmp(token.value, "then") == 0)
+    {
         token.type = TOKEN_THEN;
+        token_nuke(token);
+    }
     else if (strcmp(token.value, "else") == 0)
+    {
         token.type = TOKEN_ELSE;
+        token_nuke(token);
+    }
     else if (strcmp(token.value, "elif") == 0)
+    {
         token.type = TOKEN_ELIF;
+        token_nuke(token);
+    }
     else if (strcmp(token.value, "fi") == 0)
+    {
         token.type = TOKEN_FI;
+        token_nuke(token);
+    }
 
-    free(token.value);
-    token.value = NULL;
     return token;
 }
 
