@@ -56,7 +56,7 @@ coverage:
     - autoreconf --install
     - ./configure
     - make
-    - make CFLAGS="--coverage -fPIC" LDFLAGS="--coverage" LDLIBS="-lgcov" check
+    - make CFLAGS="--coverage -fPIC I../src" LDFLAGS="--coverage" LDLIBS="-lgcov" check
     - gcovr -r . --html --html-details -o coverage.html --gcov-ignore-parse-errors
     - |
       coverage=$(sed -n '51{s/.*>\([0-9.]\+\).*/\1/p}' coverage.html)
