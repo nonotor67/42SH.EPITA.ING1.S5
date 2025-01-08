@@ -20,7 +20,7 @@ struct ast
     struct ast *middle;
     struct ast *right;
     int size;
-    //values[0] is the name of the command for SIMPLE_COMMAND
+    // values[0] is the name of the command for SIMPLE_COMMAND
     char **values;
 };
 
@@ -103,16 +103,16 @@ if echo hello ; then echo world ; else echo bye ; fi
     size = 0
     values = NULL
 
-if echo hello ; then echo world ; elif echo Test ; then echo encore ; else echo ! fi
+if echo hello ; then echo world ; elif echo Test ; then echo encore ; else echo
+! fi
     type = CONDITIONS
     left = COMMAND_LIST
         left = SIMPLE_COMMAND
             size = 2
             values = ["echo", "hello", NULL]
-        middle = NULL
-        right = NULL
-        size = 0
-        values = NULL
+            middle = NULL right = NULL
+    size = 0
+    values = NULL
     middle =  COMMAND_LIST
         left = SIMPLE_COMMAND
             size = 2
