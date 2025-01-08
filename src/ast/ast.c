@@ -16,7 +16,8 @@ struct ast *ast_new(enum ast_type type)
     ast->type = type;
     ast->left = NULL;
     ast->right = NULL;
-    ast->value = NULL;
+    ast->middle = NULL;
+    ast->size = 0;
     ast->values = NULL;
 
     return ast;
@@ -31,8 +32,9 @@ void ast_free(struct ast *ast)
         ast_free(ast->left);
     if (ast->right)
         ast_free(ast->right);
+    if (ast->middle)
+        ast_free(ast->middle);
 
-    // No need to free the value as it is values[0]
     if (ast->values)
     {
         for (size_t i = 0; ast->values[i]; i++)
