@@ -1,11 +1,11 @@
-#include "../src/io/io.h"
-
 #include <criterion/criterion.h>
 #include <unistd.h>
 
+#include "../src/io/io.h"
+
 Test(read_input, test_read_input_from_file)
 {
-    char *argv[] = {"./bin/42sh", "input.txt"};
+    char *argv[] = { "./bin/42sh", "input.txt" };
     struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv);
     char *result = malloc(100);
     int i = 0;
@@ -19,6 +19,7 @@ Test(read_input, test_read_input_from_file)
     result[i] = '\0';
     reader_free(reader);
     char *expected = "Hello, World!\nI am a test file.\n";
-    cr_assert_str_eq(result, expected, "Expected %s, but got %s", expected, result);
+    cr_assert_str_eq(result, expected, "Expected %s, but got %s", expected,
+                     result);
     free(result);
 }
