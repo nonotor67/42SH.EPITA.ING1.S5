@@ -66,7 +66,11 @@ struct ast *list(enum parser_status *status, struct lexer *lexer)
     return and_or(status, lexer);
 }
 
-struct ast *input(enum parser_status *status, struct lexer *lexer);
+struct ast *input(enum parser_status *status, struct lexer *lexer)
+{
+    return list(status, lexer);
+}
+
 struct ast *parse(enum parser_status *status, struct lexer *lexer)
 {
     return input(status, lexer);
