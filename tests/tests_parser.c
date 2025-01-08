@@ -1,6 +1,8 @@
 #include <criterion/criterion.h>
 #include <criterion/redirect.h>
 #include <parser/parser.h>
+#include <lexer/lexer.h>
+#include <ast/ast.h>
 #include <unistd.h>
 
 Test(parser, test_parser)
