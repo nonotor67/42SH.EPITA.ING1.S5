@@ -3,7 +3,7 @@
 
 #include "builtins_bool.h"
 
-int exec_true(int argc, char **argv)
+int exec_true(int argc, __attribute__((unused)) char **argv)
 {
     if (argc > 1)
     {
