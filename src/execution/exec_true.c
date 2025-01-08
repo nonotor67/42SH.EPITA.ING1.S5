@@ -8,7 +8,7 @@ int exec_true(int argc, __attribute__((unused)) char **argv)
     if (argc > 1)
     {
         fprintf(stderr, "true: too many arguments\n");
-        exit(1);
+        return 0;
     }
 
     return 0;
