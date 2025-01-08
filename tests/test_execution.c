@@ -100,7 +100,8 @@ Test(exec_exit_no_args, test_exec_exit_no_args, .exit_code = 0)
     exec_exit(1, argv);
 }
 
-Test(exec_exit_exit_code_too_high, test_exec_exit_exit_code_too_high, .exit_code = 255)
+Test(exec_exit_exit_code_too_high, test_exec_exit_exit_code_too_high,
+     .exit_code = 255)
 {
     char *argv[] = { "exit", "256", NULL };
     exec_exit(2, argv);

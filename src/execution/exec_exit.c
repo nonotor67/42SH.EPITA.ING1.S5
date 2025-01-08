@@ -1,7 +1,7 @@
-#include "builtins_exit.h"
-
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+
+#include "builtins_exit.h"
 
 void exec_exit(int argc, char **argv)
 {
