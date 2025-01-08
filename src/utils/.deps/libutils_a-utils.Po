@@ -1,0 +1,2 @@
+libutils_a-utils.o: utils.c /usr/include/stdc-predef.h
+/usr/include/stdc-predef.h:
