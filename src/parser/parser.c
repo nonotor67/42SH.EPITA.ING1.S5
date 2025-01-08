@@ -14,6 +14,7 @@ struct ast *simple_command(enum parser_status *status, struct lexer *lexer)
     {
         struct ast *node = ast_new(SIMPLE_COMMAND);
         int buffer_size = 16;
+        node->size = 0;
         node->values = malloc(sizeof(char *) * buffer_size);
         if (!node->values)
         {
