@@ -105,4 +105,5 @@ void ast_print(struct ast *ast)
     fprintf(file, "digraph G {\n");
     ast_print_help(ast, file);
     fprintf(file, "}\n");
+    fclose(file);
 }
