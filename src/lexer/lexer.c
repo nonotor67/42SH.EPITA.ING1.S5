@@ -16,7 +16,7 @@ Utilis
 #####################################
 */
 
-#define UNITIALIZED_CHAR -5
+#define UNITIALIZED_CHAR (-5)
 
 static int last_char(struct lexer *lexer)
 {
@@ -57,45 +57,14 @@ static void token_nuke(struct token token)
     token.value = NULL;
 }
 
-// Handle the words corresponding to keywords
-static struct token lexer_next_handle_key(struct token token)
-{
-    if (strcmp(token.value, "if") == 0)
-    {
-        token.type = TOKEN_IF;
-        token_nuke(token);
-    }
-    else if (strcmp(token.value, "then") == 0)
-    {
-        token.type = TOKEN_THEN;
-        token_nuke(token);
-    }
-    else if (strcmp(token.value, "else") == 0)
-    {
-        token.type = TOKEN_ELSE;
-        token_nuke(token);
-    }
-    else if (strcmp(token.value, "elif") == 0)
-    {
-        token.type = TOKEN_ELIF;
-        token_nuke(token);
-    }
-    else if (strcmp(token.value, "fi") == 0)
-    {
-        token.type = TOKEN_FI;
-        token_nuke(token);
-    }
-
-    return token;
-}
-
 // Create a word token or a keyword token
 static struct token lexer_next_handle_word(struct lexer *lexer)
 {
     struct string *word = string_new();
     while (lexer_is_alphanum(lexer) || lexer->escape_next)
     {
-        string_push(word, last_char(lexer));
+        char c = (char)last_char(lexer);
+        string_push(word, c);
         next_char(lexer);
     }
 
@@ -104,7 +73,7 @@ static struct token lexer_next_handle_word(struct lexer *lexer)
     token.value = word->data;
     free(word); // only the string struct is freed, not the data
 
-    return lexer_next_handle_key(token);
+    return token;
 }
 
 // Switch the token based on the character
@@ -130,10 +99,10 @@ static struct token lexer_switch(struct lexer *lexer)
         token.type = TOKEN_COMMENT;
         break;
     default:
-        token.type = TOKEN_EOF;
+        token.type = TOKEN_UNKNOWN;
         break;
     }
-
+    next_char(lexer);
     return token;
 }
 
