@@ -84,7 +84,8 @@ Test(parser, test_parser_if)
 
 Test(parser, test_parser_if_else)
 {
-    char *argv[] = { "42sh", "-c", "if echo Hello ; then echo World ; else echo Bye ; fi" };
+    char *argv[] = { "42sh", "-c",
+                     "if echo Hello ; then echo World ; else echo Bye ; fi" };
     struct reader *reader = reader_new(3, argv);
     struct lexer *lexer = lexer_new(reader);
     struct parser *parser = parser_new(lexer);
@@ -115,7 +116,10 @@ Test(parser, test_parser_if_else)
 
 Test(parser, test_parser_if_elif)
 {
-    char *argv[] = { "42sh", "-c", "if echo Hello ; then echo World ; elif echo Bye ; then echo Test ; fi" };
+    char *argv[] = {
+        "42sh", "-c",
+        "if echo Hello ; then echo World ; elif echo Bye ; then echo Test ; fi"
+    };
     struct reader *reader = reader_new(3, argv);
     struct lexer *lexer = lexer_new(reader);
     struct parser *parser = parser_new(lexer);
@@ -153,7 +157,10 @@ Test(parser, test_parser_if_elif)
 
 Test(parser, test_parser_nested_if)
 {
-    char *argv[] = { "42sh", "-c", "if echo Hello ; then if echo World ; then echo Bye ; fi ; fi" };
+    char *argv[] = {
+        "42sh", "-c",
+        "if echo Hello ; then if echo World ; then echo Bye ; fi ; fi"
+    };
     struct reader *reader = reader_new(3, argv);
     struct lexer *lexer = lexer_new(reader);
     struct parser *parser = parser_new(lexer);

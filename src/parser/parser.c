@@ -42,12 +42,7 @@
 
 static int is_closing_word(char *word)
 {
-    const char *keywords[] = {
-        "then",
-        "fi",
-        "else",
-        "elif"
-    };
+    const char *keywords[] = { "then", "fi", "else", "elif" };
     for (size_t i = 0; i < sizeof(keywords) / sizeof(keywords[0]); i++)
     {
         if (strcmp(keywords[i], word) == 0)

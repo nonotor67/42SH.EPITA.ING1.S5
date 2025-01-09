@@ -2,8 +2,8 @@
 #define PARSER_H
 
 #include "ast/ast.h"
-#include "parser_struct.h"
 #include "lexer/lexer.h"
+#include "parser_struct.h"
 
 struct parser *parser_new(struct lexer *lexer);
 void parser_free(struct parser *parser);
