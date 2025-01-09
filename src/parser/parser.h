@@ -3,6 +3,8 @@
 
 #include "ast/ast.h"
 #include "lexer/lexer.h"
+#include "parser_base.h"
+#include "parser_redir.h"
 #include "parser_struct.h"
 
 struct parser *parser_new(struct lexer *lexer);
@@ -11,4 +13,4 @@ void parser_free(struct parser *parser);
 // Parse the tokens into an AST
 struct ast *parse(struct parser *parser);
 
-#endif // !PARSER_H
+#endif /* !PARSER_H */

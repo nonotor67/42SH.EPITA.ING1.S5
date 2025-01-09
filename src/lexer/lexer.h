@@ -1,7 +1,7 @@
 #ifndef LEXER_H
 #define LEXER_H
 
-#include "../io/io.h"
+#include "io/io.h"
 #include "token.h"
 
 enum lexing_mode
@@ -44,4 +44,4 @@ struct token lexer_pop(struct lexer *lexer);
 // Set the lexer mode
 void lexer_set_mode(struct lexer *lexer, enum lexing_mode mode);
 
-#endif // LEXER_H
+#endif /* !LEXER_H */

@@ -5,4 +5,4 @@
 #include "lexer/lexer.h"
 #include "parser_struct.h"
 
-#endif // !PARSE_REDIR_H
+#endif /* !PARSE_REDIR_H */

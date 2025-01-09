@@ -6,9 +6,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../io/io.h"
-#include "../utils/strings.h"
-#include "token.h"
+#include "io/io.h"
+#include "utils/utils.h"
 
 /*
 #####################################

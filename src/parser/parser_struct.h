@@ -16,4 +16,4 @@ struct parser
     struct lexer *lexer;
 };
 
-#endif // !PARSE_STRUCT_H
+#endif /* !PARSE_STRUCT_H */
