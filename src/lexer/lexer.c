@@ -1,10 +1,13 @@
 #include "lexer.h"
 
 #include <ctype.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include "../io/io.h"
+#include "../utils/strings.h"
 #include "token.h"
 
 /*
@@ -13,19 +16,38 @@ Utilis
 #####################################
 */
 
+#define UNITIALIZED_CHAR -5
+
+static int last_char(struct lexer *lexer)
+{
+    if (lexer->current_char == UNITIALIZED_CHAR) // only the first time
+        lexer->current_char = reader_next(lexer->reader);
+    return lexer->current_char;
+}
+
+static int next_char(struct lexer *lexer)
+{
+    lexer->current_char = reader_next(lexer->reader);
+    return lexer->current_char;
+}
+
 // Skip the whitespace characters in the data
 static void lexer_skip_whitespace(struct lexer *lexer)
 {
-    while (isspace(lexer->data[lexer->pos]))
-    {
-        lexer->pos++;
-    }
+    while (isspace(last_char(lexer)))
+        next_char(lexer);
 }
 
 // Test if a character is a word character
 static int lexer_is_alphanum(struct lexer *lexer)
 {
-    return isalnum(lexer->data[lexer->pos]);
+    const char accepted[] = "_-\\";
+    if (isalnum(last_char(lexer)))
+        return 1;
+    for (size_t i = 0; i < sizeof(accepted) - 1; i++)
+        if (last_char(lexer) == accepted[i])
+            return 1;
+    return 0;
 }
 
 static void token_nuke(struct token token)
@@ -70,24 +92,17 @@ static struct token lexer_next_handle_key(struct token token)
 // Create a word token or a keyword token
 static struct token lexer_next_handle_word(struct lexer *lexer)
 {
-    size_t start = lexer->pos;
-    while (lexer_is_alphanum(lexer))
-        lexer->pos++;
-
-    size_t len = lexer->pos - start;
-    char *value = malloc(len + 1);
-    if (!value)
+    struct string *word = string_new();
+    while (lexer_is_alphanum(lexer) || lexer->escape_next)
     {
-        fprintf(stderr, "Failed allocating memory for token value\n");
-        return (struct token){ TOKEN_EOF, NULL };
+        string_push(word, last_char(lexer));
+        next_char(lexer);
     }
-
-    strncpy(value, lexer->data + start, len);
-    value[len] = '\0';
 
     struct token token;
     token.type = TOKEN_WORD;
-    token.value = value;
+    token.value = word->data;
+    free(word); // only the string struct is freed, not the data
 
     return lexer_next_handle_key(token);
 }
@@ -97,27 +112,22 @@ static struct token lexer_switch(struct lexer *lexer)
 {
     struct token token;
     token.value = NULL;
-    switch (lexer->data[lexer->pos])
+    switch (last_char(lexer))
     {
     case '\n':
         token.type = TOKEN_EOL;
-        lexer->pos++;
         break;
     case ';':
         token.type = TOKEN_SEMICOLON;
-        lexer->pos++;
         break;
     case '\'':
         token.type = TOKEN_QUOTE;
-        lexer->pos++;
         break;
     case '"':
         token.type = TOKEN_DOUBLE_QUOTE;
-        lexer->pos++;
         break;
     case '#':
         token.type = TOKEN_COMMENT;
-        lexer->pos++;
         break;
     default:
         token.type = TOKEN_EOF;
@@ -129,7 +139,7 @@ static struct token lexer_switch(struct lexer *lexer)
 
 // Exports
 
-struct lexer *lexer_new(const char *data)
+struct lexer *lexer_new(struct reader *reader)
 {
     struct lexer *lexer = malloc(sizeof(struct lexer));
     if (!lexer)
@@ -137,10 +147,12 @@ struct lexer *lexer_new(const char *data)
         fprintf(stderr, "Failed allocating memory for lexer\n");
         return NULL;
     }
-    lexer->data = data;
-    lexer->pos = 0;
-    lexer->current.type = TOKEN_EOL;
+    lexer->reader = reader;
+    lexer->current.type = TOKEN_UNSET;
     lexer->current.value = NULL;
+    lexer->current_char = UNITIALIZED_CHAR;
+    lexer->escape_next = 0;
+    lexer->mode = LEXING_COMMAND;
 
     return lexer;
 }
@@ -154,7 +166,7 @@ struct token lexer_next(struct lexer *lexer)
 {
     lexer_skip_whitespace(lexer);
 
-    if (lexer->data[lexer->pos] == '\0')
+    if (last_char(lexer) == EOF)
     {
         struct token token;
         token.type = TOKEN_EOF;
@@ -162,7 +174,7 @@ struct token lexer_next(struct lexer *lexer)
         return token;
     }
 
-    if (lexer_is_alphanum(lexer))
+    if (lexer_is_alphanum(lexer) || lexer->escape_next)
         return lexer_next_handle_word(lexer);
 
     return lexer_switch(lexer);
@@ -170,52 +182,16 @@ struct token lexer_next(struct lexer *lexer)
 
 struct token lexer_peek(struct lexer *lexer)
 {
-    size_t pos = lexer->pos;
-    struct token token = lexer_next(lexer);
-    lexer->pos = pos;
-    return token;
+    if (lexer->current.type != TOKEN_UNSET)
+        return lexer->current;
+    lexer->current = lexer_next(lexer);
+    return lexer->current;
 }
 
 struct token lexer_pop(struct lexer *lexer)
 {
-    struct token token = lexer_next(lexer);
-    lexer->current = token;
+    struct token token = lexer_peek(lexer);
+    lexer->current.type = TOKEN_UNSET;
+    lexer->current.value = NULL;
     return token;
-}
-
-void lexer_refill(struct lexer *lexer)
-{
-    if (lexer == NULL)
-    {
-        fprintf(stderr, "Lexer is NULL\n");
-        return;
-    }
-    // TODO
-    // Call the read function to refill the data field
-}
-
-void lexer_print(struct lexer *lexer)
-{
-    size_t pos = lexer->pos;
-    printf("Current position : %ld\n\n", pos);
-    printf("Current token :\n");
-    token_print(lexer->current);
-    puts("\n");
-    printf("Data :\n%s\n", lexer->data);
-    for (size_t i = 0; i < pos; i++)
-        putchar(' ');
-    putchar('^');
-    putchar('\n');
-    puts("---------------------");
-    printf("Tokens :\n");
-    struct token token = lexer_pop(lexer);
-    token_print(token);
-    putchar('\n');
-    while (token.type != TOKEN_EOF)
-    {
-        token = lexer_pop(lexer);
-        token_print(token);
-        putchar('\n');
-    }
-    lexer->pos = pos;
 }
