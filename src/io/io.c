@@ -55,11 +55,10 @@ int reader_next(struct reader *reader)
 {
     if (reader->type == INPUT_STRING)
     {
-        const char c = reader->input.string[reader->current];
+        const char c = reader->input.string[reader->current++];
         return c != '\0' ? c : EOF;
     }
 
     FILE *input = reader->type == INPUT_FILE ? reader->input.file : stdin;
-    reader->current++;
     return fgetc(input);
 }
