@@ -40,7 +40,8 @@ static void lexer_skip_whitespace(struct lexer *lexer)
 
 static void lexer_skip_comment(struct lexer *lexer)
 {
-    while (lexer->mode == LEXING_COMMENT && last_char(lexer) != '\n')
+    while (lexer->mode == LEXING_COMMENT && last_char(lexer) != '\n'
+           && last_char(lexer) != EOF)
         next_char(lexer);
     lexer->mode = LEXING_NORMAL;
 }
