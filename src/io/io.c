@@ -53,7 +53,6 @@ int reader_is_stdin(const struct reader *reader)
 
 int reader_next(struct reader *reader)
 {
-    reader->current++;
     if (reader->type == INPUT_STRING)
     {
         const char c = reader->input.string[reader->current];
@@ -61,5 +60,6 @@ int reader_next(struct reader *reader)
     }
 
     FILE *input = reader->type == INPUT_FILE ? reader->input.file : stdin;
+    reader->current++;
     return fgetc(input);
 }

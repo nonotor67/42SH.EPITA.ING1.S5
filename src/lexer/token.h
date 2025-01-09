@@ -12,6 +12,8 @@ enum token_type
 
     TOKEN_EOL,
 
+    TOKEN_UNSET,
+
     TOKEN_IF,
     TOKEN_THEN,
     TOKEN_ELSE,

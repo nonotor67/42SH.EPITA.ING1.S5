@@ -4,6 +4,9 @@ static void sec_token_print(struct token token)
 {
     switch (token.type)
     {
+    case TOKEN_UNSET:
+        printf("UNSET");
+        break;
     case TOKEN_QUOTE:
         printf("QUOTE");
         break;
