@@ -30,6 +30,9 @@ struct ast *ast_new(enum ast_type type);
 // Free the AST node
 void ast_free(struct ast *ast);
 
+// Save AST in DOT format
+void ast_print(struct ast *ast);
+
 /*
 Example of AST:
 echo hello
