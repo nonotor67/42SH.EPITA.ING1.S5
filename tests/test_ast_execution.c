@@ -1,7 +1,7 @@
 #include <ast/ast.h>
-#include <execution/execution.h>
 #include <criterion/criterion.h>
 #include <criterion/redirect.h>
+#include <execution/execution.h>
 
 Test(execute_node, simple_command_with_stdout)
 {
