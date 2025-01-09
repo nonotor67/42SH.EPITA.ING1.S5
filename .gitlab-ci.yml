@@ -52,14 +52,14 @@ coverage:
   image: gcc:latest
   stage: all
   script:
-    -  apt-get update && apt-get install -y autoconf-archive libcriterion-dev gcovr
+    -  apt-get update && apt-get install -y autoconf-archive libcriterion-dev gcovr bc
     - autoreconf --install
     - ./configure
     - make CFLAGS="--coverage -fPIC -I../src" LDFLAGS="--coverage" LDLIBS="-lgcov"
     - make CFLAGS="--coverage -fPIC -I../src" LDFLAGS="--coverage" LDLIBS="-lgcov" check
     - |
       coverage=$(gcovr . --gcov-ignore-parse-errors | tail -n2 | head -n1 | grep -o '[0-9]\+%')
-      echo "Coverage: $coverage%"
+      echo "Coverage: $coverage"
       if (( $(echo "$coverage < 80" | bc -l) )); then
         exit 1
       fi
