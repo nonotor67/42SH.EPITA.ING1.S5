@@ -42,7 +42,7 @@ Test(execute_node, simple_command_list)
     node->right->left->values = value_right;
     node->right->left->values[0] = "echo";
     node->right->left->values[1] = "world!";
-    node->right->left->values[1] = NULL;
+    node->right->left->values[2] = NULL;
 
     cr_assert_eq(execute_node(node), 0);
 
@@ -56,7 +56,7 @@ Test(execute_node, last_value_count_on_command_list)
 {
     struct ast *node = ast_new(COMMAND_LIST);
     node->left = ast_new(SIMPLE_COMMAND);
-    node->left->size = 2;
+    node->left->size = 1;
     char **value_left = malloc(sizeof(char *) * 2);
     node->left->values = value_left;
     node->left->values[0] = "false";
@@ -64,7 +64,7 @@ Test(execute_node, last_value_count_on_command_list)
 
     node->right = ast_new(COMMAND_LIST);
     node->right->left = ast_new(SIMPLE_COMMAND);
-    node->right->left->size = 2;
+    node->right->left->size = 1;
     char **value_right = malloc(sizeof(char *) * 2);
     node->right->left->values = value_right;
     node->right->left->values[0] = "true";
