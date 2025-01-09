@@ -1,9 +1,9 @@
 #ifndef EXECUTION_COMMANDS_H
 #define EXECUTION_COMMANDS_H
 
-#include <ast/ast.h>
 #include <string.h>
 
+#include "ast/ast.h"
 #include "builtins_bool.h"
 #include "builtins_echo.h"
 
@@ -23,4 +23,4 @@ int execute_command(struct ast *ast);
  */
 int execute_command_list(struct ast *ast);
 
-#endif /* ! EXECUTION_COMMANDS_H */
+#endif /* !EXECUTION_COMMANDS_H */

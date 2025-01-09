@@ -151,4 +151,4 @@ if echo hello ; then echo world ; elif echo Test ; then echo encore ; else echo
 
 */
 
-#endif // AST_H
+#endif /* !AST_H */

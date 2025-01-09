@@ -6,7 +6,6 @@
 
 #include "ast/ast.h"
 #include "lexer/lexer.h"
-#include "parser_base.h"
 
 #define CHECK_STATUS(parser, ast, msg)                                         \
     if (parser->status != PARSER_OK)                                           \
