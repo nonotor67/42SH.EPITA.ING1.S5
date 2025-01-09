@@ -12,11 +12,9 @@ enum token_type
 
     TOKEN_EOL,
 
-    TOKEN_IF,
-    TOKEN_THEN,
-    TOKEN_ELSE,
-    TOKEN_ELIF,
-    TOKEN_FI,
+    TOKEN_UNSET,
+    TOKEN_UNKNOWN,
+
     TOKEN_SEMICOLON,
     TOKEN_QUOTE,
     TOKEN_DOUBLE_QUOTE,
