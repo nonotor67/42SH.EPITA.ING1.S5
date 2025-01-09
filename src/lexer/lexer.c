@@ -1,14 +1,14 @@
+#include "lexer.h"
+
 #include <ctype.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "lexer.h"
-
-#include "token.h"
 #include "../io/io.h"
 #include "../utils/strings.h"
+#include "token.h"
 
 /*
 #####################################

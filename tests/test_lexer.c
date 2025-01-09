@@ -1,8 +1,7 @@
 #include <criterion/criterion.h>
-#include <unistd.h>
-
 #include <io/io.h>
 #include <lexer/lexer.h>
+#include <unistd.h>
 
 Test(lexer_simple, simple_words)
 {

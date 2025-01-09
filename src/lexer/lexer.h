@@ -1,15 +1,14 @@
 #ifndef LEXER_H
 #define LEXER_H
 
-#include "token.h"
-
 #include "../io/io.h"
+#include "token.h"
 
 enum lexing_mode
 {
     LEXING_COMMAND, // command name or keyword
-    LEXING_NORMAL,  // command arguments
-    LEXING_STRING,  // command arguments in quotes
+    LEXING_NORMAL, // command arguments
+    LEXING_STRING, // command arguments in quotes
     LEXING_COMMENT, // ignore the rest of the line
     // Add more modes if needed
 };
