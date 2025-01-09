@@ -22,6 +22,9 @@ if [ $? -ne 0 ]; then
     echo "Les tests ne passent pas mais tkt"
 fi
 
-git add Makefile.am configure.ac src/*.c src/*.am src/*/*.c src/*/*.h src/*/*.am tests/*
-git commit -m "fix: 42sh"
-git push
+make clean
+rm tests/Makefile
+rm tests/Makefile.in
+# git add Makefile.am configure.ac src/*.c src/*.am src/*/*.c src/*/*.h src/*/*.am tests/*
+# git commit -m "fix: 42sh"
+# git push
