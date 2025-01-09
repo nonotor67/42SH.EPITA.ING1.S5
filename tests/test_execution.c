@@ -1,7 +1,6 @@
 #include <criterion/criterion.h>
 #include <criterion/redirect.h>
-#include <execution/builtins_bool.h>
-#include <execution/builtins_echo.h>
+#include <execution/execution.h>
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -87,4 +86,23 @@ Test(exec_echo_kebab, test_exec_echo_kebab)
     exec_echo(2, argv);
 
     cr_assert_stdout_eq_str("-kebab\n");
+}
+
+Test(exec_exit, test_exec_exit, .exit_code = 2)
+{
+    char *argv[] = { "exit", "2", NULL };
+    exec_exit(2, argv);
+}
+
+Test(exec_exit_no_args, test_exec_exit_no_args, .exit_code = 0)
+{
+    char *argv[] = { "exit", NULL };
+    exec_exit(1, argv);
+}
+
+Test(exec_exit_exit_code_too_high, test_exec_exit_exit_code_too_high,
+     .exit_code = 255)
+{
+    char *argv[] = { "exit", "256", NULL };
+    exec_exit(2, argv);
 }

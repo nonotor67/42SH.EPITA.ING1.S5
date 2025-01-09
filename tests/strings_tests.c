@@ -1,7 +1,6 @@
 #include <criterion/criterion.h>
 #include <unistd.h>
-
-#include "../src/utils/strings.h"
+#include <utils/strings.h>
 
 Test(strings, test_string_push)
 {

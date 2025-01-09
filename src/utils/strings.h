@@ -31,4 +31,4 @@ void string_append(struct string *string, const char *data);
 
 // add more functions if needed
 
-#endif //! STRINGS_H
+#endif /* !STRINGS_H */

@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include "builtins_echo.h"
+#include "execution.h"
 
 static void print_escaped_char(const char **p);
 static void print_argument(const char *arg, bool eflag);
@@ -61,7 +61,7 @@ bool exec_echo(int argc, char **argv)
 
     fflush(stdout);
 
-    return true;
+    return 0;
 }
 
 static void print_argument(const char *arg, bool eflag)
