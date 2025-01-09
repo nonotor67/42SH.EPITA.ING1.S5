@@ -61,7 +61,7 @@ bool exec_echo(int argc, char **argv)
 
     fflush(stdout);
 
-    return true;
+    return 0;
 }
 
 static void print_argument(const char *arg, bool eflag)
