@@ -47,69 +47,62 @@ void ast_free(struct ast *ast)
     free(ast);
 }
 
-static void ast_print_node(struct ast *ast, int file)
+static void ast_print_node(struct ast *ast, FILE *file)
 {
     switch (ast->type)
     {
     case SIMPLE_COMMAND:
-        dprintf(file, "SIMPLE_COMMAND\\n");
+        fprintf(file, "SIMPLE_COMMAND\\n");
         for (int i = 0; i < ast->size; i++)
-            dprintf(file, "%s ", ast->values[i]);
+            fprintf(file, "%s ", ast->values[i]);
         break;
     case COMMAND_LIST:
-        dprintf(file, "COMMAND_LIST\\n");
+        fprintf(file, "COMMAND_LIST\\n");
         for (int i = 0; i < ast->size; i++)
-            dprintf(file, "%s ", ast->values[i]);
+            fprintf(file, "%s ", ast->values[i]);
         break;
     case CONDITIONS:
-        dprintf(file, "CONDITIONS\\n");
+        fprintf(file, "CONDITIONS\\n");
         for (int i = 0; i < ast->size; i++)
-            dprintf(file, "%s ", ast->values[i]);
+            fprintf(file, "%s ", ast->values[i]);
         break;
     }
 }
 
-static void ast_print_help(struct ast *ast, int file)
+static void ast_print_help(struct ast *ast, FILE *file)
 {
     static int id = 0;
     int my_id = id++;
 
-    dprintf(file, "    %d [label=\"", my_id);
+    fprintf(file, "    %d [label=\"", my_id);
 
     ast_print_node(ast, file);
 
-    dprintf(file, "\"]\n");
+    fprintf(file, "\"]\n");
 
     if (ast->left)
     {
-        dprintf(file, "    %d -> %d\n", my_id, id);
+        fprintf(file, "    %d -> %d\n", my_id, id);
         ast_print_help(ast->left, file);
     }
 
     if (ast->middle)
     {
-        dprintf(file, "    %d -> %d\n", my_id, id);
+        fprintf(file, "    %d -> %d\n", my_id, id);
         ast_print_help(ast->middle, file);
     }
 
     if (ast->right)
     {
-        dprintf(file, "    %d -> %d\n", my_id, id);
+        fprintf(file, "    %d -> %d\n", my_id, id);
         ast_print_help(ast->right, file);
     }
 }
 
 void ast_print(struct ast *ast)
 {
-    int file = open("ast.dot", O_CREAT | O_WRONLY, 0644);
-    dprintf(file, "digraph G {\n");
+    FILE *file = fopen("ast.dot", "w+");
+    fprintf(file, "digraph G {\n");
     ast_print_help(ast, file);
-    dprintf(file, "}\n");
-}
-
-void ast_print_dot(struct ast *ast)
-{
-    ast_print(ast);
-    system("dot -Tpng ast.dot -o ast.png");
-    system("xdg-open ast.png");
+    fprintf(file, "}\n");
 }
