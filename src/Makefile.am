@@ -1,5 +1,5 @@
 # define the subdirectories
-SUBDIRS = ast execution io lexer parser utils
+SUBDIRS = utils io lexer parser ast execution
 
 bin_PROGRAMS = 42sh
 
