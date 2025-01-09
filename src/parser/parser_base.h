@@ -5,16 +5,16 @@
 #include "lexer/lexer.h"
 #include "parser_struct.h"
 
-struct ast *simple_command(enum parser_status *status, struct lexer *lexer);
+struct ast *simple_command(struct parser *parser, struct lexer *lexer);
 
-struct ast *command(enum parser_status *status, struct lexer *lexer);
+struct ast *command(struct parser *parser, struct lexer *lexer);
 
-struct ast *pipeline(enum parser_status *status, struct lexer *lexer);
+struct ast *pipeline(struct parser *parser, struct lexer *lexer);
 
-struct ast *and_or(enum parser_status *status, struct lexer *lexer);
+struct ast *and_or(struct parser *parser, struct lexer *lexer);
 
-struct ast *list(enum parser_status *status, struct lexer *lexer);
+struct ast *list(struct parser *parser, struct lexer *lexer);
 
-struct ast *input(enum parser_status *status, struct lexer *lexer);
+struct ast *input(struct parser *parser, struct lexer *lexer);
 
 #endif /* !PARSER_BASE_H */

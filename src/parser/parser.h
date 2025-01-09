@@ -8,6 +8,6 @@
 #include "parser_struct.h"
 
 // Parse the tokens into an AST
-struct ast *parse(enum parser_status *status, struct lexer *lexer);
+struct ast *parse(struct parser *parser, struct lexer *lexer);
 
 #endif // !PARSER_H
