@@ -1,8 +1,7 @@
 #ifndef EXECUTION_CONDITIONS_H
 #define EXECUTION_CONDITIONS_H
 
-#include <ast/ast.h>
-
+#include "ast/ast.h"
 #include "execution.h"
 
 /*
@@ -16,4 +15,4 @@
 
 int execute_condition(struct ast *ast);
 
-#endif /* ! EXECUTION_CONDITIONS_H */
+#endif /* !EXECUTION_CONDITIONS_H */

@@ -34,4 +34,4 @@ int reader_is_stdin(const struct reader *reader);
 */
 int reader_next(struct reader *reader);
 
-#endif /* ! IO_H */
+#endif /* !IO_H */
