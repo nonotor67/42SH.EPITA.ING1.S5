@@ -36,7 +36,7 @@ Test(lexer, peek_pop)
     lexer_free(lexer);
 }
 
-#define EXPECT(typ)                                                           \
+#define EXPECT(typ)                                                            \
     token = lexer_pop(lexer);                                                  \
     cr_assert_eq(token.type, typ);
 
