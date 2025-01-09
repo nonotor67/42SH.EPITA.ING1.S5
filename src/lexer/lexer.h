@@ -1,7 +1,7 @@
 #ifndef LEXER_H
 #define LEXER_H
 
-#include "../io/io.h"
+#include "io/io.h"
 #include "token.h"
 
 enum lexing_mode

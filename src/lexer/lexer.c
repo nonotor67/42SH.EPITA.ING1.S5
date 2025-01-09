@@ -6,9 +6,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../io/io.h"
-#include "../utils/strings.h"
-#include "token.h"
+#include "io/io.h"
+#include "utils/utils.h"
 
 /*
 #####################################
@@ -50,12 +49,13 @@ static int lexer_is_alphanum(struct lexer *lexer)
     return 0;
 }
 
-static void token_nuke(struct token token)
+static void __attribute__((unused)) token_nuke(struct token token)
 {
     if (token.value)
         free(token.value);
     token.value = NULL;
 }
+
 
 // Create a word token or a keyword token
 static struct token lexer_next_handle_word(struct lexer *lexer)
