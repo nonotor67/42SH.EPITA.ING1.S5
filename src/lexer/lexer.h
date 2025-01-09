@@ -6,10 +6,10 @@
 
 enum lexing_mode
 {
-    LEXING_COMMAND, // command name or keyword
-    LEXING_NORMAL, // command arguments
-    LEXING_STRING, // command arguments in quotes
-    LEXING_COMMENT, // ignore the rest of the line
+    LEXING_NORMAL,
+    LEXING_QUOTED,
+    LEXING_DOUBLE_QUOTED,
+    LEXING_COMMENT,
     // Add more modes if needed
 };
 

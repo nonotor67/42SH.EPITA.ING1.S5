@@ -7,15 +7,6 @@ static void sec_token_print(struct token token)
     case TOKEN_UNSET:
         printf("UNSET");
         break;
-    case TOKEN_QUOTE:
-        printf("QUOTE");
-        break;
-    case TOKEN_DOUBLE_QUOTE:
-        printf("DOUBLE_QUOTE");
-        break;
-    case TOKEN_COMMENT:
-        printf("COMMENT");
-        break;
     case TOKEN_WORD:
         printf("WORD(%s)", token.value);
         break;
