@@ -2,12 +2,15 @@
 
 int execute_condition(struct ast *ast)
 {
-    if (execute_node(ast->left) == 0)
+    int left = execute_node(ast->left);
+    if (left == 0)
     {
         return execute_node(ast->middle);
     }
     else
     {
+        if (ast->right == NULL)
+            return left;
         return execute_node(ast->right);
     }
 }

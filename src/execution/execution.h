@@ -19,6 +19,6 @@
  */
 int execute_node(struct ast *node);
 
-void execute(struct ast *ast);
+int execution(struct ast *ast);
 
 #endif /* !EXECUTION_H */

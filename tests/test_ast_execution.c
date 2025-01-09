@@ -147,3 +147,27 @@ Test(execute_node, condition_node_execution_false)
     free(value_right);
     free(value_left);
 }
+
+Test(execute_node, condition_without_else_closure)
+{
+    struct ast *node = ast_new(CONDITIONS);
+    node->left = ast_new(SIMPLE_COMMAND);
+    node->left->size = 1;
+    char **value_left = malloc(sizeof(char *) * 2);
+    node->left->values = value_left;
+    node->left->values[0] = "false";
+    node->left->values[1] = NULL;
+
+    node->middle = ast_new(SIMPLE_COMMAND);
+    node->middle->size = 2;
+    char **value_middle = malloc(sizeof(char *) * 3);
+    node->middle->values = value_middle;
+    node->middle->values[0] = "echo";
+    node->middle->values[1] = "Hello, world!";
+    node->middle->values[2] = NULL;
+
+    cr_assert_eq(execute_node(node), 1);
+
+    free(value_left);
+    free(value_middle);
+}
