@@ -339,7 +339,7 @@ struct ast *input(struct parser *parser)
     if (!eat(parser->lexer, TOKEN_EOL) && !eat(parser->lexer, TOKEN_EOF))
         parser->status = PARSER_UNEXPECTED_TOKEN;
 
-    CHECK_STATUS(parser, ast, "Error after parsing EOL or EOF (input)\n");
+    // CHECK_STATUS(parser, ast, "Error after parsing EOL or EOF (input)\n");
     return ast;
 }
 

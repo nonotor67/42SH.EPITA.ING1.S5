@@ -33,7 +33,7 @@ static int next_char(struct lexer *lexer)
 // Skip the whitespace characters in the data
 static void lexer_skip_whitespace(struct lexer *lexer)
 {
-    while (isspace(last_char(lexer)))
+    while (isspace(last_char(lexer)) && last_char(lexer) != '\n')
         next_char(lexer);
 }
 
