@@ -17,9 +17,10 @@ Test(parser, test_parser)
     cr_assert_eq(ast->type, SIMPLE_COMMAND);
     cr_assert_not_null(ast->values);
     cr_assert_str_eq(ast->values[0], "echo");
-    cr_assert_str_eq(ast->values[1], "hello");
-    cr_assert_str_eq(ast->values[2], "world");
+    cr_assert_str_eq(ast->values[1], "Hello");
+    cr_assert_str_eq(ast->values[2], "World");
     cr_assert_null(ast->values[3]);
     ast_free(ast);
     lexer_free(lexer);
+    reader_free(reader);
 }
