@@ -1,8 +1,10 @@
 #include "ast.h"
 
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 struct ast *ast_new(enum ast_type type)
 {
@@ -43,4 +45,65 @@ void ast_free(struct ast *ast)
     }
 
     free(ast);
+}
+
+static void ast_print_node(struct ast *ast, FILE *file)
+{
+    switch (ast->type)
+    {
+    case SIMPLE_COMMAND:
+        fprintf(file, "SIMPLE_COMMAND\\n");
+        for (int i = 0; i < ast->size; i++)
+            fprintf(file, "%s ", ast->values[i]);
+        break;
+    case COMMAND_LIST:
+        fprintf(file, "COMMAND_LIST\\n");
+        for (int i = 0; i < ast->size; i++)
+            fprintf(file, "%s ", ast->values[i]);
+        break;
+    case CONDITIONS:
+        fprintf(file, "CONDITIONS\\n");
+        for (int i = 0; i < ast->size; i++)
+            fprintf(file, "%s ", ast->values[i]);
+        break;
+    }
+}
+
+static void ast_print_help(struct ast *ast, FILE *file)
+{
+    static int id = 0;
+    int my_id = id++;
+
+    fprintf(file, "    %d [label=\"", my_id);
+
+    ast_print_node(ast, file);
+
+    fprintf(file, "\"]\n");
+
+    if (ast->left)
+    {
+        fprintf(file, "    %d -> %d\n", my_id, id);
+        ast_print_help(ast->left, file);
+    }
+
+    if (ast->middle)
+    {
+        fprintf(file, "    %d -> %d\n", my_id, id);
+        ast_print_help(ast->middle, file);
+    }
+
+    if (ast->right)
+    {
+        fprintf(file, "    %d -> %d\n", my_id, id);
+        ast_print_help(ast->right, file);
+    }
+}
+
+void ast_print(struct ast *ast)
+{
+    FILE *file = fopen("ast.dot", "w+");
+    fprintf(file, "digraph G {\n");
+    ast_print_help(ast, file);
+    fprintf(file, "}\n");
+    fclose(file);
 }
