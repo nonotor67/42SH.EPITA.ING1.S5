@@ -1,7 +1,7 @@
 #ifndef EXECUTION_COMMANDS_H
 #define EXECUTION_COMMANDS_H
 
-#include <ast/ast.h>
+#include "ast/ast.h"
 #include <string.h>
 
 #include "builtins_bool.h"
