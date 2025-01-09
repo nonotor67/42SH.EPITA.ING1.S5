@@ -2,8 +2,6 @@
 #include <unistd.h>
 #include <utils/strings.h>
 
-#include "../src/utils/strings.h"
-
 Test(strings, test_string_push)
 {
     struct string *string = string_new();
