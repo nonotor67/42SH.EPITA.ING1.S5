@@ -56,7 +56,6 @@ static void __attribute__((unused)) token_nuke(struct token token)
     token.value = NULL;
 }
 
-
 // Create a word token or a keyword token
 static struct token lexer_next_handle_word(struct lexer *lexer)
 {

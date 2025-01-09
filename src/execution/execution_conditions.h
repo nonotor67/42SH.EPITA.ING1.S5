@@ -2,7 +2,6 @@
 #define EXECUTION_CONDITIONS_H
 
 #include "ast/ast.h"
-
 #include "execution.h"
 
 /*

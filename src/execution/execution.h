@@ -6,7 +6,6 @@
 #include "builtins_bool.h"
 #include "builtins_echo.h"
 #include "builtins_exit.h"
-
 #include "execution_commands.h"
 #include "execution_conditions.h"
 

@@ -1,9 +1,9 @@
 #ifndef EXECUTION_COMMANDS_H
 #define EXECUTION_COMMANDS_H
 
-#include "ast/ast.h"
 #include <string.h>
 
+#include "ast/ast.h"
 #include "builtins_bool.h"
 #include "builtins_echo.h"
 
