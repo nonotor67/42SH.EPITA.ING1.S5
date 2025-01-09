@@ -62,6 +62,7 @@ coverage:
       echo "Coverage: $coverage"
       coverage=$(echo $coverage | tr -d '%')
       if (( $(echo "$coverage < 80" | bc -l) )); then
+        echo "Coverage is less than 80%: $coverage"
         exit 1
       fi
   when: on_success
