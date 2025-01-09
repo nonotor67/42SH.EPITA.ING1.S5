@@ -3,7 +3,10 @@
 
 #include "ast/ast.h"
 #include "lexer/lexer.h"
+
+#include "parser_base.h"
 #include "parser_struct.h"
+#include "parser_redir.h"
 
 struct parser *parser_new(struct lexer *lexer);
 void parser_free(struct parser *parser);

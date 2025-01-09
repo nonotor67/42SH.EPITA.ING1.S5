@@ -3,6 +3,7 @@
 
 #include "ast/ast.h"
 #include "lexer/lexer.h"
+
 #include "parser_struct.h"
 
 struct ast *compound_list(struct parser *parser);
