@@ -16,9 +16,6 @@ enum token_type
     TOKEN_UNKNOWN,
 
     TOKEN_SEMICOLON,
-    TOKEN_QUOTE,
-    TOKEN_DOUBLE_QUOTE,
-    TOKEN_COMMENT,
     TOKEN_WORD,
 };
 
