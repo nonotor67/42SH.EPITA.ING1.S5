@@ -38,6 +38,13 @@ static void lexer_skip_whitespace(struct lexer *lexer)
         next_char(lexer);
 }
 
+static void lexer_skip_comment(struct lexer *lexer)
+{
+    while (lexer->mode == LEXING_COMMENT && last_char(lexer) != '\n')
+        next_char(lexer);
+    lexer->mode = LEXING_NORMAL;
+}
+
 // Test if a character is a word character
 static int lexer_is_alphanum(struct lexer *lexer)
 {
@@ -50,20 +57,44 @@ static int lexer_is_alphanum(struct lexer *lexer)
     return 0;
 }
 
-static void token_nuke(struct token token)
-{
-    if (token.value)
-        free(token.value);
-    token.value = NULL;
-}
-
 // Create a word token or a keyword token
 static struct token lexer_next_handle_word(struct lexer *lexer)
 {
     struct string *word = string_new();
-    while (lexer_is_alphanum(lexer) || lexer->escape_next)
+    while (lexer_is_alphanum(lexer) || lexer->escape_next
+           || lexer->mode == LEXING_QUOTED
+           || lexer->mode == LEXING_DOUBLE_QUOTED)
     {
         char c = (char)last_char(lexer);
+        if (lexer->escape_next)
+        {
+            // when escaped, append no matter what
+            lexer->escape_next = 0;
+            string_push(word, c);
+            next_char(lexer);
+            continue;
+        }
+        if (lexer->mode == LEXING_QUOTED || lexer->mode == LEXING_DOUBLE_QUOTED)
+        {
+            const char quote = lexer->mode == LEXING_QUOTED ? '\'' : '"';
+            if (c == quote)
+            {
+                lexer->mode = LEXING_NORMAL;
+                next_char(lexer);
+                continue;
+            }
+            string_push(word, c);
+            next_char(lexer);
+            continue;
+        }
+
+        if (c == '\\' && lexer->mode == LEXING_NORMAL)
+        {
+            lexer->escape_next = 1;
+            next_char(lexer);
+            continue;
+        }
+
         string_push(word, c);
         next_char(lexer);
     }
@@ -90,14 +121,17 @@ static struct token lexer_switch(struct lexer *lexer)
         token.type = TOKEN_SEMICOLON;
         break;
     case '\'':
-        token.type = TOKEN_QUOTE;
-        break;
+        lexer->mode = LEXING_QUOTED;
+        next_char(lexer);
+        return lexer_next_handle_word(lexer);
     case '"':
-        token.type = TOKEN_DOUBLE_QUOTE;
-        break;
+        lexer->mode = LEXING_DOUBLE_QUOTED;
+        next_char(lexer);
+        return lexer_next_handle_word(lexer);
     case '#':
-        token.type = TOKEN_COMMENT;
-        break;
+        lexer->mode = LEXING_COMMENT;
+        next_char(lexer);
+        return lexer_next(lexer);
     default:
         token.type = TOKEN_UNKNOWN;
         break;
@@ -121,7 +155,7 @@ struct lexer *lexer_new(struct reader *reader)
     lexer->current.value = NULL;
     lexer->current_char = UNITIALIZED_CHAR;
     lexer->escape_next = 0;
-    lexer->mode = LEXING_COMMAND;
+    lexer->mode = LEXING_NORMAL;
 
     return lexer;
 }
@@ -134,6 +168,7 @@ void lexer_free(struct lexer *lexer)
 struct token lexer_next(struct lexer *lexer)
 {
     lexer_skip_whitespace(lexer);
+    lexer_skip_comment(lexer);
 
     if (last_char(lexer) == EOF)
     {
