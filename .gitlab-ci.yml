@@ -55,11 +55,10 @@ coverage:
     -  apt-get update && apt-get install -y autoconf-archive libcriterion-dev gcovr bc
     - autoreconf --install
     - ./configure
-    - make
-    - make CFLAGS="--coverage -fPIC I../src" LDFLAGS="--coverage" LDLIBS="-lgcov" check
-    - gcovr -r . --html --html-details -o coverage.html --gcov-ignore-parse-errors
+    - make CFLAGS="--coverage -fPIC -I../src" LDFLAGS="--coverage" LDLIBS="-lgcov"
+    - make CFLAGS="--coverage -fPIC -I../src" LDFLAGS="--coverage" LDLIBS="-lgcov" check
     - |
-      coverage=$(sed -n '51{s/.*>\([0-9.]\+\).*/\1/p}' coverage.html)
+      coverage=$(gcovr . | tail -n2 | head -n1 | grep -o '[0-9]\+%')
       echo "Coverage: $coverage%"
       if (( $(echo "$coverage < 80" | bc -l) )); then
         exit 1
