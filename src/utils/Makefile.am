@@ -4,7 +4,10 @@ libutils_a_SOURCES =  \
   utils.c \
   utils.h \
   strings.c \
-  strings.h
+  strings.h \
+  xmalloc.h \
+  xmalloc.c
+
 
 libutils_a_CPPFLAGS = -I$(top_srcdir)/src
 
