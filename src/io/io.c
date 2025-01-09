@@ -53,10 +53,9 @@ int reader_is_stdin(const struct reader *reader)
 
 int reader_next(struct reader *reader)
 {
-    reader->current++;
     if (reader->type == INPUT_STRING)
     {
-        const char c = reader->input.string[reader->current];
+        const char c = reader->input.string[reader->current++];
         return c != '\0' ? c : EOF;
     }
 
