@@ -30,7 +30,7 @@ function test_functional() {
     fi
 }
 
-test_functional "Simple echo test" "echo Hello, world!"
-test_functional "Simple echo test with newline" "echo -n Hello, world!"
+test_functional "Simple echo test" "echo Hello world"
+test_functional "Simple echo test with newline" "echo -n Hello world"
 test_functional "Simple true" "true"
 test_functional "Simple false" "false"
