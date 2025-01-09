@@ -23,4 +23,4 @@ int execute_command(struct ast *ast);
  */
 int execute_command_list(struct ast *ast);
 
-#endif /* ! EXECUTION_COMMANDS_H */
+#endif /* !EXECUTION_COMMANDS_H */

@@ -44,4 +44,4 @@ struct token lexer_pop(struct lexer *lexer);
 // Set the lexer mode
 void lexer_set_mode(struct lexer *lexer, enum lexing_mode mode);
 
-#endif // LEXER_H
+#endif /* !LEXER_H */

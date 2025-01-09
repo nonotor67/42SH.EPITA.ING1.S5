@@ -15,4 +15,4 @@
 
 int execute_condition(struct ast *ast);
 
-#endif /* ! EXECUTION_CONDITIONS_H */
+#endif /* !EXECUTION_CONDITIONS_H */
