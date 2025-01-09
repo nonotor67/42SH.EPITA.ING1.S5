@@ -4,7 +4,6 @@
 #include <ast/ast.h>
 
 #include "execution.h"
-#include "execution_command.h"
 
 /*
 @description:

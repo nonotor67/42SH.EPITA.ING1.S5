@@ -9,7 +9,11 @@ libexecution_a_SOURCES =  \
   exec_echo.c \
   builtins_echo.h \
   exec_exit.c \
-  builtins_exit.h
+  builtins_exit.h \
+  execution_conditions.c \
+  execution_conditions.h \
+  execution_commands.c \
+  execution_commands.h
 
 libexecution_a_CPPFLAGS = -I$(top_srcdir)/src
 
