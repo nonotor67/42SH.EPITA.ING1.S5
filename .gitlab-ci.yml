@@ -52,7 +52,7 @@ coverage:
   image: gcc:latest
   stage: all
   script:
-    -  apt-get update && apt-get install -y autoconf-archive libcriterion-dev gcovr bc
+    -  apt-get update && apt-get install -y autoconf-archive libcriterion-dev gcovr
     - autoreconf --install
     - ./configure
     - make CFLAGS="--coverage -fPIC -I../src" LDFLAGS="--coverage" LDLIBS="-lgcov"
