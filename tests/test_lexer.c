@@ -64,6 +64,24 @@ Test(lexer, words_semicolon)
     free(reader);
 }
 
+Test(lexer, words_newline)
+{
+    char *argv[] = { "42sh", "-c", "echo Hello\n echo World" };
+    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv);
+    struct lexer *lexer = lexer_new(reader);
+
+    struct token token;
+    EXPECT_WORD("echo")
+    EXPECT_WORD("Hello")
+    EXPECT(TOKEN_EOL)
+    EXPECT_WORD("echo")
+    EXPECT_WORD("World")
+    EXPECT(TOKEN_EOF)
+
+    free(lexer);
+    free(reader);
+}
+
 Test(lexer, simple_quotes)
 {
     char *argv[] = { "42sh", "-c", "echo 'Hello World'" };
