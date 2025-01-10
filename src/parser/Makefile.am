@@ -2,6 +2,7 @@ lib_LIBRARIES = libparser.a
 
 libparser_a_SOURCES =  \
   parser.c \
+  parser_base.c \
   parser.h \
   parser_base.h \
   parser_redir.h \
