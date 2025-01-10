@@ -21,6 +21,8 @@ int main(int argc, char **argv)
         // Execute the AST.
         if (ast)
             res = execution(ast);
+        if (parser->status == PARSER_BAD_IF)
+            res = 2;
         parser_free(parser);
         ast_free(ast);
     }

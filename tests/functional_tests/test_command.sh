@@ -51,6 +51,7 @@ test_functional "Simple ls with flags" "ls -l"
 test_functional "Echo with big args" "echo helloooooooooooooooooooooooooooooooooooooooooooooooooooooooooo"
 test_functional "Echo with multiples args" "echo Hello the world"
 test_functional "Echo with quotes" "echo \"Hello the world\""
+test_functional "Failed if" "if false; fi"
 
 # Test multiple commands
 test_functional "Multiple commands" "echo Hello; echo World"
