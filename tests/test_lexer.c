@@ -171,3 +171,35 @@ Test(lexer, double_quoted_comment)
     free(lexer);
     free(reader);
 }
+
+Test(lexer, points)
+{
+    char *argv[] = { "42sh", "-c", "echo Hello. World." };
+    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv);
+    struct lexer *lexer = lexer_new(reader);
+
+    struct token token;
+    EXPECT_WORD("echo")
+    EXPECT_WORD("Hello.");
+    EXPECT_WORD("World.");
+    EXPECT(TOKEN_EOF)
+
+    free(lexer);
+    free(reader);
+}
+
+Test(lexer, commas)
+{
+    char *argv[] = { "42sh", "-c", "echo Hello, World," };
+    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv);
+    struct lexer *lexer = lexer_new(reader);
+
+    struct token token;
+    EXPECT_WORD("echo")
+    EXPECT_WORD("Hello,");
+    EXPECT_WORD("World,");
+    EXPECT(TOKEN_EOF)
+
+    free(lexer);
+    free(reader);
+}
