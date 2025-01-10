@@ -58,6 +58,7 @@ test_functional "Simple condition with elif" "if false; then echo \"true\"; elif
 # Test for the case where the condition is false
 test_functional "Simple condition with false" "if false; then echo true; fi"
 test_functional "Simple condition with else and false" "if false; then echo \"true\"; else echo \"false\"; fi"
+test_functional "Commands list with conditions" "echo toto; if true; then echo tkt; fi"
 
 echo
 echo "==== Test Summary for $(basename "$0") ===="
