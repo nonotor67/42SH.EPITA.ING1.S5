@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <string.h>
 
 #include "parser.h"
@@ -6,7 +7,7 @@
     if (parser->status != PARSER_OK)                                           \
     {                                                                          \
         if (ast)                                                               \
-            free(ast);                                                         \
+            ast_free(ast);                                                     \
         fprintf(stderr, msg);                                                  \
         return NULL;                                                           \
     }
@@ -15,8 +16,10 @@
     if (!eat_word(lexer, word))                                                \
     {                                                                          \
         fprintf(stderr, msg);                                                  \
-        parser->status = PARSER_UNEXPECTED_TOKEN;                              \
-        return NULL;                                                           \
+        parser->status = PARSER_BAD_IF;                                        \
+        struct token token = lexer_peek(lexer);                                \
+        free(token.value);                                                     \
+        lexer_pop(lexer);                                                      \
     }
 
 static int is_closing_word(char *word)
@@ -134,6 +137,7 @@ static struct ast *else_clause(struct parser *parser)
 static struct ast *rule_if(struct parser *parser)
 {
     EXPECT_WORD(parser->lexer, "if", "Expected 'if' keyword (rule_if)\n");
+    CHECK_STATUS(parser, NULL, "Error bad if\n");
 
     struct ast *root = ast_new(CONDITIONS);
 
@@ -141,6 +145,7 @@ static struct ast *rule_if(struct parser *parser)
     CHECK_STATUS(parser, root, "Error after parsing compound_list (if)\n");
 
     EXPECT_WORD(parser->lexer, "then", "Expected 'then' keyword (rule_if)\n");
+    CHECK_STATUS(parser, root, "Error bad if\n");
 
     root->middle = compound_list(parser);
     CHECK_STATUS(parser, root, "Error after parsing compound_list (if)\n");
@@ -149,6 +154,7 @@ static struct ast *rule_if(struct parser *parser)
     CHECK_STATUS(parser, root, "Error after parsing else_clause (if)\n");
 
     EXPECT_WORD(parser->lexer, "fi", "Expected 'fi' keyword (rule_if)\n");
+    CHECK_STATUS(parser, root, "Error bad if\n");
 
     return root;
 }
