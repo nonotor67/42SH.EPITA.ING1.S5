@@ -51,7 +51,7 @@ int execute_command_list(struct ast *ast)
 {
     int status = 0;
     if (ast->left != NULL)
-        status = execute_command(ast->left);
+        status = execute_node(ast->left);
     if (ast->right != NULL)
         status = execute_command_list(ast->right);
     return status;
