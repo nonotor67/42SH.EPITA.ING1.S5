@@ -9,18 +9,23 @@ int main(int argc, char **argv)
     // Create a reader, lexer, and parser.
     struct reader *reader = reader_new(argc, argv);
     struct lexer *lexer = lexer_new(reader);
-    struct parser *parser = parser_new(lexer);
+    int res = 1;
+    while (lexer->current.type != TOKEN_EOF)
+    {
+        struct parser *parser = parser_new(lexer);
 
-    // Parse the input.
-    struct ast *ast = parse(parser);
+        // Parse the input.
+        struct ast *ast = parse(parser);
 
-    // Execute the AST.
-    int res = execution(ast);
+        // Execute the AST.
+        res = execution(ast);
+        parser_free(parser);
+        ast_free(ast);
+    }
+    
 
     reader_free(reader);
     lexer_free(lexer);
-    parser_free(parser);
-    ast_free(ast);
 
     return res;
 }
