@@ -17,7 +17,7 @@
     {                                                                          \
         fprintf(stderr, msg);                                                  \
         parser->status = PARSER_UNEXPECTED_TOKEN;                              \
-        exit(2);                                                        \
+        exit(2);                                                               \
     }
 
 static int is_closing_word(char *word)
