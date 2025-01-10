@@ -1,5 +1,5 @@
-#ifndef PARSE_STRUCT_H
-#define PARSE_STRUCT_H
+#ifndef PARSER_STRUCT_H
+#define PARSER_STRUCT_H
 
 #include "lexer/lexer.h"
 
@@ -16,4 +16,4 @@ struct parser
     struct lexer *lexer;
 };
 
-#endif /* !PARSE_STRUCT_H */
+#endif /* !PARSER_STRUCT_H */
