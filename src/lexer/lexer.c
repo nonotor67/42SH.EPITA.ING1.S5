@@ -122,11 +122,11 @@ static struct token lexer_switch(struct lexer *lexer)
         break;
     case '\'':
         lexer->mode = LEXING_QUOTED;
-        next_char(lexer);
+        lexer->current_char = UNITIALIZED_CHAR;
         return lexer_next_handle_word(lexer);
     case '"':
         lexer->mode = LEXING_DOUBLE_QUOTED;
-        next_char(lexer);
+        lexer->current_char = UNITIALIZED_CHAR;
         return lexer_next_handle_word(lexer);
     case '#':
         lexer->mode = LEXING_COMMENT;
@@ -136,7 +136,7 @@ static struct token lexer_switch(struct lexer *lexer)
         token.type = TOKEN_UNKNOWN;
         break;
     }
-    next_char(lexer);
+    lexer->current_char = UNITIALIZED_CHAR;
     return token;
 }
 
