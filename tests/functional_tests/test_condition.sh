@@ -1,5 +1,4 @@
 #!/bin/bash
-
 function test_functional() {
     local test_name="$1"               # Nom du test
     local command="$2"                 # Commande à tester
@@ -30,7 +29,6 @@ function test_functional() {
     fi
 }
 
-test_functional "Simple echo test" "echo Hello world"
-test_functional "Simple echo test with newline" "echo -n Hello world"
-test_functional "Simple true" "true"
-test_functional "Simple false" "false"
+test_functional "Simple condition" "if true; then echo \"true\"; fi"
+test_functional "Simple condition with else" "if false; then echo \"true\"; else echo \"false\"; fi"
+test_functional "Simple condition with elif" "if false; then echo \"true\"; elif true; then echo \"elif\"; fi"

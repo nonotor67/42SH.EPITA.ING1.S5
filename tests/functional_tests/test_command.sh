@@ -30,7 +30,13 @@ function test_functional() {
     fi
 }
 
-test_functional "Simple echo test" "echo Hello world"
-test_functional "Simple echo test with newline" "echo -n Hello world"
-test_functional "Simple true" "true"
-test_functional "Simple false" "false"
+test_functional "Simple ls" "ls"
+test_functional "Simple ls with flags" "ls -l"
+test_functional "Echo with big args" "echo helloooooooooooooooooooooooooooooooooooooooooooooooooooooooooo"
+test_functional "Echo with multiples args" "echo Hello the world"
+test_functional "Echo with quotes" "echo \"Hello the world\""
+
+# Test multiple commands
+test_functional "Multiple commands" "echo Hello; echo World"
+test_functional "Multiple commands with quotes" "echo \"Hello the world\"; ls; cat Makefile"
+test_functional "Multiple commands with quotes and flags" "echo \"Hello the world\"; ls -l; cat Makefile"
