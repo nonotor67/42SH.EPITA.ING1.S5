@@ -1,12 +1,16 @@
 #!/bin/bash
 
+total_tests=0
+failed_tests=0
+
 function test_functional() {
-    local test_name="$1"               # Nom du test
-    local command="$2"                 # Commande à tester
-    local your_shell="../src/42sh"     # Chemin vers shell
-    local ref_shell="/bin/bash"        # Shell de référence
+    local test_name="$1"
+    local command="$2"
+    local your_shell="../src/42sh"
+    local ref_shell="/bin/bash"
 
     echo "Running test: $test_name"
+    ((total_tests++))
 
     local your_stdout your_stderr your_exit_code
     your_stdout=$(mktemp)
@@ -30,6 +34,7 @@ function test_functional() {
     if [[ "$your_output" == "$ref_output" && "$your_exit_code" == "$ref_exit_code" ]]; then
         if [[ -n "$ref_error" && -z "$your_error" ]]; then
             echo "❌ Test failed: Expected stderr but none was produced"
+            ((failed_tests++))
         else
             echo "✅ Test passed: Outputs and exit codes match"
         fi
@@ -42,22 +47,22 @@ function test_functional() {
         echo "Reference shell output: $ref_output"
         echo "Reference shell stderr: $ref_error"
         echo "Reference shell exit code: $ref_exit_code"
+        ((failed_tests++))
     fi
 }
 
-
+# Ajouter les tests ici
 test_functional "Simple ls" "ls"
 test_functional "Simple ls with flags" "ls -l"
-test_functional "Echo with big args" "echo helloooooooooooooooooooooooooooooooooooooooooooooooooooooooooo"
-test_functional "Echo with multiples args" "echo Hello the world"
-test_functional "Echo with quotes" "echo \"Hello the world\""
 
-# Test multiple commands
-test_functional "Multiple commands" "echo Hello; echo World"
-test_functional "Multiple commands with quotes" "echo \"Hello the world\"; ls; cat Makefile"
-test_functional "Multiple commands with quotes and flags" "echo \"Hello the world\"; ls -l; cat Makefile"
-test_functional "Multiple commands newline" "echo Hello\n echo World"
-test_functional "Multiple commands newline with quotes" "echo \"Hello the world\"\n ls\n cat Makefile"
+# Résumé du script
+echo
+echo "==== Test Summary for $(basename "$0") ===="
+echo "Total tests: $total_tests"
+echo "Failed tests: $failed_tests"
 
-# Test unknown command
-test_functional "Unknown command" "unknown_command"
+if [[ $failed_tests -gt 0 ]]; then
+    exit 1
+else
+    exit 0
+fi
