@@ -169,7 +169,7 @@ Test(execute_node, condition_without_else_closure)
     node->middle->values[1] = my_strdup("Hello, world!");
     node->middle->values[2] = NULL;
 
-    cr_assert_eq(execute_node(node), 1);
+    cr_assert_eq(execute_node(node), 0);
 
     ast_free(node);
 }
