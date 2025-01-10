@@ -39,7 +39,6 @@
         return NULL;                                                           \
     }
 
-
 struct parser *parser_new(struct lexer *lexer)
 {
     struct parser *parser = malloc(sizeof(struct parser));
@@ -53,8 +52,6 @@ void parser_free(struct parser *parser)
 {
     free(parser);
 }
-
-
 
 struct ast *simple_command(struct parser *parser)
 {

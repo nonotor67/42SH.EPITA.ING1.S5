@@ -1,6 +1,6 @@
-#include "parser.h"
-
 #include <string.h>
+
+#include "parser.h"
 
 #define CHECK_STATUS(parser, ast, msg)                                         \
     if (parser->status != PARSER_OK)                                           \
