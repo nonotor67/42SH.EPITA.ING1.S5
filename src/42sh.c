@@ -22,7 +22,6 @@ int main(int argc, char **argv)
         parser_free(parser);
         ast_free(ast);
     }
-    
 
     reader_free(reader);
     lexer_free(lexer);
