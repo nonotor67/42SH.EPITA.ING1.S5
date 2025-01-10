@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stdlib.h>
 
 #include "parser.h"
 
@@ -16,7 +17,7 @@
     {                                                                          \
         fprintf(stderr, msg);                                                  \
         parser->status = PARSER_UNEXPECTED_TOKEN;                              \
-        return NULL;                                                           \
+        exit(2);                                                        \
     }
 
 static int is_closing_word(char *word)
