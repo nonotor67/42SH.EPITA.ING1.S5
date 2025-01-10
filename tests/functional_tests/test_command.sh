@@ -56,6 +56,8 @@ test_functional "Echo with quotes" "echo \"Hello the world\""
 test_functional "Multiple commands" "echo Hello; echo World"
 test_functional "Multiple commands with quotes" "echo \"Hello the world\"; ls; cat Makefile"
 test_functional "Multiple commands with quotes and flags" "echo \"Hello the world\"; ls -l; cat Makefile"
+test_functional "Multiple commands newline" "echo Hello\n echo World"
+test_functional "Multiple commands newline with quotes" "echo \"Hello the world\"\n ls\n cat Makefile"
 
 # Test unknown command
 test_functional "Unknown command" "unknown_command"
