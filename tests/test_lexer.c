@@ -219,7 +219,8 @@ Test(lexer, very_long)
 
     struct token token;
     EXPECT_WORD("echo")
-    EXPECT_WORD("Loremipsumdolorsitamet,consecteturadipiscingelit."
+    EXPECT_WORD(
+        "Loremipsumdolorsitamet,consecteturadipiscingelit."
         "Aliquamconsequatmassasedurnavenenatisbibendum.Praesentavariusenim,"
         "necvehiculanulla.Utatlectusaliquam,consecteturmagnased,suscipitipsum."
         "Maurisnecmaurisex.Utsednullasuscipit,");
