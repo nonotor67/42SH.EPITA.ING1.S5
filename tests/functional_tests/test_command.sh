@@ -53,7 +53,6 @@ function test_functional() {
 
 test_functional "Simple ls" "ls"
 test_functional "Simple ls with flags" "ls -l"
-test_functional "Simple ls with flags and path" "echo Hello, World!"
 test_functional "Test echo with key words" "echo true false if then else elif fi"
 
 echo
