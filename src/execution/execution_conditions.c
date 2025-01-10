@@ -10,7 +10,7 @@ int execute_condition(struct ast *ast)
     else
     {
         if (ast->right == NULL)
-            return left;
+            return 0;
         return execute_node(ast->right);
     }
 }
