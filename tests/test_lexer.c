@@ -203,3 +203,26 @@ Test(lexer, commas)
     free(lexer);
     free(reader);
 }
+
+Test(lexer, very_long)
+{
+    char *argv[] = {
+        "42sh", "-c",
+        "echo "
+        "Loremipsumdolorsitamet,consecteturadipiscingelit."
+        "Aliquamconsequatmassasedurnavenenatisbibendum.Praesentavariusenim,"
+        "necvehiculanulla.Utatlectusaliquam,consecteturmagnased,suscipitipsum."
+        "Maurisnecmaurisex.Utsednullasuscipit,"
+    };
+    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv);
+    struct lexer *lexer = lexer_new(reader);
+
+    struct token token;
+    EXPECT_WORD("echo")
+    EXPECT_WORD("Hello,");
+    EXPECT_WORD("World,");
+    EXPECT(TOKEN_EOF)
+
+    free(lexer);
+    free(reader);
+}
