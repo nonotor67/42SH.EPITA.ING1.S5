@@ -51,11 +51,11 @@ function test_functional() {
     fi
 }
 
-# Ajouter les tests ici
 test_functional "Simple ls" "ls"
 test_functional "Simple ls with flags" "ls -l"
+test_functional "Simple ls with flags and path" "echo Hello, World!"
+test_functional "Test ponctuation" "echo ,;:/?*!§@"
 
-# Résumé du script
 echo
 echo "==== Test Summary for $(basename "$0") ===="
 echo "Total tests: $total_tests"

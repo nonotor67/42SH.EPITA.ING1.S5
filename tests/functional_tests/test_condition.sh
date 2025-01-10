@@ -55,6 +55,10 @@ test_functional "Simple condition" "if true; then echo \"true\"; fi"
 test_functional "Simple condition with else" "if false; then echo \"true\"; else echo \"false\"; fi"
 test_functional "Simple condition with elif" "if false; then echo \"true\"; elif true; then echo \"elif\"; fi"
 
+# Test for the case where the condition is false
+test_functional "Simple condition with false" "if false; then echo \"true\"; fi"
+test_functional "Simple condition with else and false" "if false; then echo \"true\"; else echo \"false\"; fi"
+
 echo
 echo "==== Test Summary for $(basename "$0") ===="
 echo "Total tests: $total_tests"
