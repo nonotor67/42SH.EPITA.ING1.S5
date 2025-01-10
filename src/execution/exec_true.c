@@ -2,13 +2,8 @@
 
 #include "execution.h"
 
-int exec_true(int argc, __attribute__((unused)) char **argv)
+int exec_true(__attribute__((unused)) int argc,
+              __attribute__((unused)) char **argv)
 {
-    if (argc > 1)
-    {
-        fprintf(stderr, "true: too many arguments\n");
-        return 0;
-    }
-
     return 0;
 }
