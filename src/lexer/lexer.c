@@ -19,7 +19,7 @@ Utilis
 
 static int last_char(struct lexer *lexer)
 {
-    if (lexer->current_char == UNITIALIZED_CHAR) // only the first time
+    if (lexer->current_char == UNITIALIZED_CHAR) // read the next character
         lexer->current_char = reader_next(lexer->reader);
     return lexer->current_char;
 }
@@ -130,7 +130,7 @@ static struct token lexer_switch(struct lexer *lexer)
         return lexer_next_handle_word(lexer);
     case '#':
         lexer->mode = LEXING_COMMENT;
-        next_char(lexer);
+        lexer->current_char = UNITIALIZED_CHAR;
         return lexer_next(lexer);
     default:
         token.type = TOKEN_UNKNOWN;
