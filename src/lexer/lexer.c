@@ -48,7 +48,7 @@ static void lexer_skip_comment(struct lexer *lexer)
 // Test if a character is a word character
 static int lexer_is_alphanum(struct lexer *lexer)
 {
-    static const char accepted[] = "_-,.\\";
+    static const char accepted[] = "_-,./\\";
     if (isalnum(last_char(lexer)))
         return 1;
     for (size_t i = 0; i < sizeof(accepted) - 1; i++)
