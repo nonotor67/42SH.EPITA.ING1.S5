@@ -14,3 +14,4 @@ unit_tests_CPPFLAGS = -I$(abs_top_srcdir)/src
 check: $(check_PROGRAMS)
 	$(MAKE) $(check_PROGRAMS)
 	./unit_tests
+	./functional_tests/func_tests.sh

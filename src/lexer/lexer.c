@@ -19,7 +19,7 @@ Utilis
 
 static int last_char(struct lexer *lexer)
 {
-    if (lexer->current_char == UNITIALIZED_CHAR) // only the first time
+    if (lexer->current_char == UNITIALIZED_CHAR) // read the next character
         lexer->current_char = reader_next(lexer->reader);
     return lexer->current_char;
 }
@@ -48,7 +48,7 @@ static void lexer_skip_comment(struct lexer *lexer)
 // Test if a character is a word character
 static int lexer_is_alphanum(struct lexer *lexer)
 {
-    const char accepted[] = "_-\\";
+    const char accepted[] = "_-,.\\";
     if (isalnum(last_char(lexer)))
         return 1;
     for (size_t i = 0; i < sizeof(accepted) - 1; i++)
@@ -122,21 +122,21 @@ static struct token lexer_switch(struct lexer *lexer)
         break;
     case '\'':
         lexer->mode = LEXING_QUOTED;
-        next_char(lexer);
+        lexer->current_char = UNITIALIZED_CHAR;
         return lexer_next_handle_word(lexer);
     case '"':
         lexer->mode = LEXING_DOUBLE_QUOTED;
-        next_char(lexer);
+        lexer->current_char = UNITIALIZED_CHAR;
         return lexer_next_handle_word(lexer);
     case '#':
         lexer->mode = LEXING_COMMENT;
-        next_char(lexer);
+        lexer->current_char = UNITIALIZED_CHAR;
         return lexer_next(lexer);
     default:
         token.type = TOKEN_UNKNOWN;
         break;
     }
-    next_char(lexer);
+    lexer->current_char = UNITIALIZED_CHAR;
     return token;
 }
 

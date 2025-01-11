@@ -1,5 +1,5 @@
-#ifndef PARSE_STRUCT_H
-#define PARSE_STRUCT_H
+#ifndef PARSER_STRUCT_H
+#define PARSER_STRUCT_H
 
 #include "lexer/lexer.h"
 
@@ -7,6 +7,7 @@ enum parser_status
 {
     PARSER_OK,
     PARSER_UNEXPECTED_TOKEN,
+    PARSER_BAD_IF,
     PARSER_EOF,
 };
 
@@ -16,4 +17,4 @@ struct parser
     struct lexer *lexer;
 };
 
-#endif /* !PARSE_STRUCT_H */
+#endif /* !PARSER_STRUCT_H */
