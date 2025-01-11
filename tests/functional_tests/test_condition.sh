@@ -60,6 +60,14 @@ test_functional "Simple condition with false" "if false; then echo true; fi"
 test_functional "Simple condition with else and false" "if false; then echo \"true\"; else echo \"false\"; fi"
 test_functional "Commands list with conditions" "echo toto; if true; then echo tkt; fi"
 
+# Test for binary
+test_functional "Simple condition with binary" "if true; then /bin/echo \"true\"; fi"
+test_functional "Simple condition with else and binary" "if false; then /bin/echo \"true\"; else /bin/echo \"false\"; fi"
+
+# Bad if
+test_functional "Bad if" "if; then echo \"true\"; fi"
+test_functional "Bad if with else" "if; then echo \"true\"; else echo \"false\"; fi"
+
 echo
 echo "==== Test Summary for $(basename "$0") ===="
 echo "Total tests: $total_tests"

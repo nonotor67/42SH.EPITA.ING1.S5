@@ -57,6 +57,12 @@ test_functional "Test echo with key words" "echo true false if then else elif fi
 test_functional "Echo with big args" "echo helloooooooooooooooooooooooooooooooooooooooooooooooooooooooooo"
 test_functional "Echo with multiples args" "echo Hello the world"
 
+# Test with binary
+test_functional "Simple echo" "/bin/echo Hello world"
+test_functional "Simple echo with newline" "/bin/echo -n Hello world"
+test_functional "Simple true" "/bin/true"
+test_functional "Simple false" "/bin/false"
+
 echo
 echo "==== Test Summary for $(basename "$0") ===="
 echo "Total tests: $total_tests"
