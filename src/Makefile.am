@@ -7,8 +7,7 @@ bin_PROGRAMS = 42sh
 
 42sh_CPPFLAGS = -I$(top_srcdir)/src
 
-42sh_CFLAGS = -std=c99 -Werror -Wall -Wextra -Wvla -pedantic -fsanitize=address,undefined
-42sh_LDFLAGS = -fsanitize=address,undefined
+42sh_CFLAGS = -std=c99 -Werror -Wall -Wextra -Wvla -pedantic
 
 42sh_LDADD = -L$(abs_top_builddir)/src/io -lio -L$(abs_top_builddir)/src/execution -lexecution \
              	-L$(abs_top_builddir)/src/parser -lparser -L$(abs_top_builddir)/src/lexer -llexer \
