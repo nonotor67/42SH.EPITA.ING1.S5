@@ -71,11 +71,14 @@ void updateVariable(struct HashMap *ht, char *name, char *value)
 {
     unsigned int index = hash(name);
     struct Variable *var = ht->map[index];
+    // Search for the variable in the linked list
     while (var != NULL)
     {
         if (strcmp(var->name, name) == 0)
         {
+            // free the old value
             free(var->value);
+            // allocate memory for the new value and copy it
             var->value = strcpy(xmalloc(strlen(value) + 1), value);
             return;
         }
