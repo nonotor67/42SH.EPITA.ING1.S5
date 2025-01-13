@@ -6,6 +6,16 @@
 #include "ast/ast.h"
 #include "builtins_bool.h"
 #include "builtins_echo.h"
+#include "execution_redir.h"
+
+/*
+@brief: Execute all commands
+@params:
+    ast: AST node of type SIMPLE_COMMAND
+@return:
+    exit status of the command
+ */
+int dispatch_command(struct ast *ast);
 
 /*
 @params:
