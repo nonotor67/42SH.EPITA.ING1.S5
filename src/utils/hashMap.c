@@ -90,6 +90,16 @@ void removeVariable(struct HashMap *ht, char *name)
 
 void updateVariable(struct HashMap *ht, char *name, char *value)
 {
-    removeVariable(ht, name);
-    insertVariable(ht, name, value);
+    unsigned int index = hash(name);
+    struct Variable *var = ht->map[index];
+    while (var != NULL)
+    {
+        if (strcmp(var->name, name) == 0)
+        {
+            free(var->value);
+            var->value = strcpy(xmalloc(strlen(value) + 1), value);
+            return;
+        }
+        var = var->next;
+    }
 }
