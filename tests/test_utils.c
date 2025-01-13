@@ -61,17 +61,6 @@ Test(test_insert, insert)
     free_hash_map(ht);
 }
 
-Test(test_remove, removeVariable)
-{
-    struct HashMap *ht = create_hash_table();
-    insertVariable(ht, "test", "value");
-    removeVariable(ht, "test");
-    struct Variable var = getVariable(ht, "test");
-    cr_assert_null(var.name);
-    cr_assert_null(var.value);
-    free_hash_map(ht);
-}
-
 Test(test_get, getVariable)
 {
     struct HashMap *ht = create_hash_table();

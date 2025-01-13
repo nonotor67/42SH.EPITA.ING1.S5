@@ -5,6 +5,7 @@
 struct HashMap *create_hash_table()
 {
     struct HashMap *ht = xmalloc(sizeof(struct HashMap));
+    // Initialize the hash table with NULL values
     for (int i = 0; i < TABLE_SIZE; i++)
     {
         ht->map[i] = NULL;
@@ -15,9 +16,11 @@ struct HashMap *create_hash_table()
 
 void free_hash_map(struct HashMap *ht)
 {
+    // Free the memory allocated for each variable
     for (int i = 0; i < TABLE_SIZE; i++)
     {
         struct Variable *var = ht->map[i];
+        // Free the linked list
         while (var != NULL)
         {
             struct Variable *next = var->next;
@@ -51,6 +54,7 @@ struct Variable getVariable(struct HashMap *ht, char *name)
 {
     unsigned int index = hash(name);
     struct Variable *var = ht->map[index];
+    // Search for the variable in the linked list
     while (var != NULL)
     {
         if (strcmp(var->name, name) == 0)
@@ -61,31 +65,6 @@ struct Variable getVariable(struct HashMap *ht, char *name)
     }
 
     return (struct Variable){ NULL, NULL, NULL };
-}
-
-void removeVariable(struct HashMap *ht, char *name)
-{
-    unsigned int index = hash(name);
-    struct Variable *var = ht->map[index];
-    struct Variable *prev = NULL;
-    while (var != NULL)
-    {
-        if (strcmp(var->name, name) == 0)
-        {
-            if (prev == NULL)
-            {
-                ht->map[index] = var->next;
-            }
-            else
-            {
-                prev->next = var->next;
-            }
-            free_variable(var);
-            return;
-        }
-        prev = var;
-        var = var->next;
-    }
 }
 
 void updateVariable(struct HashMap *ht, char *name, char *value)

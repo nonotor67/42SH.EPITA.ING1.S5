@@ -43,12 +43,6 @@ void insertVariable(struct HashMap *ht, char *name, char *value);
  */
 struct Variable getVariable(struct HashMap *ht, char *name);
 /*
-    @brief Remove a variable from the hash table
-    @param ht The hash table
-    @param name The name of the variable to remove
- */
-void removeVariable(struct HashMap *ht, char *name);
-/*
     @brief Update the value of a variable in the hash table
     @param ht The hash table
     @param name The name of the variable to update
