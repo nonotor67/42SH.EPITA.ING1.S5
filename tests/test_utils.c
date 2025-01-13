@@ -1,6 +1,6 @@
-#include <utils/utils.h>
 #include <criterion/criterion.h>
 #include <criterion/redirect.h>
+#include <utils/utils.h>
 
 Test(test_malloc_not_null, xmalloc)
 {
