@@ -17,5 +17,6 @@ unsigned int hash(char *str);
 void insertVariable(struct HashMap *ht, char *name, char *value);
 struct Variable getVariable(struct HashMap *ht, char *name);
 void removeVariable(struct HashMap *ht, char *name);
+void updateVariable(struct HashMap *ht, char *name, char *value);
 
 #endif /* !HASHMAP_H */

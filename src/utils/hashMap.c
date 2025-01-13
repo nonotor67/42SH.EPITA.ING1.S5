@@ -87,3 +87,9 @@ void removeVariable(struct HashMap *ht, char *name)
         var = var->next;
     }
 }
+
+void updateVariable(struct HashMap *ht, char *name, char *value)
+{
+    removeVariable(ht, name);
+    insertVariable(ht, name, value);
+}

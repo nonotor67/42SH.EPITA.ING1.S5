@@ -81,3 +81,14 @@ Test(test_get, getVariable)
     cr_assert_str_eq(var.value, "value");
     free_hash_map(ht);
 }
+
+Test(test_update, updateVariable)
+{
+    struct HashMap *ht = create_hash_table();
+    insertVariable(ht, "test", "value");
+    updateVariable(ht, "test", "new_value");
+    struct Variable var = getVariable(ht, "test");
+    cr_assert_str_eq(var.name, "test");
+    cr_assert_str_eq(var.value, "new_value");
+    free_hash_map(ht);
+}
