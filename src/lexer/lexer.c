@@ -46,22 +46,22 @@ static void lexer_skip_comment(struct lexer *lexer)
 }
 
 // Test if a character is a word character
-static int lexer_is_alphanum(struct lexer *lexer)
+static int lexer_is_word_char(struct lexer *lexer)
 {
-    static const char accepted[] = "_-,./\\";
-    if (isalnum(last_char(lexer)))
-        return 1;
-    for (size_t i = 0; i < sizeof(accepted) - 1; i++)
-        if (last_char(lexer) == accepted[i])
-            return 1;
-    return 0;
+    if (last_char(lexer) == EOF)
+        return 0;
+    static const char reserved[] = " \t\n;#|&<>'\"";
+    for (size_t i = 0; i < sizeof(reserved) - 1; i++)
+        if (last_char(lexer) == reserved[i])
+            return 0;
+    return 1;
 }
 
 // Create a word token or a keyword token
 static struct token lexer_next_handle_word(struct lexer *lexer)
 {
     struct string *word = string_new();
-    while (lexer_is_alphanum(lexer) || lexer->escape_next
+    while (lexer_is_word_char(lexer) || lexer->escape_next
            || lexer->mode == LEXING_QUOTED
            || lexer->mode == LEXING_DOUBLE_QUOTED)
     {
@@ -178,7 +178,7 @@ struct token lexer_next(struct lexer *lexer)
         return token;
     }
 
-    if (lexer_is_alphanum(lexer) || lexer->escape_next)
+    if (lexer_is_word_char(lexer) || lexer->escape_next)
         return lexer_next_handle_word(lexer);
 
     return lexer_switch(lexer);
