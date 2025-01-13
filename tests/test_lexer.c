@@ -46,6 +46,12 @@ Test(lexer, peek_pop)
     cr_assert_str_eq(token.value, str);                                        \
     free(token.value);
 
+#define EXPECT_REDIR(str)                                                      \
+    token = lexer_pop(lexer);                                                  \
+    cr_assert_eq(token.type, TOKEN_REDIR);                                     \
+    cr_assert_str_eq(token.value, str);                                        \
+    free(token.value);
+
 Test(lexer, words_semicolon)
 {
     char *argv[] = { "42sh", "-c", "echo Hello ; echo World" };
@@ -270,6 +276,64 @@ Test(lexer, dollar_tail)
     struct token token;
     EXPECT_WORD("echo")
     EXPECT_WORD("Hello$")
+    EXPECT(TOKEN_EOF)
+
+    free(lexer);
+    free(reader);
+}
+
+#define INIT_LEXER_TEST(str) char *argv[] = { "42sh", "-c", str }; \
+    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv); \
+    struct lexer *lexer = lexer_new(reader); \
+    struct token token;
+
+Test(lexer, redirections_simple)
+{
+    INIT_LEXER_TEST("echo Hello >> file.txt")
+    EXPECT_WORD("echo")
+    EXPECT_WORD("Hello")
+    EXPECT_REDIR(">>")
+    EXPECT_WORD("file.txt")
+    EXPECT(TOKEN_EOF)
+
+    free(lexer);
+    free(reader);
+}
+
+Test(lexer, redirections_number)
+{
+    INIT_LEXER_TEST("echo 12> file.txt")
+    EXPECT_WORD("echo")
+    EXPECT_REDIR("12>")
+    EXPECT_WORD("file.txt")
+    EXPECT(TOKEN_EOF)
+
+    free(lexer);
+    free(reader);
+}
+
+Test(lexer, redirections_trap)
+{
+    INIT_LEXER_TEST("echo \\2> file.txt")
+    EXPECT_WORD("echo")
+    EXPECT_WORD("2")
+    EXPECT_REDIR(">")
+    EXPECT_WORD("file.txt")
+    EXPECT(TOKEN_EOF)
+
+    free(lexer);
+    free(reader);
+}
+
+Test(lexer, redirections_double)
+{
+    INIT_LEXER_TEST("echo Hello >> file.txt 2>&1")
+    EXPECT_WORD("echo")
+    EXPECT_WORD("Hello")
+    EXPECT_REDIR(">>")
+    EXPECT_WORD("file.txt")
+    EXPECT_REDIR("2>&")
+    EXPECT_WORD("1")
     EXPECT(TOKEN_EOF)
 
     free(lexer);

@@ -57,36 +57,72 @@ static int lexer_is_word_char(struct lexer *lexer)
     return 1;
 }
 
+#define BLIND_PUSH_WHEN(cond) \
+    if (cond)                 \
+    {                         \
+        string_push(word, last_char(lexer)); \
+        next_char(lexer);     \
+        lexer->escape_next=0;                      \
+        continue;             \
+    }
+
+// Returns true if it is a redirection and adds the redirection to the word
+static int lexer_try_redir(struct lexer *lexer, struct string *word)
+{
+    char c = (char)last_char(lexer);
+    if (c != '>' && c != '<')
+        return 0;
+    // check if word is a number
+    for (size_t i = 0; i < word->length; i++)
+        if (!isdigit(word->data[i]))
+            return 0;
+
+    string_push(word, c);
+    next_char(lexer);
+
+    // check if the next character completes the redirection
+    char c2 = (char)last_char(lexer);
+    char str[] = { c, c2, '\0' };
+    if (strcmp(str, ">>") == 0
+        || strcmp(str, "<<") == 0
+        || strcmp(str, "<>") == 0
+        || strcmp(str, ">&") == 0
+        || strcmp(str, "<&") == 0
+        || strcmp(str, ">|") == 0)
+    {
+        string_push(word, c2);
+        next_char(lexer);
+    }
+
+    return 1;
+}
+
 // Create a word token or a keyword token
 static struct token lexer_next_handle_word(struct lexer *lexer)
 {
     struct string *word = string_new();
+    int has_escaped = 0;
     while (lexer_is_word_char(lexer) || lexer->escape_next
            || lexer->mode == LEXING_QUOTED
            || lexer->mode == LEXING_DOUBLE_QUOTED)
     {
+        has_escaped |= lexer->escape_next || lexer->mode == LEXING_QUOTED
+                       || lexer->mode == LEXING_DOUBLE_QUOTED;
         char c = (char)last_char(lexer);
-        if (lexer->escape_next)
+
+        BLIND_PUSH_WHEN(lexer->escape_next);
+
+        if ((lexer->mode == LEXING_QUOTED && c == '\'')
+            || (lexer->mode == LEXING_DOUBLE_QUOTED && c == '"'))
         {
-            // when escaped, append no matter what
-            lexer->escape_next = 0;
-            string_push(word, c);
+            lexer->mode = LEXING_NORMAL;
             next_char(lexer);
             continue;
         }
-        if (lexer->mode == LEXING_QUOTED || lexer->mode == LEXING_DOUBLE_QUOTED)
-        {
-            const char quote = lexer->mode == LEXING_QUOTED ? '\'' : '"';
-            if (c == quote)
-            {
-                lexer->mode = LEXING_NORMAL;
-                next_char(lexer);
-                continue;
-            }
-            string_push(word, c);
-            next_char(lexer);
-            continue;
-        }
+
+        BLIND_PUSH_WHEN(lexer->mode == LEXING_QUOTED);
+        // TODO: add expanding logic
+        BLIND_PUSH_WHEN(lexer->mode == LEXING_DOUBLE_QUOTED);
 
         if (c == '\\' && lexer->mode == LEXING_NORMAL)
         {
@@ -95,15 +131,17 @@ static struct token lexer_next_handle_word(struct lexer *lexer)
             continue;
         }
 
-        string_push(word, c);
-        next_char(lexer);
+        BLIND_PUSH_WHEN(1);
     }
 
     struct token token;
     token.type = TOKEN_WORD;
+
+    if (!has_escaped && lexer_try_redir(lexer, word))
+        token.type = TOKEN_REDIR;
+
     token.value = word->data;
     free(word); // only the string struct is freed, not the data
-
     return token;
 }
 
@@ -132,6 +170,10 @@ static struct token lexer_switch(struct lexer *lexer)
         lexer->mode = LEXING_COMMENT;
         lexer->current_char = UNITIALIZED_CHAR;
         return lexer_next(lexer);
+    case '>':
+    case '<':
+        // redirections are handled in lexer_next_handle_word
+        return lexer_next_handle_word(lexer);
     default:
         token.type = TOKEN_UNKNOWN;
         break;
