@@ -52,7 +52,7 @@ int execute_command(struct ast *ast)
     if (ast->redir)
         return exec_redir(ast->size, ast->values, ast->redir);
     else
-        return dispatch_command(ast);
+        return dispatch_command(ast->size, ast->values);
 }
 
 int execute_command_list(struct ast *ast)
