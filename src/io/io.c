@@ -65,7 +65,8 @@ int reader_next(struct reader *reader)
         const char c = reader->input.string[reader->current++];
         res = c != '\0' ? c : EOF;
     }
-    else {
+    else
+    {
         FILE *input = reader->type == INPUT_FILE ? reader->input.file : stdin;
         res = fgetc(input);
     }

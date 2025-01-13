@@ -282,9 +282,10 @@ Test(lexer, dollar_tail)
     free(reader);
 }
 
-#define INIT_LEXER_TEST(str) char *argv[] = { "42sh", "-c", str }; \
-    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv); \
-    struct lexer *lexer = lexer_new(reader); \
+#define INIT_LEXER_TEST(str)                                                   \
+    char *argv[] = { "42sh", "-c", str };                                      \
+    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv);   \
+    struct lexer *lexer = lexer_new(reader);                                   \
     struct token token;
 
 Test(lexer, redirections_simple)

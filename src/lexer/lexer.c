@@ -57,13 +57,13 @@ static int lexer_is_word_char(struct lexer *lexer)
     return 1;
 }
 
-#define BLIND_PUSH_WHEN(cond) \
-    if (cond)                 \
-    {                         \
-        string_push(word, last_char(lexer)); \
-        next_char(lexer);     \
-        lexer->escape_next=0;                      \
-        continue;             \
+#define BLIND_PUSH_WHEN(cond)                                                  \
+    if (cond)                                                                  \
+    {                                                                          \
+        string_push(word, last_char(lexer));                                   \
+        next_char(lexer);                                                      \
+        lexer->escape_next = 0;                                                \
+        continue;                                                              \
     }
 
 // Returns true if it is a redirection and adds the redirection to the word
@@ -83,12 +83,9 @@ static int lexer_try_redir(struct lexer *lexer, struct string *word)
     // check if the next character completes the redirection
     char c2 = (char)last_char(lexer);
     char str[] = { c, c2, '\0' };
-    if (strcmp(str, ">>") == 0
-        || strcmp(str, "<<") == 0
-        || strcmp(str, "<>") == 0
-        || strcmp(str, ">&") == 0
-        || strcmp(str, "<&") == 0
-        || strcmp(str, ">|") == 0)
+    if (strcmp(str, ">>") == 0 || strcmp(str, "<<") == 0
+        || strcmp(str, "<>") == 0 || strcmp(str, ">&") == 0
+        || strcmp(str, "<&") == 0 || strcmp(str, ">|") == 0)
     {
         string_push(word, c2);
         next_char(lexer);
@@ -107,7 +104,7 @@ static struct token lexer_next_handle_word(struct lexer *lexer)
            || lexer->mode == LEXING_DOUBLE_QUOTED)
     {
         has_escaped |= lexer->escape_next || lexer->mode == LEXING_QUOTED
-                       || lexer->mode == LEXING_DOUBLE_QUOTED;
+            || lexer->mode == LEXING_DOUBLE_QUOTED;
         char c = (char)last_char(lexer);
 
         BLIND_PUSH_WHEN(lexer->escape_next);
