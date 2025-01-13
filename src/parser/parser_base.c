@@ -270,7 +270,12 @@ struct ast *input(struct parser *parser)
     struct token tok = lexer_peek(parser->lexer);
     parser->status = tok.type == TOKEN_EOF ? PARSER_EOF : PARSER_OK;
 
-    if (tok.type == TOKEN_EOL || tok.type == TOKEN_EOF)
+    if (tok.type == TOKEN_EOL)
+    {
+        lexer_pop(parser->lexer);
+        return NULL; // empty command
+    }
+    if (tok.type == TOKEN_EOF)
         return NULL; // empty command
 
     struct ast *ast = list(parser);
