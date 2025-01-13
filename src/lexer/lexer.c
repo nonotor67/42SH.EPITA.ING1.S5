@@ -48,11 +48,12 @@ static void lexer_skip_comment(struct lexer *lexer)
 // Test if a character is a word character
 static int lexer_is_word_char(struct lexer *lexer)
 {
-    if (last_char(lexer) == EOF)
+    const int c = last_char(lexer);
+    if (c == EOF)
         return 0;
     static const char reserved[] = " \t\n;#|&<>'\"";
     for (size_t i = 0; i < sizeof(reserved) - 1; i++)
-        if (last_char(lexer) == reserved[i])
+        if (c == reserved[i])
             return 0;
     return 1;
 }
@@ -103,6 +104,7 @@ static struct token lexer_next_handle_word(struct lexer *lexer)
            || lexer->mode == LEXING_QUOTED
            || lexer->mode == LEXING_DOUBLE_QUOTED)
     {
+        // has_escaped can only go from 0 to 1 and never back to 0 thanks to |=
         has_escaped |= lexer->escape_next || lexer->mode == LEXING_QUOTED
             || lexer->mode == LEXING_DOUBLE_QUOTED;
         char c = (char)last_char(lexer);

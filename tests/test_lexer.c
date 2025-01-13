@@ -326,6 +326,19 @@ Test(lexer, redirections_trap)
     free(reader);
 }
 
+Test(lexer, redirections_trap2)
+{
+    INIT_LEXER_TEST("echo '2'> file.txt")
+    EXPECT_WORD("echo")
+    EXPECT_WORD("2")
+    EXPECT_REDIR(">")
+    EXPECT_WORD("file.txt")
+    EXPECT(TOKEN_EOF)
+
+    free(lexer);
+    free(reader);
+}
+
 Test(lexer, redirections_double)
 {
     INIT_LEXER_TEST("echo Hello >> file.txt 2>&1")

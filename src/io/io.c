@@ -59,10 +59,11 @@ int reader_next(struct reader *reader)
         fprintf(stderr, "Error: Reader is at EOF\n");
         exit(1);
     }
-    int res;
+    int res = 0;
     if (reader->type == INPUT_STRING)
     {
         const char c = reader->input.string[reader->current++];
+        // replace the null terminator with EOF
         res = c != '\0' ? c : EOF;
     }
     else
