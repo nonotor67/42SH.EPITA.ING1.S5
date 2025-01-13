@@ -5,7 +5,9 @@
 #include <lexer/lexer.h>
 #include <parser/parser.h>
 
-#define DEBUG(str) if (verbose) printf("%s\n", str)
+#define DEBUG(str)                                                             \
+    if (verbose)                                                               \
+    printf("%s\n", str)
 
 int execute_loop(struct lexer *lexer, char **argv)
 {
@@ -35,17 +37,18 @@ int main(int argc, char **argv)
     int verbose = 0;
     int cflag = 0;
     int c;
-    while ((c = getopt (argc, argv, "cv")) != -1) {
+    while ((c = getopt(argc, argv, "cv")) != -1)
+    {
         switch (c)
         {
-            case 'c':
-                cflag = 1;
-                break;
-            case 'v':
-                verbose = 1;
-                break;
-            default:
-                abort();
+        case 'c':
+            cflag = 1;
+            break;
+        case 'v':
+            verbose = 1;
+            break;
+        default:
+            abort();
         }
     }
     int real_argc = argc - optind + 1;

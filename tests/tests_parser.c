@@ -5,10 +5,10 @@
 #include <parser/parser.h>
 #include <unistd.h>
 
-#define INIT_PARSER(str) \
-    struct reader *reader = reader_from_string(str); \
-    struct lexer *lexer = lexer_new(reader); \
-    struct parser *parser = parser_new(lexer); \
+#define INIT_PARSER(str)                                                       \
+    struct reader *reader = reader_from_string(str);                           \
+    struct lexer *lexer = lexer_new(reader);                                   \
+    struct parser *parser = parser_new(lexer);                                 \
     struct ast *ast = parse(parser);
 
 Test(parser, test_parser_simple_command)
@@ -105,7 +105,8 @@ Test(parser, test_parser_if_else)
 
 Test(parser, test_parser_if_elif)
 {
-    INIT_PARSER("if echo Hello ; then echo World ; elif echo Bye ; then echo Test ; fi")
+    INIT_PARSER(
+        "if echo Hello ; then echo World ; elif echo Bye ; then echo Test ; fi")
 
     cr_assert_not_null(ast);
     cr_assert_eq(ast->type, CONDITIONS);
