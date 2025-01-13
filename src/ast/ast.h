@@ -237,7 +237,7 @@ echo test | if echo hello ; then echo world ; else echo bye ; fi
         values = NULL
 
 ! echo test **Simplified**
-    type = NOT
+    type = NEGATION
     left = SIMPLE_COMMAND
         size = 2
         values = ["echo", "test", NULL]
