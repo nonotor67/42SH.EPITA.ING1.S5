@@ -32,7 +32,7 @@ struct ast
     int size;
     // values[0] is the name of the command for SIMPLE_COMMAND
     char **values;
-    // Is used in simple commands, conditions, and loops 
+    // Is used in simple commands, conditions, and loops
     char **redir;
 };
 
