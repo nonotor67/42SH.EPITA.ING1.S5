@@ -82,6 +82,12 @@ static void ast_print_node(struct ast *ast, FILE *file)
     case UNTIL_LOOP:
         fprintf(file, "UNTIL_LOOP\\n");
         break;
+    case AND:
+        fprintf(file, "AND\\n");
+        break;
+    case OR:
+        fprintf(file, "OR\\n");
+        break;
     default:
         fprintf(file, "UNKNOWN\\n");
         break;

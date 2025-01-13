@@ -17,10 +17,12 @@ enum ast_type
     WHILE_LOOP,
     // until ... do ... done
     UNTIL_LOOP,
-    // ! ...
-    NEGATION,
     // pipeline
-    PIPELINE
+    PIPELINE,
+    // Operators
+    AND,
+    NEGATION,
+    OR
 };
 
 struct ast
