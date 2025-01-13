@@ -81,7 +81,7 @@ test_functional "Bad if 6 " "if echo encore; then echo true; elif echo encore; f
 test_functional "Bad if 7 " "if echo test
 then
 fi"
-
+test_functional "ACU" "if true then echo encore; fi"
 
 echo
 echo "==== Test Summary for $(basename "$0") ===="

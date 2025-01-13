@@ -3,12 +3,24 @@
 
 #include "parser.h"
 
+#define IS_BAD_IF(parser)                                                      \
+    if (parser->status != PARSER_OK)                                           \
+    {                                                                          \
+        parser->status = PARSER_BAD_IF;                                        \
+    }
+
 #define CHECK_STATUS(parser, ast, msg)                                         \
     if (parser->status != PARSER_OK)                                           \
     {                                                                          \
         if (ast)                                                               \
             ast_free(ast);                                                     \
         fprintf(stderr, msg);                                                  \
+        struct token tok = lexer_pop(parser->lexer);                           \
+        while (tok.type != TOKEN_EOF)                                          \
+        {                                                                      \
+            free(tok.value);                                                   \
+            tok = lexer_pop(parser->lexer);                                    \
+        }                                                                      \
         return NULL;                                                           \
     }
 
@@ -82,9 +94,8 @@ struct ast *compound_list(struct parser *parser)
 
         tok = lexer_peek(parser->lexer);
         // if the next token is a closing keyword, we stop the compound_list
-        if (is_closing_word(tok.value))
+        if (tok.type == TOKEN_WORD && is_closing_word(tok.value))
             break;
-
         current->right = ast_new(COMMAND_LIST);
         current = current->right;
         current->left = and_or(parser);
@@ -142,15 +153,18 @@ static struct ast *rule_if(struct parser *parser)
     struct ast *root = ast_new(CONDITIONS);
 
     root->left = compound_list(parser);
+    IS_BAD_IF(parser);
     CHECK_STATUS(parser, root, "Error after parsing compound_list (if)\n");
 
     EXPECT_WORD(parser->lexer, "then", "Expected 'then' keyword (rule_if)\n");
     CHECK_STATUS(parser, root, "Error bad if\n");
 
     root->middle = compound_list(parser);
+    IS_BAD_IF(parser);
     CHECK_STATUS(parser, root, "Error after parsing compound_list (if)\n");
 
     root->right = else_clause(parser);
+    IS_BAD_IF(parser);
     CHECK_STATUS(parser, root, "Error after parsing else_clause (if)\n");
 
     EXPECT_WORD(parser->lexer, "fi", "Expected 'fi' keyword (rule_if)\n");
@@ -194,8 +208,10 @@ struct ast *command(struct parser *parser)
     for (size_t i = 0; i < sizeof(shell_commands) / sizeof(shell_commands[0]);
          i++)
     {
-        if (strcmp(shell_commands[i], lexer_peek(parser->lexer).value) == 0)
-            return shell_command(parser);
+        struct token token = lexer_peek(parser->lexer);
+        if (token.type == TOKEN_WORD)
+            if (strcmp(shell_commands[i], token.value) == 0)
+                return shell_command(parser);
     }
     return simple_command(parser);
 }
