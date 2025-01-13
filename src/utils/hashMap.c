@@ -39,7 +39,7 @@ unsigned int hash(char *name)
     return hash % TABLE_SIZE;
 }
 
-void insert(struct HashMap *ht, char *name, char *value)
+void insertVariable(struct HashMap *ht, char *name, char *value)
 {
     unsigned int index = hash(name);
     struct Variable *var = create_variable(name, value);
