@@ -21,6 +21,7 @@ struct ast *ast_new(enum ast_type type)
     ast->middle = NULL;
     ast->size = 0;
     ast->values = NULL;
+    ast->redir = NULL;
 
     return ast;
 }
@@ -43,6 +44,12 @@ void ast_free(struct ast *ast)
             free(ast->values[i]);
         free(ast->values);
     }
+    if (ast->redir)
+    {
+        for (size_t i = 0; ast->redir[i]; i++)
+            free(ast->redir[i]);
+        free(ast->redir);
+    }
 
     free(ast);
 }
@@ -53,20 +60,36 @@ static void ast_print_node(struct ast *ast, FILE *file)
     {
     case SIMPLE_COMMAND:
         fprintf(file, "SIMPLE_COMMAND\\n");
-        for (int i = 0; i < ast->size; i++)
-            fprintf(file, "%s ", ast->values[i]);
         break;
     case COMMAND_LIST:
         fprintf(file, "COMMAND_LIST\\n");
-        for (int i = 0; i < ast->size; i++)
-            fprintf(file, "%s ", ast->values[i]);
         break;
     case CONDITIONS:
         fprintf(file, "CONDITIONS\\n");
-        for (int i = 0; i < ast->size; i++)
-            fprintf(file, "%s ", ast->values[i]);
+        break;
+    case WHILE_LOOP:
+        fprintf(file, "WHILE_LOOP\\n");
+        break;
+    case FOR_LOOP:
+        fprintf(file, "FOR_LOOP\\n");
+        break;
+    case PIPELINE:
+        fprintf(file, "PIPELINE\\n");
+        break;
+    case NEGATION:
+        fprintf(file, "NEGATION\\n");
+        break;
+    case UNTIL_LOOP:
+        fprintf(file, "UNTIL_LOOP\\n");
+        break;
+    default:
+        fprintf(file, "UNKNOWN\\n");
         break;
     }
+    for (int i = 0; i < ast->size; i++)
+        fprintf(file, "%s ", ast->values[i]);
+    for (int i = 0; i < ast->size; i++)
+        fprintf(file, "%s ", ast->redir[i]);
 }
 
 static void ast_print_help(struct ast *ast, FILE *file)
