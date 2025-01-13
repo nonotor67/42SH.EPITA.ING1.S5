@@ -2,12 +2,12 @@
 #define EXECUTION_REDIR_H
 
 #include <ast/ast.h>
-#include "execution_commands.h"
-
+#include <fcntl.h>
 #include <stdlib.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#include <fcntl.h>
+
+#include "execution_commands.h"
 
 /*
 @brief Execute a command with redirections

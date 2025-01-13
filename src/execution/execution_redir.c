@@ -1,10 +1,10 @@
 #include "execution_redir.h"
 
-// redirection = [IONUMBER] ( '>' | '<' | '>>' | '>&' | '<&' | '>|' | '<>' ) WORD ;
+// redirection = [IONUMBER] ( '>' | '<' | '>>' | '>&' | '<&' | '>|' | '<>' )
+// WORD ;
 int exec_redir(int size, char **values, char **redir)
 {
     int fd = -1;
-    int status = 0;
     for (int i = 0; redir[i]; i += 2)
     {
         if (redir[i][0] == '>')
