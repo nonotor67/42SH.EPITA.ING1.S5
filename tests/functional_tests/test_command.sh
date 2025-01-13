@@ -56,6 +56,13 @@ test_functional "Simple ls with flags" "ls -l"
 test_functional "Test echo with key words" "echo true false if then else elif fi"
 test_functional "Echo with big args" "echo helloooooooooooooooooooooooooooooooooooooooooooooooooooooooooo"
 test_functional "Echo with multiples args" "echo Hello the world"
+test_functional "Echo long spaces" "echo Hello     the     world"
+test_functional "Echo lots of newlines" "echo test
+
+
+
+
+echo encore"
 
 # Test with binary
 test_functional "Simple echo" "/bin/echo Hello world"
