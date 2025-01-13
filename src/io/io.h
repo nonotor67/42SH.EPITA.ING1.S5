@@ -3,6 +3,12 @@
 
 #include <stdio.h>
 
+enum reader_status
+{
+    READER_OK,
+    READER_EOF
+};
+
 enum input_type
 {
     INPUT_STRING,
@@ -12,6 +18,7 @@ enum input_type
 
 struct reader
 {
+    enum reader_status status;
     enum input_type type;
     int current;
     union
