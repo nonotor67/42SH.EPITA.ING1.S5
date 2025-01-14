@@ -183,7 +183,7 @@ Test(execute_node, simple_pipeline)
     struct ast *node = ast_new(PIPELINE);
     node->left = ast_new(SIMPLE_COMMAND);
     node->left->size = 2;
-    char **value_left = malloc(sizeof(char *) * 3);
+    struct word **value_left = malloc(sizeof(char *) * 3);
     node->left->values = value_left;
     node->left->values[0] = my_strdup("echo");
     node->left->values[1] = my_strdup("Hello");
@@ -191,7 +191,7 @@ Test(execute_node, simple_pipeline)
 
     node->right = ast_new(SIMPLE_COMMAND);
     node->right->size = 2;
-    char **value_right = malloc(sizeof(char *) * 2);
+    struct word **value_right = malloc(sizeof(char *) * 2);
     node->right->values = value_right;
     node->right->values[0] = my_strdup("wc");
     node->right->values[1] = NULL;
@@ -210,7 +210,7 @@ Test(execute_node, multiple_pipelines)
     struct ast *node = ast_new(PIPELINE);
     node->left = ast_new(SIMPLE_COMMAND);
     node->left->size = 2;
-    char **value_left = malloc(sizeof(char *) * 3);
+    struct word **value_left = malloc(sizeof(char *) * 3);
     node->left->values = value_left;
     node->left->values[0] = my_strdup("echo");
     node->left->values[1] = my_strdup("Hello");
@@ -219,14 +219,14 @@ Test(execute_node, multiple_pipelines)
     node->right = ast_new(PIPELINE);
     node->right->left = ast_new(SIMPLE_COMMAND);
     node->right->left->size = 2;
-    char **value_right_left = malloc(sizeof(char *) * 2);
+    struct word **value_right_left = malloc(sizeof(char *) * 2);
     node->right->left->values = value_right_left;
     node->right->left->values[0] = my_strdup("cat");
     node->right->left->values[1] = NULL;
 
     node->right->right = ast_new(SIMPLE_COMMAND);
     node->right->right->size = 2;
-    char **value_right_right = malloc(sizeof(char *) * 3);
+    struct word **value_right_right = malloc(sizeof(char *) * 3);
     node->right->right->values = value_right_right;
     node->right->right->values[0] = my_strdup("wc");
     node->right->right->values[1] = my_strdup("-c");
@@ -246,7 +246,7 @@ Test(execute_node, pipeline_with_builtin)
     struct ast *node = ast_new(PIPELINE);
     node->left = ast_new(SIMPLE_COMMAND);
     node->left->size = 2;
-    char **value_left = malloc(sizeof(char *) * 3);
+    struct word **value_left = malloc(sizeof(char *) * 3);
     node->left->values = value_left;
     node->left->values[0] = my_strdup("echo");
     node->left->values[1] = my_strdup("Hello, world!");
@@ -254,7 +254,7 @@ Test(execute_node, pipeline_with_builtin)
 
     node->right = ast_new(SIMPLE_COMMAND);
     node->right->size = 2;
-    char **value_right = malloc(sizeof(char *) * 3);
+    struct word **value_right = malloc(sizeof(char *) * 3);
     node->right->values = value_right;
     node->right->values[0] = my_strdup("echo");
     node->right->values[1] = my_strdup("maison");

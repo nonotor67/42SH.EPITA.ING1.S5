@@ -13,7 +13,7 @@
 @return:
     exit status of the command
  */
-static int run_command(char **values)
+static int run_command(struct ast *ast)
 {
     pid_t pid = fork();
     if (pid == 0)
@@ -36,18 +36,7 @@ static int run_command(char **values)
     return 0;
 }
 
-int dispatch_command(int size, char **values)
-{
-    if (strcmp(values[0], "echo") == 0)
-        return exec_echo(size, values);
-    if (strcmp(values[0], "true") == 0)
-        return exec_true(size, values);
-    if (strcmp(values[0], "false") == 0)
-        return exec_false(size, values);
-    return run_command(values);
-}
-
-int execute_command(struct ast *ast)
+int dispatch_command(struct ast *ast)
 {
     if (strcmp(ast->expanded_values[0], "echo") == 0)
         return exec_echo(ast->size, ast->expanded_values);
@@ -56,6 +45,13 @@ int execute_command(struct ast *ast)
     if (strcmp(ast->expanded_values[0], "false") == 0)
         return exec_false(ast->size, ast->expanded_values);
     return run_command(ast);
+}
+
+int execute_command(struct ast *ast)
+{
+    if (ast->redir)
+        return exec_redir(ast->size, ast->expanded_values, ast->redir);
+    return dispatch_command(ast);
 }
 
 int execute_command_list(struct ast *ast)
