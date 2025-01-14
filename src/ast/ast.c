@@ -24,7 +24,9 @@ struct ast *ast_new(enum ast_type type)
     ast->size = 0;
     ast->values = NULL;
     ast->expanded_values = NULL;
+    ast->expanded_redir = NULL;
     ast->redir = NULL;
+    ast->redir_size = 0;
 
     return ast;
 }
@@ -104,7 +106,7 @@ static void ast_print_node(struct ast *ast, FILE *file)
     for (int i = 0; i < ast->size; i++)
         fprintf(file, "%s ", ast->values[i]->value.data);
     for (int i = 0; i < ast->size; i++)
-        fprintf(file, "%s ", ast->redir[i]);
+        fprintf(file, "%s ", ast->redir[i]->value.data);
 }
 
 static void ast_print_help(struct ast *ast, FILE *file)

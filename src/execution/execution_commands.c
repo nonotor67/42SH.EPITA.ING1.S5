@@ -36,7 +36,7 @@ static int run_command(struct ast *ast)
     return 0;
 }
 
-int execute_command(struct ast *ast)
+int dispatch_command(struct ast *ast)
 {
     if (strcmp(ast->expanded_values[0], "echo") == 0)
         return exec_echo(ast->size, ast->expanded_values);
@@ -45,6 +45,13 @@ int execute_command(struct ast *ast)
     if (strcmp(ast->expanded_values[0], "false") == 0)
         return exec_false(ast->size, ast->expanded_values);
     return run_command(ast);
+}
+
+int execute_command(struct ast *ast)
+{
+    if (ast->redir)
+        return exec_redir(ast);
+    return dispatch_command(ast);
 }
 
 int execute_command_list(struct ast *ast)

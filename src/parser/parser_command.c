@@ -12,31 +12,88 @@ Contains all the functions to parse the command part of the grammar
 --> Commands
 */
 
-// simple_command = WORD { element }
-// element = WORD
-// Step 1
+/*
+redirection = [IONUMBER] ( '>' | '<' | '>>' | '>&' | '<&' | '>|' | '<>' ) WORD
+--> First : TOKEN_REDIR
+*/
+static void handle_redirection(struct parser *parser, struct ast *node,
+                               int buffer_size_redir)
+{
+    if (lexer_peek(parser->lexer).type == TOKEN_REDIR)
+    {
+        if (!node->redir)
+        {
+            node->redir = malloc(sizeof(struct word *) * buffer_size_redir);
+            CHECK_ALLOCATION(node->redir);
+        }
+        if (node->redir_size >= buffer_size_redir - 1)
+        {
+            buffer_size_redir *= 2;
+            node->redir =
+                realloc(node->redir, sizeof(struct word *) * buffer_size_redir);
+            CHECK_ALLOCATION(node->redir);
+        }
+        struct word *redir = lexer_pop(parser->lexer).word;
+        node->redir[node->redir_size++] = redir;
+        struct token token = lexer_peek(parser->lexer);
+        if (token.type == TOKEN_WORD)
+        {
+            node->redir[node->redir_size++] = token.word;
+            lexer_pop(parser->lexer);
+        }
+        else
+        {
+            fprintf(stderr, "Error: Expected a word token after redirection\n");
+            parser->status = PARSER_UNEXPECTED_TOKEN;
+        }
+    }
+}
+
+/*
+prefix = redirection
+        | ASSIGNMENT_WORD
+First : TOKEN_REDIR, TOKEN_WORD
+*/
+
+/* simple_command = prefix { prefix }
+                  | { prefix } WORD { element }
+First : TOKEN_REDIR, TOKEN_WORD
+
+element = WORD | redirection
+Step 2
+ */
 struct ast *simple_command(struct parser *parser)
 {
     struct token token = lexer_peek(parser->lexer);
-    if (token.type == TOKEN_WORD)
+    if (token.type == TOKEN_WORD || token.type == TOKEN_REDIR)
     {
         struct ast *node = ast_new(SIMPLE_COMMAND);
-        int buffer_size = 16;
+        int buffer_size_values = 16;
+        int buffer_size_redir = 16;
         node->size = 0;
-        node->values = malloc(sizeof(char *) * buffer_size);
+        node->redir_size = 0;
+        node->values = malloc(sizeof(struct word *) * buffer_size_values);
         CHECK_ALLOCATION(node->values);
-        while (token.type == TOKEN_WORD)
+        while (token.type == TOKEN_WORD || token.type == TOKEN_REDIR)
         {
-            lexer_pop(parser->lexer);
-            if (node->size >= buffer_size - 1)
+            if (token.type != TOKEN_REDIR)
+                lexer_pop(parser->lexer);
+            if (node->size >= buffer_size_values - 1)
             {
-                buffer_size *= 2;
+                buffer_size_values *= 2;
                 node->values =
-                    realloc(node->values, sizeof(char *) * buffer_size);
+                    realloc(node->values, sizeof(char *) * buffer_size_values);
                 CHECK_ALLOCATION(node->values);
             }
-            node->values[node->size] = token.word;
-            node->size++;
+            handle_redirection(parser, node, buffer_size_redir);
+            struct token tok;
+            CHECK_STATUS(parser, node,
+                         "Error after parsing redirection (simple_command)\n");
+            if (token.type == TOKEN_WORD)
+            {
+                node->values[node->size] = token.word;
+                node->size++;
+            }
             token = lexer_peek(parser->lexer);
         }
         node->values[node->size] = NULL;
@@ -186,7 +243,18 @@ struct ast *command(struct parser *parser)
         struct token token = lexer_peek(parser->lexer);
         if (token.type == TOKEN_WORD)
             if (strcmp(shell_commands[i], token.word->value.data) == 0)
-                return shell_command(parser);
+            {
+                struct token tok;
+                struct ast *ast = shell_command(parser);
+                CHECK_STATUS(parser, ast,
+                             "Error after parsing shell_command (command)\n");
+                int buffer_size_redir = 16;
+                while (lexer_peek(parser->lexer).type == TOKEN_REDIR)
+                {
+                    handle_redirection(parser, ast, buffer_size_redir);
+                }
+                return ast;
+            }
     }
     return simple_command(parser);
 }
