@@ -1,5 +1,5 @@
-#include "execution.h"
 #include "ast/ast.h"
+#include "execution.h"
 
 int execution_while(struct ast *ast)
 {
