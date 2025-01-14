@@ -5,5 +5,6 @@
 #include "strings.h"
 #include "variable.h"
 #include "xmalloc.h"
+#include "word.h"
 
 #endif /* !UTILS_H */

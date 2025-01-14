@@ -6,7 +6,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "utils/word.h"
+#include "utils/utils.h"
 
 struct ast *ast_new(enum ast_type type)
 {
