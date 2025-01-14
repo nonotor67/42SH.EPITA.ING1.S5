@@ -16,6 +16,8 @@ static const struct execute_entry execute_table[] = {
     { SIMPLE_COMMAND, execute_command },
     { COMMAND_LIST, execute_command_list },
     { CONDITIONS, execute_condition },
+    { OR, execution_or },
+    { AND, execution_and },
     { PIPELINE, execute_pipeline }
 };
 

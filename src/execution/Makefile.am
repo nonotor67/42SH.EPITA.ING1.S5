@@ -16,6 +16,8 @@ libexecution_a_SOURCES =  \
   execution_commands.h \
   execution_redir.c \
   execution_redir.h \
+  execution_or_and.c \
+  execution_or_and.h \
   execution_pipeline.c \
   execution_pipeline.h
 
