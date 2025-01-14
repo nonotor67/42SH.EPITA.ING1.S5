@@ -110,6 +110,7 @@ int lexer_lex_variable(struct lexer *lexer, struct variable *var)
     const char c = (char)last_char(lexer);
     // try special vars first
     for (size_t i = 0; i < sizeof(accepted_single) - 1; i++)
+    {
         if (c == accepted_single[i])
         {
             string_init(&var->name);
@@ -117,6 +118,7 @@ int lexer_lex_variable(struct lexer *lexer, struct variable *var)
             next_char(lexer);
             return 1;
         }
+    }
 
     // try normal vars
     if (!lexer_is_name_char(lexer))
