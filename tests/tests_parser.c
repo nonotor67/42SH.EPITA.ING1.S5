@@ -204,7 +204,7 @@ Test(parser, test_redir_prefix_before_and_after)
 Test(parser, test_redir_lots)
 {
     INIT_PARSER("echo Hello > file 0> file.txt 15<< EOF <&"
-    " a.txt < b.txt >> c.txt 2>> d.txt >| e.txt 2>& ok <> f.txt")
+                " a.txt < b.txt >> c.txt 2>> d.txt >| e.txt 2>& ok <> f.txt")
     cr_assert_not_null(ast);
     cr_assert_eq(ast->type, SIMPLE_COMMAND);
     cr_assert_not_null(ast->values);
