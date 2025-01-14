@@ -10,26 +10,27 @@ Test(lexer, peek_pop)
 
     struct token token = lexer_peek(lexer);
     cr_assert_eq(token.type, TOKEN_WORD);
-    cr_assert_str_eq(token.value, "echo");
+    cr_assert_str_eq(token.word->value.data, "echo");
     token = lexer_pop(lexer);
     cr_assert_eq(token.type, TOKEN_WORD);
-    cr_assert_str_eq(token.value, "echo"); // check if pop is the same as peek
-    free(token.value);
+    cr_assert_str_eq(token.word->value.data,
+                     "echo"); // check if pop is the same as peek
+    word_free(token.word);
 
     token = lexer_peek(lexer);
     cr_assert_eq(token.type, TOKEN_WORD);
-    cr_assert_str_eq(token.value, "Hello");
-    free(token.value);
-    lexer_pop(lexer);
+    cr_assert_str_eq(token.word->value.data, "Hello");
+    token = lexer_pop(lexer);
+    word_free(token.word);
 
     token = lexer_pop(lexer);
     cr_assert_eq(token.type, TOKEN_WORD);
-    cr_assert_str_eq(token.value, "World");
-    free(token.value);
+    cr_assert_str_eq(token.word->value.data, "World");
+    word_free(token.word);
 
     token = lexer_pop(lexer);
     cr_assert_eq(token.type, TOKEN_EOF);
-    cr_assert_null(token.value);
+    cr_assert_null(token.word);
 
     reader_free(reader);
     lexer_free(lexer);
@@ -42,14 +43,14 @@ Test(lexer, peek_pop)
 #define EXPECT_WORD(str)                                                       \
     token = lexer_pop(lexer);                                                  \
     cr_assert_eq(token.type, TOKEN_WORD);                                      \
-    cr_assert_str_eq(token.value, str);                                        \
-    free(token.value);
+    cr_assert_str_eq(token.word->value.data, str);                             \
+    word_free(token.word);
 
 #define EXPECT_REDIR(str)                                                      \
     token = lexer_pop(lexer);                                                  \
     cr_assert_eq(token.type, TOKEN_REDIR);                                     \
-    cr_assert_str_eq(token.value, str);                                        \
-    free(token.value);
+    cr_assert_str_eq(token.word->value.data, str);                             \
+    word_free(token.word);
 
 Test(lexer, words_semicolon)
 {
@@ -175,7 +176,7 @@ Test(lexer, points)
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
-    EXPECT_WORD("echo")
+    EXPECT_WORD("echo");
     EXPECT_WORD("Hello.");
     EXPECT_WORD("World.");
     EXPECT(TOKEN_EOF)

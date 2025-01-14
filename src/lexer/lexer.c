@@ -61,24 +61,24 @@ static int lexer_is_word_char(struct lexer *lexer)
 #define BLIND_PUSH_WHEN(cond)                                                  \
     if (cond)                                                                  \
     {                                                                          \
-        string_push(word, last_char(lexer));                                   \
+        string_push(&word->value, last_char(lexer));                           \
         next_char(lexer);                                                      \
         lexer->escape_next = 0;                                                \
         continue;                                                              \
     }
 
 // Returns true if it is a redirection and adds the redirection to the word
-static int lexer_try_redir(struct lexer *lexer, struct string *word)
+static int lexer_try_redir(struct lexer *lexer, struct word *word)
 {
     char c = (char)last_char(lexer);
     if (c != '>' && c != '<')
         return 0;
     // check if word is a number
-    for (size_t i = 0; i < word->length; i++)
-        if (!isdigit(word->data[i]))
+    for (size_t i = 0; i < word->value.length; i++)
+        if (!isdigit(word->value.data[i]))
             return 0;
 
-    string_push(word, c);
+    string_push(&word->value, c);
     next_char(lexer);
 
     // check if the next character completes the redirection
@@ -88,7 +88,7 @@ static int lexer_try_redir(struct lexer *lexer, struct string *word)
         || strcmp(str, "<>") == 0 || strcmp(str, ">&") == 0
         || strcmp(str, "<&") == 0 || strcmp(str, ">|") == 0)
     {
-        string_push(word, c2);
+        string_push(&word->value, c2);
         next_char(lexer);
     }
 
@@ -98,7 +98,7 @@ static int lexer_try_redir(struct lexer *lexer, struct string *word)
 // Create a word token or a keyword token
 static struct token lexer_next_handle_word(struct lexer *lexer)
 {
-    struct string *word = string_new();
+    struct word *word = word_new();
     int has_escaped = 0;
     while (lexer_is_word_char(lexer) || lexer->escape_next
            || lexer->mode == LEXING_QUOTED
@@ -139,8 +139,7 @@ static struct token lexer_next_handle_word(struct lexer *lexer)
     if (!has_escaped && lexer_try_redir(lexer, word))
         token.type = TOKEN_REDIR;
 
-    token.value = word->data;
-    free(word); // only the string struct is freed, not the data
+    token.word = word;
     return token;
 }
 
@@ -148,7 +147,7 @@ static struct token lexer_next_handle_word(struct lexer *lexer)
 static struct token lexer_switch(struct lexer *lexer)
 {
     struct token token;
-    token.value = NULL;
+    token.word = NULL;
     switch (last_char(lexer))
     {
     case '\n':
@@ -193,7 +192,7 @@ struct lexer *lexer_new(struct reader *reader)
     }
     lexer->reader = reader;
     lexer->current.type = TOKEN_UNSET;
-    lexer->current.value = NULL;
+    lexer->current.word = NULL;
     lexer->current_char = UNITIALIZED_CHAR;
     lexer->escape_next = 0;
     lexer->mode = LEXING_NORMAL;
@@ -215,7 +214,7 @@ struct token lexer_next(struct lexer *lexer)
     {
         struct token token;
         token.type = TOKEN_EOF;
-        token.value = NULL;
+        token.word = NULL;
         return token;
     }
 
@@ -237,6 +236,6 @@ struct token lexer_pop(struct lexer *lexer)
 {
     struct token token = lexer_peek(lexer);
     lexer->current.type = TOKEN_UNSET;
-    lexer->current.value = NULL;
+    lexer->current.word = NULL;
     return token;
 }

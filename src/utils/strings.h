@@ -16,9 +16,11 @@ struct string_view
     size_t length;
 };
 
-// initializes an empty string
+// initializes and allocates an empty string
 struct string *string_new(void);
-// initializes a NULL-terminated string
+// initializes a string
+void string_init(struct string *string);
+// initializes and allocates a NULL-terminated string
 struct string *string_from(const char *data);
 
 // frees a string

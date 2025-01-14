@@ -18,7 +18,7 @@ static int run_command(struct ast *ast)
     pid_t pid = fork();
     if (pid == 0)
     {
-        execvp(ast->values[0], ast->values);
+        execvp(ast->expanded_values[0], ast->expanded_values);
         exit(127);
     }
     else
@@ -28,7 +28,7 @@ static int run_command(struct ast *ast)
         int exit_status = WEXITSTATUS(status);
         if (exit_status == 127)
         {
-            fprintf(stderr, "Command not found: %s\n", ast->values[0]);
+            fprintf(stderr, "Command not found: %s\n", ast->expanded_values[0]);
             return 127;
         }
         return WEXITSTATUS(status);
@@ -38,12 +38,12 @@ static int run_command(struct ast *ast)
 
 int execute_command(struct ast *ast)
 {
-    if (strcmp(ast->values[0], "echo") == 0)
-        return exec_echo(ast->size, ast->values);
-    if (strcmp(ast->values[0], "true") == 0)
-        return exec_true(ast->size, ast->values);
-    if (strcmp(ast->values[0], "false") == 0)
-        return exec_false(ast->size, ast->values);
+    if (strcmp(ast->expanded_values[0], "echo") == 0)
+        return exec_echo(ast->size, ast->expanded_values);
+    if (strcmp(ast->expanded_values[0], "true") == 0)
+        return exec_true(ast->size, ast->expanded_values);
+    if (strcmp(ast->expanded_values[0], "false") == 0)
+        return exec_false(ast->size, ast->expanded_values);
     return run_command(ast);
 }
 

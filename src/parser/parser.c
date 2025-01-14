@@ -73,7 +73,7 @@ struct ast *simple_command(struct parser *parser)
                     realloc(node->values, sizeof(char *) * buffer_size);
                 CHECK_ALLOCATION(node->values);
             }
-            node->values[node->size] = token.value;
+            node->values[node->size] = token.word;
             node->size++;
             token = lexer_peek(parser->lexer);
         }

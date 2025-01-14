@@ -10,7 +10,9 @@ libutils_a_SOURCES =  \
   hashMap.h \
   hashMap.c \
   variable.h \
-  variable.c
+  variable.c \
+  word.h \
+  word.c
 
 
 libutils_a_CPPFLAGS = -I$(top_srcdir)/src
