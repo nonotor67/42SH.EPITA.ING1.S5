@@ -116,7 +116,7 @@ static int execute_loop(struct lexer *lexer, int real_argc, char **real_argv)
         // Execute the AST.
         if (ast)
             res = execution(ast);
-        if (parser->status == PARSER_BAD_IF)
+        if (parser->status != PARSER_OK && parser->status != PARSER_EOF)
             res = 2;
         parser_free(parser);
         ast_free(ast);
