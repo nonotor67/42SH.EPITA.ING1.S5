@@ -5,14 +5,16 @@
 #include <parser/parser.h>
 #include <unistd.h>
 
+#define INIT_PARSER(str)                                                       \
+    struct reader *reader = reader_from_string(str);                           \
+    struct lexer *lexer = lexer_new(reader);                                   \
+    struct parser *parser = parser_new(lexer);                                 \
+    struct ast *ast = parse(parser);
+
 Test(parser, test_parser_simple_command)
 {
-    char *argv[] = { "42sh", "-c", "echo Hello World" };
-    struct reader *reader = reader_new(3, argv);
-    struct lexer *lexer = lexer_new(reader);
-    struct parser *parser = parser_new(lexer);
+    INIT_PARSER("echo Hello World")
 
-    struct ast *ast = parse(parser);
     cr_assert_not_null(ast);
     cr_assert_eq(ast->type, SIMPLE_COMMAND);
     cr_assert_not_null(ast->values);
@@ -28,12 +30,8 @@ Test(parser, test_parser_simple_command)
 
 Test(parser, test_parser_command_list)
 {
-    char *argv[] = { "42sh", "-c", "echo Hello ; echo World" };
-    struct reader *reader = reader_new(3, argv);
-    struct lexer *lexer = lexer_new(reader);
-    struct parser *parser = parser_new(lexer);
+    INIT_PARSER("echo Hello ; echo World")
 
-    struct ast *ast = parse(parser);
     cr_assert_not_null(ast);
     cr_assert_eq(ast->type, COMMAND_LIST);
     cr_assert_not_null(ast->left);
@@ -56,12 +54,8 @@ Test(parser, test_parser_command_list)
 
 Test(parser, test_parser_if)
 {
-    char *argv[] = { "42sh", "-c", "if echo Hello ; then echo World ; fi" };
-    struct reader *reader = reader_new(3, argv);
-    struct lexer *lexer = lexer_new(reader);
-    struct parser *parser = parser_new(lexer);
+    INIT_PARSER("if echo Hello ; then echo World ; fi")
 
-    struct ast *ast = parse(parser);
     cr_assert_not_null(ast);
     cr_assert_eq(ast->type, CONDITIONS);
     cr_assert_not_null(ast->left);
@@ -84,13 +78,8 @@ Test(parser, test_parser_if)
 
 Test(parser, test_parser_if_else)
 {
-    char *argv[] = { "42sh", "-c",
-                     "if echo Hello ; then echo World ; else echo Bye ; fi" };
-    struct reader *reader = reader_new(3, argv);
-    struct lexer *lexer = lexer_new(reader);
-    struct parser *parser = parser_new(lexer);
+    INIT_PARSER("if echo Hello ; then echo World ; else echo Bye ; fi")
 
-    struct ast *ast = parse(parser);
     cr_assert_not_null(ast);
     cr_assert_eq(ast->type, CONDITIONS);
     cr_assert_not_null(ast->left);
@@ -116,15 +105,9 @@ Test(parser, test_parser_if_else)
 
 Test(parser, test_parser_if_elif)
 {
-    char *argv[] = {
-        "42sh", "-c",
-        "if echo Hello ; then echo World ; elif echo Bye ; then echo Test ; fi"
-    };
-    struct reader *reader = reader_new(3, argv);
-    struct lexer *lexer = lexer_new(reader);
-    struct parser *parser = parser_new(lexer);
+    INIT_PARSER(
+        "if echo Hello ; then echo World ; elif echo Bye ; then echo Test ; fi")
 
-    struct ast *ast = parse(parser);
     cr_assert_not_null(ast);
     cr_assert_eq(ast->type, CONDITIONS);
     cr_assert_not_null(ast->left);
@@ -157,15 +140,8 @@ Test(parser, test_parser_if_elif)
 
 Test(parser, test_parser_nested_if)
 {
-    char *argv[] = {
-        "42sh", "-c",
-        "if echo Hello ; then if echo World ; then echo Bye ; fi ; fi"
-    };
-    struct reader *reader = reader_new(3, argv);
-    struct lexer *lexer = lexer_new(reader);
-    struct parser *parser = parser_new(lexer);
+    INIT_PARSER("if echo Hello ; then if echo World ; then echo Bye ; fi ; fi")
 
-    struct ast *ast = parse(parser);
     cr_assert_not_null(ast);
     cr_assert_eq(ast->type, CONDITIONS);
     cr_assert_not_null(ast->left);
