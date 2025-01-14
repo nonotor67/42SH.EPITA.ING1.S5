@@ -58,17 +58,10 @@ static void env_init(int argc, char **argv)
     // Initialize the global variables in the hash table
     global_variables = create_hash_table();
 
-    // print argv
-    printf("argc = %d\n", argc);
-    for (int i = 0; i <= argc; i++)
-    {
-        printf("argv[%d] = %s\n", i, argv[i]);
-    }
-    return;
-
     char *argument_list = xmalloc(1024);
     unsigned int argument_list_size = 1024;
     unsigned int actual_list_size = 0;
+
     for (int i = 0; i < argc; i++)
     {
         if (actual_list_size + strlen(argv[i]) + 1 >= argument_list_size)
@@ -85,19 +78,19 @@ static void env_init(int argc, char **argv)
         free(int_tmp);
     }
 
-    char *int_tmp = xmalloc(256);
-    // InsertVariables allocate a new string, so we can free or use the old one
-    insertVariable(global_variables, "#", my_itoa(argc - 1, int_tmp));
-
+    argument_list[actual_list_size - 1] = '\0';
     insertVariable(global_variables, "@", argument_list);
     insertVariable(global_variables, "*", argument_list);
     free(argument_list);
 
-    insertVariable(global_variables, "?", "0");
-
+    // InsertVariables allocate a new string, so we can free or use the old one
+    char *int_tmp = xmalloc(256);
+    insertVariable(global_variables, "#", my_itoa(argc - 1, int_tmp));
     insertVariable(global_variables, "$", my_itoa(getpid(), int_tmp));
     insertVariable(global_variables, "UID", my_itoa(getuid(), int_tmp));
     free(int_tmp);
+
+    insertVariable(global_variables, "?", "0");
 
     insertVariable(global_variables, "OLDPWD", getenv("PWD"));
     insertVariable(global_variables, "PWD", getenv("PWD"));
@@ -107,7 +100,6 @@ static void env_init(int argc, char **argv)
 static int execute_loop(struct lexer *lexer, int real_argc, char **real_argv)
 {
     env_init(real_argc, real_argv);
-    (void)real_argv; // avoid unused
     int res = 0;
     while (lexer->current.type != TOKEN_EOF)
     {
@@ -152,15 +144,14 @@ int main(int argc, char **argv)
     struct reader *reader;
     if (argc == 1) // no arg
     {
-        real_argv[0] = argv[0];
         reader = reader_from_stdin();
+        real_argv[0] = argv[0];
     }
     else if (cflag) // -c str [ARGUMENTS...]
     {
-        printf("real_argc = %d\n", real_argc);
         // skip the first argument (the command)
-        real_argv[0] = argv[0];
         reader = reader_from_string(*real_argv);
+        real_argv[0] = argv[0];
     }
     else // [ARGUMENTS...] (first one is the file)
         reader = reader_from_file(*real_argv);
@@ -171,6 +162,7 @@ int main(int argc, char **argv)
 
     // Default
     int res = execute_loop(lexer, real_argc, real_argv);
+
     DEBUG("Done executing loop");
     reader_free(reader);
     lexer_free(lexer);
