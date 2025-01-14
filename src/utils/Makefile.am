@@ -10,11 +10,13 @@ libutils_a_SOURCES =  \
   hashMap.h \
   hashMap.c \
   variable.h \
-  variable.c
+  variable.c \
+  word.h \
+  word.c
 
 
 libutils_a_CPPFLAGS = -I$(top_srcdir)/src
 
-libutils_a_CFLAGS = -std=c99 -Werror -Wall -Wextra -Wvla -pedantic -g3 -fsanitize=address,undefined
+libutils_a_CFLAGS = -std=c99 -Werror -Wall -Wextra -Wvla -pedantic
 
 noinst_LIBRARIES = libutils.a

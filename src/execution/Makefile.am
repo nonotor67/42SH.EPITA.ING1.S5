@@ -18,9 +18,11 @@ libexecution_a_SOURCES =  \
   execution_redir.h \
   execution_or_and.c \
   execution_or_and.h
+  execution_pipeline.c \
+  execution_pipeline.h
 
 libexecution_a_CPPFLAGS = -I$(top_srcdir)/src
 
-libexecution_a_CFLAGS = -std=c99 -Werror -Wall -Wextra -Wvla -pedantic -g3 -fsanitize=address,undefined
+libexecution_a_CFLAGS = -std=c99 -Werror -Wall -Wextra -Wvla -pedantic
 
 noinst_LIBRARIES = libexecution.a

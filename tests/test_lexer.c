@@ -5,32 +5,32 @@
 
 Test(lexer, peek_pop)
 {
-    char *argv[] = { "42sh", "-c", "echo Hello World" };
-    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv);
+    struct reader *reader = reader_from_string("echo Hello World");
     struct lexer *lexer = lexer_new(reader);
 
     struct token token = lexer_peek(lexer);
     cr_assert_eq(token.type, TOKEN_WORD);
-    cr_assert_str_eq(token.value, "echo");
+    cr_assert_str_eq(token.word->value.data, "echo");
     token = lexer_pop(lexer);
     cr_assert_eq(token.type, TOKEN_WORD);
-    cr_assert_str_eq(token.value, "echo"); // check if pop is the same as peek
-    free(token.value);
+    cr_assert_str_eq(token.word->value.data,
+                     "echo"); // check if pop is the same as peek
+    word_free(token.word);
 
     token = lexer_peek(lexer);
     cr_assert_eq(token.type, TOKEN_WORD);
-    cr_assert_str_eq(token.value, "Hello");
-    free(token.value);
-    lexer_pop(lexer);
+    cr_assert_str_eq(token.word->value.data, "Hello");
+    token = lexer_pop(lexer);
+    word_free(token.word);
 
     token = lexer_pop(lexer);
     cr_assert_eq(token.type, TOKEN_WORD);
-    cr_assert_str_eq(token.value, "World");
-    free(token.value);
+    cr_assert_str_eq(token.word->value.data, "World");
+    word_free(token.word);
 
     token = lexer_pop(lexer);
     cr_assert_eq(token.type, TOKEN_EOF);
-    cr_assert_null(token.value);
+    cr_assert_null(token.word);
 
     reader_free(reader);
     lexer_free(lexer);
@@ -43,19 +43,18 @@ Test(lexer, peek_pop)
 #define EXPECT_WORD(str)                                                       \
     token = lexer_pop(lexer);                                                  \
     cr_assert_eq(token.type, TOKEN_WORD);                                      \
-    cr_assert_str_eq(token.value, str);                                        \
-    free(token.value);
+    cr_assert_str_eq(token.word->value.data, str);                             \
+    word_free(token.word);
 
 #define EXPECT_REDIR(str)                                                      \
     token = lexer_pop(lexer);                                                  \
     cr_assert_eq(token.type, TOKEN_REDIR);                                     \
-    cr_assert_str_eq(token.value, str);                                        \
-    free(token.value);
+    cr_assert_str_eq(token.word->value.data, str);                             \
+    word_free(token.word);
 
 Test(lexer, words_semicolon)
 {
-    char *argv[] = { "42sh", "-c", "echo Hello ; echo World" };
-    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv);
+    struct reader *reader = reader_from_string("echo Hello ; echo World");
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
@@ -72,8 +71,7 @@ Test(lexer, words_semicolon)
 
 Test(lexer, words_newline)
 {
-    char *argv[] = { "42sh", "-c", "echo Hello\n echo World" };
-    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv);
+    struct reader *reader = reader_from_string("echo Hello\n echo World");
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
@@ -90,8 +88,7 @@ Test(lexer, words_newline)
 
 Test(lexer, simple_quotes)
 {
-    char *argv[] = { "42sh", "-c", "echo 'Hello World'" };
-    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv);
+    struct reader *reader = reader_from_string("echo 'Hello World'");
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
@@ -105,8 +102,7 @@ Test(lexer, simple_quotes)
 
 Test(lexer, escaped_quotes)
 {
-    char *argv[] = { "42sh", "-c", "echo \\'Hello\\'" };
-    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv);
+    struct reader *reader = reader_from_string("echo \\'Hello\\'");
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
@@ -120,8 +116,7 @@ Test(lexer, escaped_quotes)
 
 Test(lexer, escaped_spaces)
 {
-    char *argv[] = { "42sh", "-c", "echo Hello\\ World" };
-    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv);
+    struct reader *reader = reader_from_string("echo Hello\\ World");
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
@@ -135,8 +130,7 @@ Test(lexer, escaped_spaces)
 
 Test(lexer, escaped_quotes_and_spaces)
 {
-    char *argv[] = { "42sh", "-c", "echo 'Hello\\ World'" };
-    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv);
+    struct reader *reader = reader_from_string("echo 'Hello\\ World'");
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
@@ -150,8 +144,7 @@ Test(lexer, escaped_quotes_and_spaces)
 
 Test(lexer, lexer_comments)
 {
-    char *argv[] = { "42sh", "-c", "echo Hello # World" };
-    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv);
+    struct reader *reader = reader_from_string("echo Hello # World");
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
@@ -165,8 +158,7 @@ Test(lexer, lexer_comments)
 
 Test(lexer, double_quoted_comment)
 {
-    char *argv[] = { "42sh", "-c", "echo \"Hello # World\"" };
-    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv);
+    struct reader *reader = reader_from_string("echo \"Hello # World\"");
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
@@ -180,12 +172,11 @@ Test(lexer, double_quoted_comment)
 
 Test(lexer, points)
 {
-    char *argv[] = { "42sh", "-c", "echo Hello. World." };
-    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv);
+    struct reader *reader = reader_from_string("echo Hello. World.");
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
-    EXPECT_WORD("echo")
+    EXPECT_WORD("echo");
     EXPECT_WORD("Hello.");
     EXPECT_WORD("World.");
     EXPECT(TOKEN_EOF)
@@ -196,8 +187,7 @@ Test(lexer, points)
 
 Test(lexer, commas)
 {
-    char *argv[] = { "42sh", "-c", "echo Hello, World," };
-    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv);
+    struct reader *reader = reader_from_string("echo Hello, World,");
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
@@ -212,15 +202,11 @@ Test(lexer, commas)
 
 Test(lexer, very_long)
 {
-    char *argv[] = {
-        "42sh", "-c",
-        "echo "
-        "Loremipsumdolorsitamet,consecteturadipiscingelit."
+    struct reader *reader = reader_from_string(
+        "echo Loremipsumdolorsitamet,consecteturadipiscingelit."
         "Aliquamconsequatmassasedurnavenenatisbibendum.Praesentavariusenim,"
         "necvehiculanulla.Utatlectusaliquam,consecteturmagnased,suscipitipsum."
-        "Maurisnecmaurisex.Utsednullasuscipit,"
-    };
-    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv);
+        "Maurisnecmaurisex.Utsednullasuscipit,");
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
@@ -238,8 +224,7 @@ Test(lexer, very_long)
 
 Test(lexer, weird_chars)
 {
-    char *argv[] = { "42sh", "-c", "echo Hello@World" };
-    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv);
+    struct reader *reader = reader_from_string("echo Hello@World");
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
@@ -253,8 +238,7 @@ Test(lexer, weird_chars)
 
 Test(lexer, weird_chars2)
 {
-    char *argv[] = { "42sh", "-c", "echo ^chouette %po-u*et" };
-    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv);
+    struct reader *reader = reader_from_string("echo ^chouette %po-u*et");
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
@@ -269,8 +253,7 @@ Test(lexer, weird_chars2)
 
 Test(lexer, dollar_tail)
 {
-    char *argv[] = { "42sh", "-c", "echo Hello$" };
-    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv);
+    struct reader *reader = reader_from_string("echo Hello$");
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
@@ -283,8 +266,7 @@ Test(lexer, dollar_tail)
 }
 
 #define INIT_LEXER_TEST(str)                                                   \
-    char *argv[] = { "42sh", "-c", str };                                      \
-    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv);   \
+    struct reader *reader = reader_from_string(str);                           \
     struct lexer *lexer = lexer_new(reader);                                   \
     struct token token;
 

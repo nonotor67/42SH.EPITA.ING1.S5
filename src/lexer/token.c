@@ -8,7 +8,7 @@ static void sec_token_print(struct token token)
         printf("UNSET");
         break;
     case TOKEN_WORD:
-        printf("WORD(%s)", token.value);
+        printf("WORD(%s)", token.word->value.data);
         break;
     default:
         printf("UNKNOWN");
