@@ -2,5 +2,5 @@
 
 int execute_negation(struct ast *node)
 {
-    return !execution(node->left);
+    return !execute_node(node->left);
 }
