@@ -4,40 +4,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "ast/ast.h"
-#include "lexer/lexer.h"
-
-#define CHECK_STATUS(parser, ast, msg)                                         \
-    if (parser->status != PARSER_OK)                                           \
-    {                                                                          \
-        if (ast)                                                               \
-            free(ast);                                                         \
-        fprintf(stderr, msg);                                                  \
-        return NULL;                                                           \
-    }
-
-#define CHECK_ALLOCATION(ptr)                                                  \
-    if (!ptr)                                                                  \
-    {                                                                          \
-        fprintf(stderr, "Failed allocating memory\n");                         \
-        exit(1);                                                               \
-    }
-
-#define EXPECT_TOKEN(lexer, type, msg)                                         \
-    if (!eat(lexer, type))                                                     \
-    {                                                                          \
-        fprintf(stderr, msg);                                                  \
-        parser->status = PARSER_UNEXPECTED_TOKEN;                              \
-        return NULL;                                                           \
-    }
-
-#define EXPECT_WORD(lexer, word, msg)                                          \
-    if (!eat_word(lexer, word))                                                \
-    {                                                                          \
-        fprintf(stderr, msg);                                                  \
-        parser->status = PARSER_UNEXPECTED_TOKEN;                              \
-        return NULL;                                                           \
-    }
+/*
+Contains the creation and top layer of the parser
+--> list
+--> input
+*/
 
 struct parser *parser_new(struct lexer *lexer)
 {
@@ -53,36 +24,75 @@ void parser_free(struct parser *parser)
     free(parser);
 }
 
-struct ast *simple_command(struct parser *parser)
+/*
+list = and_or { ( ';' | '&' ) and_or } [ ';' | '&' ] ;
+For step 1, only works for ';' and not for '&' yet.
+*/
+struct ast *list(struct parser *parser)
 {
+    struct ast *root = ast_new(COMMAND_LIST);
+    root->left = and_or(parser);
+    struct token tok;
+    CHECK_STATUS(parser, root, "Error after parsing and_or (list)\n");
+
     struct token token = lexer_peek(parser->lexer);
-    if (token.type == TOKEN_WORD)
+    struct ast *current = root;
+    while (token.type == TOKEN_SEMICOLON) // || AMPERSAND later
     {
-        struct ast *node = ast_new(SIMPLE_COMMAND);
-        int buffer_size = 16;
-        node->size = 0;
-        node->values = malloc(sizeof(char *) * buffer_size);
-        CHECK_ALLOCATION(node->values);
-        while (token.type == TOKEN_WORD)
-        {
-            lexer_pop(parser->lexer);
-            if (node->size >= buffer_size - 1)
-            {
-                buffer_size *= 2;
-                node->values =
-                    realloc(node->values, sizeof(char *) * buffer_size);
-                CHECK_ALLOCATION(node->values);
-            }
-            node->values[node->size] = token.value;
-            node->size++;
-            token = lexer_peek(parser->lexer);
-        }
-        node->values[node->size] = NULL;
-        return node;
+        lexer_pop(parser->lexer);
+        enum token_type next = lexer_peek(parser->lexer).type;
+
+        if (next == TOKEN_EOF || next == TOKEN_EOL)
+            // corresponding to the [ ';' | '&' ] part of the rule
+            break;
+
+        current->right = ast_new(COMMAND_LIST);
+        current = current->right;
+        current->left = and_or(parser);
+        CHECK_STATUS(parser, root, "Error after parsing and_or (list)\n");
+
+        token = lexer_peek(parser->lexer);
     }
-    fprintf(stderr, "Error: Expected a word token (simple_command)\n");
-    parser->status = PARSER_UNEXPECTED_TOKEN;
-    return NULL;
+
+    if (current == root)
+    {
+        // if it is a single command, we don't need a COMMAND_LIST node
+        root = root->left;
+        free(current);
+    }
+
+    return root;
+}
+
+/*
+input =
+    list '\n'
+    | list EOF
+    | '\n'
+    | EOF
+    ;
+*/
+struct ast *input(struct parser *parser)
+{
+    struct token tok = lexer_peek(parser->lexer);
+    parser->status = tok.type == TOKEN_EOF ? PARSER_EOF : PARSER_OK;
+
+    if (tok.type == TOKEN_EOL)
+    {
+        lexer_pop(parser->lexer);
+        return NULL; // empty command
+    }
+    if (tok.type == TOKEN_EOF)
+        return NULL; // empty command
+
+    struct ast *ast = list(parser);
+    CHECK_STATUS(parser, ast, "Error after parsing list (input)\n");
+
+    if (!eat(parser->lexer, TOKEN_EOL) && !eat(parser->lexer, TOKEN_EOF))
+        parser->status = PARSER_UNEXPECTED_TOKEN;
+
+    // CHECK_STATUS(parser, ast, "Error after parsing EOL or EOF (input)\n");
+    return ast;
 }
 
 struct ast *parse(struct parser *parser)

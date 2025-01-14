@@ -3,11 +3,14 @@
 #include <criterion/redirect.h>
 #include <execution/execution.h>
 
-char *my_strdup(const char *str)
+#include "utils/word.h"
+
+struct word *my_strdup(const char *str)
 {
-    char *new_str = malloc(strlen(str) + 1);
-    strcpy(new_str, str);
-    return new_str;
+    struct word *word = word_new();
+    for (size_t i = 0; str[i]; i++)
+        word_push(word, str[i]);
+    return word;
 }
 
 Test(execute_node, simple_command_with_stdout)
@@ -36,7 +39,7 @@ Test(execute_node, simple_command_list)
     struct ast *node = ast_new(COMMAND_LIST);
     node->left = ast_new(SIMPLE_COMMAND);
     node->left->size = 2;
-    char **value_left = malloc(sizeof(char *) * 3);
+    struct word **value_left = malloc(sizeof(struct word *) * 3);
     node->left->values = value_left;
     node->left->values[0] = my_strdup("echo");
     node->left->values[1] = my_strdup("Hello,");
@@ -45,7 +48,7 @@ Test(execute_node, simple_command_list)
     node->right = ast_new(COMMAND_LIST);
     node->right->left = ast_new(SIMPLE_COMMAND);
     node->right->left->size = 2;
-    char **value_right = malloc(sizeof(char *) * 3);
+    struct word **value_right = malloc(sizeof(struct word *) * 3);
     node->right->left->values = value_right;
     node->right->left->values[0] = my_strdup("echo");
     node->right->left->values[1] = my_strdup("world!");
@@ -63,7 +66,7 @@ Test(execute_node, last_value_count_on_command_list)
     struct ast *node = ast_new(COMMAND_LIST);
     node->left = ast_new(SIMPLE_COMMAND);
     node->left->size = 1;
-    char **value_left = malloc(sizeof(char *) * 2);
+    struct word **value_left = malloc(sizeof(char *) * 2);
     node->left->values = value_left;
     node->left->values[0] = my_strdup("echo");
     node->left->values[1] = NULL;
@@ -71,7 +74,7 @@ Test(execute_node, last_value_count_on_command_list)
     node->right = ast_new(COMMAND_LIST);
     node->right->left = ast_new(SIMPLE_COMMAND);
     node->right->left->size = 1;
-    char **value_right = malloc(sizeof(char *) * 2);
+    struct word **value_right = malloc(sizeof(char *) * 2);
     node->right->left->values = value_right;
     node->right->left->values[0] = my_strdup("echo");
     node->right->left->values[1] = NULL;
@@ -87,14 +90,14 @@ Test(execute_node, condition_node_execution)
     struct ast *node = ast_new(CONDITIONS);
     node->left = ast_new(SIMPLE_COMMAND);
     node->left->size = 1;
-    char **value_left = malloc(sizeof(char *) * 2);
+    struct word **value_left = malloc(sizeof(char *) * 2);
     node->left->values = value_left;
     node->left->values[0] = my_strdup("true");
     node->left->values[1] = NULL;
 
     node->middle = ast_new(SIMPLE_COMMAND);
     node->middle->size = 2;
-    char **value_middle = malloc(sizeof(char *) * 3);
+    struct word **value_middle = malloc(sizeof(char *) * 3);
     node->middle->values = value_middle;
     node->middle->values[0] = my_strdup("echo");
     node->middle->values[1] = my_strdup("Hello, world!");
@@ -102,7 +105,7 @@ Test(execute_node, condition_node_execution)
 
     node->right = ast_new(SIMPLE_COMMAND);
     node->right->size = 1;
-    char **value_right = malloc(sizeof(char *) * 2);
+    struct word **value_right = malloc(sizeof(char *) * 2);
     node->right->values = value_right;
     node->right->values[0] = my_strdup("echo");
     node->right->values[1] = NULL;
@@ -121,14 +124,14 @@ Test(execute_node, condition_node_execution_false)
     struct ast *node = ast_new(CONDITIONS);
     node->left = ast_new(SIMPLE_COMMAND);
     node->left->size = 1;
-    char **value_left = malloc(sizeof(char *) * 2);
+    struct word **value_left = malloc(sizeof(char *) * 2);
     node->left->values = value_left;
     node->left->values[0] = my_strdup("false");
     node->left->values[1] = NULL;
 
     node->middle = ast_new(SIMPLE_COMMAND);
     node->middle->size = 2;
-    char **value_middle = malloc(sizeof(char *) * 3);
+    struct word **value_middle = malloc(sizeof(char *) * 3);
     node->middle->values = value_middle;
     node->middle->values[0] = my_strdup("echo");
     node->middle->values[1] = my_strdup("Hello, world!");
@@ -136,7 +139,7 @@ Test(execute_node, condition_node_execution_false)
 
     node->right = ast_new(SIMPLE_COMMAND);
     node->right->size = 3;
-    char **value_right = malloc(sizeof(char *) * 4);
+    struct word **value_right = malloc(sizeof(char *) * 4);
     node->right->values = value_right;
     node->right->values[0] = my_strdup("echo");
     node->right->values[1] = my_strdup("-n");
@@ -156,14 +159,14 @@ Test(execute_node, condition_without_else_closure)
     struct ast *node = ast_new(CONDITIONS);
     node->left = ast_new(SIMPLE_COMMAND);
     node->left->size = 1;
-    char **value_left = malloc(sizeof(char *) * 2);
+    struct word **value_left = malloc(sizeof(char *) * 2);
     node->left->values = value_left;
     node->left->values[0] = my_strdup("false");
     node->left->values[1] = NULL;
 
     node->middle = ast_new(SIMPLE_COMMAND);
     node->middle->size = 2;
-    char **value_middle = malloc(sizeof(char *) * 3);
+    struct word **value_middle = malloc(sizeof(char *) * 3);
     node->middle->values = value_middle;
     node->middle->values[0] = my_strdup("echo");
     node->middle->values[1] = my_strdup("Hello, world!");
