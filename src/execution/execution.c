@@ -18,6 +18,7 @@ static const struct execute_entry execute_table[] = {
     { CONDITIONS, execute_condition },
     { PIPELINE, execute_pipeline }
 };
+
 /*
 @brief Expands the values of a source word array and stores them in a target
 array.
