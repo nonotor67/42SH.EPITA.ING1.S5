@@ -4,6 +4,8 @@
 #include <io/io.h>
 #include <lexer/lexer.h>
 #include <parser/parser.h>
+#include <stdlib.h>
+#include <string.h>
 #include <utils/utils.h>
 
 struct HashMap *global_variables;
@@ -56,12 +58,20 @@ static void env_init(int argc, char **argv)
     // Initialize the global variables in the hash table
     global_variables = create_hash_table();
 
+    // print argv
+    printf("argc = %d\n", argc);
+    for (int i = 0; i <= argc; i++)
+    {
+        printf("argv[%d] = %s\n", i, argv[i]);
+    }
+    return;
+
     char *argument_list = xmalloc(1024);
     unsigned int argument_list_size = 1024;
     unsigned int actual_list_size = 0;
     for (int i = 0; i < argc; i++)
     {
-        while (actual_list_size + strlen(argv[i]) >= argument_list_size)
+        if (actual_list_size + strlen(argv[i]) + 1 >= argument_list_size)
         {
             argument_list_size *= 2;
             argument_list = xrealloc(argument_list, argument_list_size);
@@ -70,13 +80,10 @@ static void env_init(int argc, char **argv)
         actual_list_size += strlen(argv[i]);
         argument_list[actual_list_size] = ' ';
         actual_list_size++;
-
-        // Insert the $n variable in the hash table
-        char *s = xmalloc(256);
-        insertVariable(global_variables, my_itoa(i, s), argv[i]);
-        free(s);
+        char *int_tmp = xmalloc(256);
+        insertVariable(global_variables, my_itoa(i, int_tmp), argv[i]);
+        free(int_tmp);
     }
-    argument_list[actual_list_size - 1] = '\0';
 
     char *int_tmp = xmalloc(256);
     // InsertVariables allocate a new string, so we can free or use the old one
@@ -97,10 +104,10 @@ static void env_init(int argc, char **argv)
     insertVariable(global_variables, "IFS", " \t\n");
 }
 
-static int execute_loop(struct lexer *lexer, int argc, char **argv)
+static int execute_loop(struct lexer *lexer, int real_argc, char **real_argv)
 {
-    env_init(argc, argv);
-    (void)argv; // avoid unused
+    env_init(real_argc, real_argv);
+    (void)real_argv; // avoid unused
     int res = 0;
     while (lexer->current.type != TOKEN_EOF)
     {
@@ -139,15 +146,22 @@ int main(int argc, char **argv)
             abort();
         }
     }
-    int real_argc = argc - optind + 1;
+    int real_argc = argc - optind;
     char **real_argv = argv + optind;
     // Create a reader
     struct reader *reader;
-    if (real_argc == 1) // no arg
+    if (argc == 1) // no arg
+    {
+        real_argv[0] = argv[0];
         reader = reader_from_stdin();
+    }
     else if (cflag) // -c str [ARGUMENTS...]
+    {
+        printf("real_argc = %d\n", real_argc);
         // skip the first argument (the command)
-        reader = reader_from_string(*real_argv++);
+        real_argv[0] = argv[0];
+        reader = reader_from_string(*real_argv);
+    }
     else // [ARGUMENTS...] (first one is the file)
         reader = reader_from_file(*real_argv);
     DEBUG("Created reader");
