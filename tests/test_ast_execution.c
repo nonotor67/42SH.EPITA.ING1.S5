@@ -377,7 +377,7 @@ Test(execute_node, simple_negation)
     struct ast *node = ast_new(NEGATION);
     node->left = ast_new(SIMPLE_COMMAND);
     node->left->size = 1;
-    char **value_left = malloc(sizeof(char *) * 2);
+    struct word **value_left = malloc(sizeof(char *) * 2);
     node->left->values = value_left;
     node->left->values[0] = my_strdup("false");
     node->left->values[1] = NULL;
@@ -392,7 +392,7 @@ Test(execute_node, simple_negation_true)
     struct ast *node = ast_new(NEGATION);
     node->left = ast_new(SIMPLE_COMMAND);
     node->left->size = 1;
-    char **value_left = malloc(sizeof(char *) * 2);
+    struct word **value_left = malloc(sizeof(char *) * 2);
     node->left->values = value_left;
     node->left->values[0] = my_strdup("true");
     node->left->values[1] = NULL;
