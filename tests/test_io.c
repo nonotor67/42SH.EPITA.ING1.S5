@@ -5,8 +5,7 @@
 
 Test(read_input, test_read_input_from_file)
 {
-    char *argv[] = { "./bin/42sh", "input.txt" };
-    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv);
+    struct reader *reader = reader_from_file("input.txt");
     char *result = malloc(100);
     int i = 0;
     while (1)
@@ -26,8 +25,7 @@ Test(read_input, test_read_input_from_file)
 
 Test(read_input, test_read_from_string)
 {
-    char *argv[] = { "./bin/42sh", "-c", "echo Hello World!" };
-    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv);
+    struct reader *reader = reader_from_string("echo Hello World!");
     char *result = malloc(100);
     int i = 0;
     while (1)

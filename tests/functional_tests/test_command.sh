@@ -56,12 +56,32 @@ test_functional "Simple ls with flags" "ls -l"
 test_functional "Test echo with key words" "echo true false if then else elif fi"
 test_functional "Echo with big args" "echo helloooooooooooooooooooooooooooooooooooooooooooooooooooooooooo"
 test_functional "Echo with multiples args" "echo Hello the world"
+test_functional "Echo long spaces" "echo Hello     the     world"
+test_functional "Echo lots of newlines" "echo test
+
+
+
+
+echo encore"
 
 # Test with binary
 test_functional "Simple echo" "/bin/echo Hello world"
 test_functional "Simple echo with newline" "/bin/echo -n Hello world"
 test_functional "Simple true" "/bin/true"
 test_functional "Simple false" "/bin/false"
+
+
+# Test bad if
+test_functional "Bad if 1 " "if; then echo true; fi"
+test_functional "Bad if 2 " "if; then echo true; else echo false; fi"
+test_functional "Bad if 3 " "if echo encore; fi"
+test_functional "Bad if 4 " "if echo encore; then echo true;"
+test_functional "Bad if 5 " "if echo encore; then echo true; else echo false"
+test_functional "Bad if 6 " "if echo encore; then echo true; elif echo encore; fi"
+test_functional "Bad if 7 " "if echo test
+then
+fi"
+test_functional "ACU" "if true then echo encore; fi"
 
 echo
 echo "==== Test Summary for $(basename "$0") ===="

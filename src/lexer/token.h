@@ -17,6 +17,7 @@ enum token_type
 
     TOKEN_SEMICOLON,
     TOKEN_WORD,
+    TOKEN_REDIR,
 };
 
 struct token
