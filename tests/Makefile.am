@@ -11,7 +11,7 @@ unit_tests_LDADD = -lcriterion -L$(abs_top_builddir)/src/io -lio -L$(abs_top_bui
 	-L$(abs_top_builddir)/src/ast -last -L$(abs_top_builddir)/src/utils -lutils
 unit_tests_CPPFLAGS = -I$(abs_top_srcdir)/src
 
-check: $(check_PROGRAMS)
+check-local: $(check_PROGRAMS)
 	$(MAKE) $(check_PROGRAMS)
 	./unit_tests
 	./functional_tests/func_tests.sh
