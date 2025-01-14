@@ -173,3 +173,94 @@ Test(execute_node, condition_without_else_closure)
 
     ast_free(node);
 }
+
+Test(execute_node, simple_pipeline)
+{
+    cr_redirect_stdout();
+    struct ast *node = ast_new(PIPELINE);
+    node->left = ast_new(SIMPLE_COMMAND);
+    node->left->size = 2;
+    char **value_left = malloc(sizeof(char *) * 3);
+    node->left->values = value_left;
+    node->left->values[0] = my_strdup("echo");
+    node->left->values[1] = my_strdup("Hello");
+    node->left->values[2] = NULL;
+
+    node->right = ast_new(SIMPLE_COMMAND);
+    node->right->size = 2;
+    char **value_right = malloc(sizeof(char *) * 2);
+    node->right->values = value_right;
+    node->right->values[0] = my_strdup("wc");
+    node->right->values[1] = NULL;
+
+    cr_assert_eq(execute_node(node), 0);
+
+    fflush(stdout);
+    cr_assert_stdout_eq_str("      1       1       6\n");
+
+    ast_free(node);
+}
+
+Test(execute_node, multiple_pipelines)
+{
+    cr_redirect_stdout();
+    struct ast *node = ast_new(PIPELINE);
+    node->left = ast_new(SIMPLE_COMMAND);
+    node->left->size = 2;
+    char **value_left = malloc(sizeof(char *) * 3);
+    node->left->values = value_left;
+    node->left->values[0] = my_strdup("echo");
+    node->left->values[1] = my_strdup("Hello");
+    node->left->values[2] = NULL;
+
+    node->right = ast_new(PIPELINE);
+    node->right->left = ast_new(SIMPLE_COMMAND);
+    node->right->left->size = 2;
+    char **value_right_left = malloc(sizeof(char *) * 2);
+    node->right->left->values = value_right_left;
+    node->right->left->values[0] = my_strdup("cat");
+    node->right->left->values[1] = NULL;
+
+    node->right->right = ast_new(SIMPLE_COMMAND);
+    node->right->right->size = 2;
+    char **value_right_right = malloc(sizeof(char *) * 3);
+    node->right->right->values = value_right_right;
+    node->right->right->values[0] = my_strdup("wc");
+    node->right->right->values[1] = my_strdup("-c");
+    node->right->right->values[2] = NULL;
+
+    cr_assert_eq(execute_node(node), 0);
+
+    fflush(stdout);
+    cr_assert_stdout_eq_str("6\n");
+
+    ast_free(node);
+}
+
+Test(execute_node, pipeline_with_builtin)
+{
+    cr_redirect_stdout();
+    struct ast *node = ast_new(PIPELINE);
+    node->left = ast_new(SIMPLE_COMMAND);
+    node->left->size = 2;
+    char **value_left = malloc(sizeof(char *) * 3);
+    node->left->values = value_left;
+    node->left->values[0] = my_strdup("echo");
+    node->left->values[1] = my_strdup("Hello, world!");
+    node->left->values[2] = NULL;
+
+    node->right = ast_new(SIMPLE_COMMAND);
+    node->right->size = 2;
+    char **value_right = malloc(sizeof(char *) * 3);
+    node->right->values = value_right;
+    node->right->values[0] = my_strdup("echo");
+    node->right->values[1] = my_strdup("maison");
+    node->right->values[2] = NULL;
+
+    cr_assert_eq(execute_node(node), 0);
+
+    fflush(stdout);
+    cr_assert_stdout_eq_str("maison\n");
+
+    ast_free(node);
+}
