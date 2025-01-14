@@ -38,7 +38,8 @@ struct ast
     // execute_node should populate this with the expanded values
     char **expanded_values;
     // Is used in simple commands, conditions, and loops
-    char **redir;
+    struct word **redir;
+    int redir_size;
 };
 
 // Create a new AST node (allocated)
