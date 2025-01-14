@@ -16,6 +16,6 @@
 @param redir: array of redirections ending with NULL
 @return exit status of the command
  */
-int exec_redir(int size, char **values, char **redir);
+int exec_redir(struct ast *ast);
 
 #endif /* ! EXECUTION_REDIR_H */

@@ -6,6 +6,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "utils/utils.h"
+
 struct ast *ast_new(enum ast_type type)
 {
     struct ast *ast = malloc(sizeof(struct ast));
@@ -21,7 +23,10 @@ struct ast *ast_new(enum ast_type type)
     ast->middle = NULL;
     ast->size = 0;
     ast->values = NULL;
+    ast->expanded_values = NULL;
+    ast->expanded_redir = NULL;
     ast->redir = NULL;
+    ast->redir_size = 0;
 
     return ast;
 }
@@ -41,8 +46,14 @@ void ast_free(struct ast *ast)
     if (ast->values)
     {
         for (size_t i = 0; ast->values[i]; i++)
-            free(ast->values[i]);
+            word_free(ast->values[i]);
         free(ast->values);
+    }
+    if (ast->expanded_values)
+    {
+        for (size_t i = 0; ast->expanded_values[i]; i++)
+            free(ast->expanded_values[i]);
+        free(ast->expanded_values);
     }
     if (ast->redir)
     {
@@ -93,9 +104,9 @@ static void ast_print_node(struct ast *ast, FILE *file)
         break;
     }
     for (int i = 0; i < ast->size; i++)
-        fprintf(file, "%s ", ast->values[i]);
+        fprintf(file, "%s ", ast->values[i]->value.data);
     for (int i = 0; i < ast->size; i++)
-        fprintf(file, "%s ", ast->redir[i]);
+        fprintf(file, "%s ", ast->redir[i]->value.data);
 }
 
 static void ast_print_help(struct ast *ast, FILE *file)

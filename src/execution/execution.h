@@ -9,6 +9,8 @@
 #include "execution_commands.h"
 #include "execution_conditions.h"
 #include "execution_negation.h"
+#include "execution_or_and.h"
+#include "execution_pipeline.h"
 
 /*
 @description:

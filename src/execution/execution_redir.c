@@ -1,42 +1,11 @@
 #include "execution_redir.h"
 
+#include <stdio.h>
+
 // redirection = [IONUMBER] ( '>' | '<' | '>>' | '>&' | '<&' | '>|' | '<>' )
 // WORD ;
-int exec_redir(int size, char **values, char **redir)
+int exec_redir(struct ast *ast)
 {
-    int fd = -1;
-    for (int i = 0; redir[i]; i += 2)
-    {
-        if (redir[i][0] == '>')
-        {
-            if (redir[i][1] == '>')
-                fd = open(redir[i + 1], O_CREAT | O_WRONLY | O_APPEND, 0644);
-            else
-                fd = open(redir[i + 1], O_CREAT | O_WRONLY | O_TRUNC, 0644);
-        }
-        else if (redir[i][0] == '<')
-            fd = open(redir[i + 1], O_RDONLY);
-        else if (redir[i][0] == '2' && redir[i][1] == '>')
-            fd = open(redir[i + 1], O_CREAT | O_WRONLY | O_TRUNC, 0644);
-        else if (redir[i][0] == '<' && redir[i][1] == '&')
-            fd = open(redir[i + 1], O_RDONLY);
-        else if (redir[i][0] == '>' && redir[i][1] == '&')
-            fd = open(redir[i + 1], O_CREAT | O_WRONLY | O_TRUNC, 0644);
-        else if (redir[i][0] == '<' && redir[i][1] == '>')
-            fd = open(redir[i + 1], O_CREAT | O_WRONLY | O_TRUNC, 0644);
-        else if (redir[i][0] == '>' && redir[i][1] == '|')
-            fd = open(redir[i + 1], O_CREAT | O_WRONLY | O_TRUNC, 0644);
-        else if (redir[i][0] == '<' && redir[i][1] == '>')
-            fd = open(redir[i + 1], O_CREAT | O_WRONLY | O_TRUNC, 0644);
-        if (fd == -1)
-        {
-            return 1;
-        }
-        if (dup2(fd, redir[i][0] == '<' ? STDIN_FILENO : STDOUT_FILENO) == -1)
-        {
-            return 1;
-        }
-        close(fd);
-    }
-    return dispatch_command(size, values);
+    (void)ast;
+    return 0;
 }

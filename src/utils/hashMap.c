@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include <stddef.h>
 #include <string.h>
 
@@ -45,6 +46,11 @@ unsigned int hash(char *name)
 
 void insertVariable(struct HashMap *ht, char *name, char *value)
 {
+    if (getVariable(ht, name).name != NULL)
+    {
+        updateVariable(ht, name, value);
+        return;
+    }
     unsigned int index = hash(name);
     struct Variable *var = create_variable(name, value);
     var->next = ht->map[index];
@@ -81,7 +87,6 @@ void updateVariable(struct HashMap *ht, char *name, char *value)
             free(var->value);
             // allocate memory for the new value and copy it
             var->value = strcpy(xmalloc(strlen(value) + 1), value);
-            return;
         }
         var = var->next;
     }

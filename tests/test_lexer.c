@@ -2,35 +2,36 @@
 #include <io/io.h>
 #include <lexer/lexer.h>
 #include <lexer/token.h>
+#include <parser/parser_struct.h>
 
 Test(lexer, peek_pop)
 {
-    char *argv[] = { "42sh", "-c", "echo Hello World" };
-    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv);
+    struct reader *reader = reader_from_string("echo Hello World");
     struct lexer *lexer = lexer_new(reader);
 
     struct token token = lexer_peek(lexer);
     cr_assert_eq(token.type, TOKEN_WORD);
-    cr_assert_str_eq(token.value, "echo");
+    cr_assert_str_eq(token.word->value.data, "echo");
     token = lexer_pop(lexer);
     cr_assert_eq(token.type, TOKEN_WORD);
-    cr_assert_str_eq(token.value, "echo"); // check if pop is the same as peek
-    free(token.value);
+    cr_assert_str_eq(token.word->value.data,
+                     "echo"); // check if pop is the same as peek
+    word_free(token.word);
 
     token = lexer_peek(lexer);
     cr_assert_eq(token.type, TOKEN_WORD);
-    cr_assert_str_eq(token.value, "Hello");
-    free(token.value);
-    lexer_pop(lexer);
+    cr_assert_str_eq(token.word->value.data, "Hello");
+    token = lexer_pop(lexer);
+    word_free(token.word);
 
     token = lexer_pop(lexer);
     cr_assert_eq(token.type, TOKEN_WORD);
-    cr_assert_str_eq(token.value, "World");
-    free(token.value);
+    cr_assert_str_eq(token.word->value.data, "World");
+    word_free(token.word);
 
     token = lexer_pop(lexer);
     cr_assert_eq(token.type, TOKEN_EOF);
-    cr_assert_null(token.value);
+    cr_assert_null(token.word);
 
     reader_free(reader);
     lexer_free(lexer);
@@ -40,30 +41,29 @@ Test(lexer, peek_pop)
     token = lexer_pop(lexer);                                                  \
     cr_assert_eq(token.type, typ);
 
-#define EXPECT_WORD(str)                                                       \
+#define EAT_WORD(str)                                                          \
     token = lexer_pop(lexer);                                                  \
     cr_assert_eq(token.type, TOKEN_WORD);                                      \
-    cr_assert_str_eq(token.value, str);                                        \
-    free(token.value);
+    cr_assert_str_eq(token.word->value.data, str);                             \
+    word_free(token.word);
 
 #define EXPECT_REDIR(str)                                                      \
     token = lexer_pop(lexer);                                                  \
     cr_assert_eq(token.type, TOKEN_REDIR);                                     \
-    cr_assert_str_eq(token.value, str);                                        \
-    free(token.value);
+    cr_assert_str_eq(token.word->value.data, str);                             \
+    word_free(token.word);
 
 Test(lexer, words_semicolon)
 {
-    char *argv[] = { "42sh", "-c", "echo Hello ; echo World" };
-    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv);
+    struct reader *reader = reader_from_string("echo Hello ; echo World");
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
-    EXPECT_WORD("echo")
-    EXPECT_WORD("Hello")
+    EAT_WORD("echo")
+    EAT_WORD("Hello")
     EXPECT(TOKEN_SEMICOLON)
-    EXPECT_WORD("echo")
-    EXPECT_WORD("World")
+    EAT_WORD("echo")
+    EAT_WORD("World")
     EXPECT(TOKEN_EOF)
 
     free(lexer);
@@ -72,16 +72,15 @@ Test(lexer, words_semicolon)
 
 Test(lexer, words_newline)
 {
-    char *argv[] = { "42sh", "-c", "echo Hello\n echo World" };
-    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv);
+    struct reader *reader = reader_from_string("echo Hello\n echo World");
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
-    EXPECT_WORD("echo")
-    EXPECT_WORD("Hello")
+    EAT_WORD("echo")
+    EAT_WORD("Hello")
     EXPECT(TOKEN_EOL)
-    EXPECT_WORD("echo")
-    EXPECT_WORD("World")
+    EAT_WORD("echo")
+    EAT_WORD("World")
     EXPECT(TOKEN_EOF)
 
     free(lexer);
@@ -90,13 +89,26 @@ Test(lexer, words_newline)
 
 Test(lexer, simple_quotes)
 {
-    char *argv[] = { "42sh", "-c", "echo 'Hello World'" };
-    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv);
+    struct reader *reader = reader_from_string("echo 'Hello World'");
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
-    EXPECT_WORD("echo")
-    EXPECT_WORD("Hello World")
+    EAT_WORD("echo")
+    EAT_WORD("Hello World")
+    EXPECT(TOKEN_EOF)
+
+    free(lexer);
+    free(reader);
+}
+
+Test(lexer, quotes_quotes)
+{
+    struct reader *reader = reader_from_string("echo 'Hello''World'");
+    struct lexer *lexer = lexer_new(reader);
+
+    struct token token;
+    EAT_WORD("echo")
+    EAT_WORD("HelloWorld")
     EXPECT(TOKEN_EOF)
 
     free(lexer);
@@ -105,13 +117,12 @@ Test(lexer, simple_quotes)
 
 Test(lexer, escaped_quotes)
 {
-    char *argv[] = { "42sh", "-c", "echo \\'Hello\\'" };
-    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv);
+    struct reader *reader = reader_from_string("echo \\'Hello\\'");
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
-    EXPECT_WORD("echo")
-    EXPECT_WORD("'Hello'")
+    EAT_WORD("echo")
+    EAT_WORD("'Hello'")
     EXPECT(TOKEN_EOF)
 
     free(lexer);
@@ -120,13 +131,12 @@ Test(lexer, escaped_quotes)
 
 Test(lexer, escaped_spaces)
 {
-    char *argv[] = { "42sh", "-c", "echo Hello\\ World" };
-    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv);
+    struct reader *reader = reader_from_string("echo Hello\\ World");
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
-    EXPECT_WORD("echo")
-    EXPECT_WORD("Hello World")
+    EAT_WORD("echo")
+    EAT_WORD("Hello World")
     EXPECT(TOKEN_EOF)
 
     free(lexer);
@@ -135,13 +145,12 @@ Test(lexer, escaped_spaces)
 
 Test(lexer, escaped_quotes_and_spaces)
 {
-    char *argv[] = { "42sh", "-c", "echo 'Hello\\ World'" };
-    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv);
+    struct reader *reader = reader_from_string("echo 'Hello\\ World'");
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
-    EXPECT_WORD("echo")
-    EXPECT_WORD("Hello\\ World")
+    EAT_WORD("echo")
+    EAT_WORD("Hello\\ World")
     EXPECT(TOKEN_EOF)
 
     free(lexer);
@@ -150,13 +159,12 @@ Test(lexer, escaped_quotes_and_spaces)
 
 Test(lexer, lexer_comments)
 {
-    char *argv[] = { "42sh", "-c", "echo Hello # World" };
-    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv);
+    struct reader *reader = reader_from_string("echo Hello # World");
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
-    EXPECT_WORD("echo")
-    EXPECT_WORD("Hello")
+    EAT_WORD("echo")
+    EAT_WORD("Hello")
     EXPECT(TOKEN_EOF)
 
     free(lexer);
@@ -165,13 +173,12 @@ Test(lexer, lexer_comments)
 
 Test(lexer, double_quoted_comment)
 {
-    char *argv[] = { "42sh", "-c", "echo \"Hello # World\"" };
-    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv);
+    struct reader *reader = reader_from_string("echo \"Hello # World\"");
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
-    EXPECT_WORD("echo")
-    EXPECT_WORD("Hello # World")
+    EAT_WORD("echo")
+    EAT_WORD("Hello # World")
     EXPECT(TOKEN_EOF)
 
     free(lexer);
@@ -180,14 +187,13 @@ Test(lexer, double_quoted_comment)
 
 Test(lexer, points)
 {
-    char *argv[] = { "42sh", "-c", "echo Hello. World." };
-    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv);
+    struct reader *reader = reader_from_string("echo Hello. World.");
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
-    EXPECT_WORD("echo")
-    EXPECT_WORD("Hello.");
-    EXPECT_WORD("World.");
+    EAT_WORD("echo");
+    EAT_WORD("Hello.");
+    EAT_WORD("World.");
     EXPECT(TOKEN_EOF)
 
     free(lexer);
@@ -196,14 +202,13 @@ Test(lexer, points)
 
 Test(lexer, commas)
 {
-    char *argv[] = { "42sh", "-c", "echo Hello, World," };
-    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv);
+    struct reader *reader = reader_from_string("echo Hello, World,");
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
-    EXPECT_WORD("echo")
-    EXPECT_WORD("Hello,");
-    EXPECT_WORD("World,");
+    EAT_WORD("echo")
+    EAT_WORD("Hello,");
+    EAT_WORD("World,");
     EXPECT(TOKEN_EOF)
 
     free(lexer);
@@ -212,20 +217,16 @@ Test(lexer, commas)
 
 Test(lexer, very_long)
 {
-    char *argv[] = {
-        "42sh", "-c",
-        "echo "
-        "Loremipsumdolorsitamet,consecteturadipiscingelit."
+    struct reader *reader = reader_from_string(
+        "echo Loremipsumdolorsitamet,consecteturadipiscingelit."
         "Aliquamconsequatmassasedurnavenenatisbibendum.Praesentavariusenim,"
         "necvehiculanulla.Utatlectusaliquam,consecteturmagnased,suscipitipsum."
-        "Maurisnecmaurisex.Utsednullasuscipit,"
-    };
-    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv);
+        "Maurisnecmaurisex.Utsednullasuscipit,");
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
-    EXPECT_WORD("echo")
-    EXPECT_WORD(
+    EAT_WORD("echo")
+    EAT_WORD(
         "Loremipsumdolorsitamet,consecteturadipiscingelit."
         "Aliquamconsequatmassasedurnavenenatisbibendum.Praesentavariusenim,"
         "necvehiculanulla.Utatlectusaliquam,consecteturmagnased,suscipitipsum."
@@ -238,13 +239,12 @@ Test(lexer, very_long)
 
 Test(lexer, weird_chars)
 {
-    char *argv[] = { "42sh", "-c", "echo Hello@World" };
-    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv);
+    struct reader *reader = reader_from_string("echo Hello@World");
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
-    EXPECT_WORD("echo")
-    EXPECT_WORD("Hello@World")
+    EAT_WORD("echo")
+    EAT_WORD("Hello@World")
     EXPECT(TOKEN_EOF)
 
     free(lexer);
@@ -253,14 +253,13 @@ Test(lexer, weird_chars)
 
 Test(lexer, weird_chars2)
 {
-    char *argv[] = { "42sh", "-c", "echo ^chouette %po-u*et" };
-    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv);
+    struct reader *reader = reader_from_string("echo ^chouette %po-u*et");
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
-    EXPECT_WORD("echo")
-    EXPECT_WORD("^chouette")
-    EXPECT_WORD("%po-u*et")
+    EAT_WORD("echo")
+    EAT_WORD("^chouette")
+    EAT_WORD("%po-u*et")
     EXPECT(TOKEN_EOF)
 
     free(lexer);
@@ -269,13 +268,12 @@ Test(lexer, weird_chars2)
 
 Test(lexer, dollar_tail)
 {
-    char *argv[] = { "42sh", "-c", "echo Hello$" };
-    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv);
+    struct reader *reader = reader_from_string("echo Hello$");
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
-    EXPECT_WORD("echo")
-    EXPECT_WORD("Hello$")
+    EAT_WORD("echo")
+    EAT_WORD("Hello$")
     EXPECT(TOKEN_EOF)
 
     free(lexer);
@@ -283,18 +281,17 @@ Test(lexer, dollar_tail)
 }
 
 #define INIT_LEXER_TEST(str)                                                   \
-    char *argv[] = { "42sh", "-c", str };                                      \
-    struct reader *reader = reader_new(sizeof(argv) / sizeof(char *), argv);   \
+    struct reader *reader = reader_from_string(str);                           \
     struct lexer *lexer = lexer_new(reader);                                   \
     struct token token;
 
 Test(lexer, redirections_simple)
 {
     INIT_LEXER_TEST("echo Hello >> file.txt")
-    EXPECT_WORD("echo")
-    EXPECT_WORD("Hello")
+    EAT_WORD("echo")
+    EAT_WORD("Hello")
     EXPECT_REDIR(">>")
-    EXPECT_WORD("file.txt")
+    EAT_WORD("file.txt")
     EXPECT(TOKEN_EOF)
 
     free(lexer);
@@ -304,9 +301,9 @@ Test(lexer, redirections_simple)
 Test(lexer, redirections_number)
 {
     INIT_LEXER_TEST("echo 12> file.txt")
-    EXPECT_WORD("echo")
+    EAT_WORD("echo")
     EXPECT_REDIR("12>")
-    EXPECT_WORD("file.txt")
+    EAT_WORD("file.txt")
     EXPECT(TOKEN_EOF)
 
     free(lexer);
@@ -316,10 +313,10 @@ Test(lexer, redirections_number)
 Test(lexer, redirections_trap)
 {
     INIT_LEXER_TEST("echo \\2> file.txt")
-    EXPECT_WORD("echo")
-    EXPECT_WORD("2")
+    EAT_WORD("echo")
+    EAT_WORD("2")
     EXPECT_REDIR(">")
-    EXPECT_WORD("file.txt")
+    EAT_WORD("file.txt")
     EXPECT(TOKEN_EOF)
 
     free(lexer);
@@ -329,10 +326,10 @@ Test(lexer, redirections_trap)
 Test(lexer, redirections_trap2)
 {
     INIT_LEXER_TEST("echo '2'> file.txt")
-    EXPECT_WORD("echo")
-    EXPECT_WORD("2")
+    EAT_WORD("echo")
+    EAT_WORD("2")
     EXPECT_REDIR(">")
-    EXPECT_WORD("file.txt")
+    EAT_WORD("file.txt")
     EXPECT(TOKEN_EOF)
 
     free(lexer);
@@ -342,12 +339,47 @@ Test(lexer, redirections_trap2)
 Test(lexer, redirections_double)
 {
     INIT_LEXER_TEST("echo Hello >> file.txt 2>&1")
-    EXPECT_WORD("echo")
-    EXPECT_WORD("Hello")
+    EAT_WORD("echo")
+    EAT_WORD("Hello")
     EXPECT_REDIR(">>")
-    EXPECT_WORD("file.txt")
+    EAT_WORD("file.txt")
     EXPECT_REDIR("2>&")
-    EXPECT_WORD("1")
+    EAT_WORD("1")
+    EXPECT(TOKEN_EOF)
+
+    free(lexer);
+    free(reader);
+}
+
+Test(lexer, simple_variable)
+{
+    INIT_LEXER_TEST("echo $HOME")
+    EAT_WORD("echo")
+    token = lexer_pop(lexer);
+    cr_assert_str_eq(token.word->value.data, "");
+    cr_assert_eq(token.word->var_length, 1);
+    cr_assert_not_null(token.word->variables);
+    cr_assert_str_eq(token.word->variables[0].name.data, "HOME");
+    cr_assert_eq(token.word->variables[0].pos, 0);
+    word_free(token.word);
+    EXPECT(TOKEN_EOF)
+
+    free(lexer);
+    free(reader);
+}
+
+Test(lexer, variable_in_word_tricky)
+{
+    INIT_LEXER_TEST("echo '$a'$b'$c'")
+    EAT_WORD("echo")
+    token = lexer_pop(lexer);
+    cr_assert_str_eq(token.word->value.data, "$a$c");
+    cr_assert_eq(token.word->var_length, 1);
+    cr_assert_not_null(token.word->variables);
+    cr_assert_str_eq(token.word->variables[0].name.data, "b");
+    fprintf(stderr, "pos: %zu\n", token.word->variables[0].pos);
+    cr_assert_eq(token.word->variables[0].pos, 2);
+    word_free(token.word);
     EXPECT(TOKEN_EOF)
 
     free(lexer);

@@ -17,7 +17,11 @@ libexecution_a_SOURCES =  \
   execution_redir.c \
   execution_redir.h \
   execution_negation.c \
-  execution_negation.h
+  execution_negation.h \
+  execution_or_and.c \
+  execution_or_and.h \
+  execution_pipeline.c \
+  execution_pipeline.h
 
 libexecution_a_CPPFLAGS = -I$(top_srcdir)/src
 

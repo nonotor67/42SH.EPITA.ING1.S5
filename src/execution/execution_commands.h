@@ -16,7 +16,7 @@
 @return:
     exit status of the command
  */
-int dispatch_command(int size, char **values);
+int dispatch_command(struct ast *ast);
 
 /*
 @params:
