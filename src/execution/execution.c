@@ -18,7 +18,11 @@ static const struct execute_entry execute_table[] = {
     { CONDITIONS, execute_condition },
     { PIPELINE, execute_pipeline }
 };
-
+/*
+@brief Expands the values of a source word array and stores them in a target array.
+@param target Pointer to a char** array, which will be allocated and filled with the evaluated values.
+@param source Array of pointers to 'word' structures, which contains the elements to be evaluated.
+ */
 static void expand_values(char ***target, struct word **source)
 {
     size_t size = 0;
