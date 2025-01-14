@@ -13,12 +13,12 @@
 @return:
     exit status of the command
  */
-static int run_command(struct ast *ast)
+static int run_command(char **values)
 {
     pid_t pid = fork();
     if (pid == 0)
     {
-        execvp(ast->values[0], ast->values);
+        execvp(values[0], values);
         exit(127);
     }
     else
@@ -28,7 +28,7 @@ static int run_command(struct ast *ast)
         int exit_status = WEXITSTATUS(status);
         if (exit_status == 127)
         {
-            fprintf(stderr, "Command not found: %s\n", ast->values[0]);
+            fprintf(stderr, "Command not found: %s\n", values[0]);
             return 127;
         }
         return WEXITSTATUS(status);
@@ -36,15 +36,23 @@ static int run_command(struct ast *ast)
     return 0;
 }
 
+int dispatch_command(int size, char **values)
+{
+    if (strcmp(values[0], "echo") == 0)
+        return exec_echo(size, values);
+    if (strcmp(values[0], "true") == 0)
+        return exec_true(size, values);
+    if (strcmp(values[0], "false") == 0)
+        return exec_false(size, values);
+    return run_command(values);
+}
+
 int execute_command(struct ast *ast)
 {
-    if (strcmp(ast->values[0], "echo") == 0)
-        return exec_echo(ast->size, ast->values);
-    if (strcmp(ast->values[0], "true") == 0)
-        return exec_true(ast->size, ast->values);
-    if (strcmp(ast->values[0], "false") == 0)
-        return exec_false(ast->size, ast->values);
-    return run_command(ast);
+    if (ast->redir)
+        return exec_redir(ast->size, ast->values, ast->redir);
+    else
+        return dispatch_command(ast->size, ast->values);
 }
 
 int execute_command_list(struct ast *ast)
