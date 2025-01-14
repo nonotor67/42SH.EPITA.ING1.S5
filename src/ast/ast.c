@@ -24,6 +24,7 @@ struct ast *ast_new(enum ast_type type)
     ast->size = 0;
     ast->values = NULL;
     ast->expanded_values = NULL;
+    ast->expanded_redir = NULL;
     ast->redir = NULL;
     ast->redir_size = 0;
 

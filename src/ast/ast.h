@@ -39,6 +39,7 @@ struct ast
     char **expanded_values;
     // Is used in simple commands, conditions, and loops
     struct word **redir;
+    char **expanded_redir;
     int redir_size;
 };
 
