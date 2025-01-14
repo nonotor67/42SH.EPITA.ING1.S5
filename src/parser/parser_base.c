@@ -15,31 +15,33 @@
         if (ast)                                                               \
             ast_free(ast);                                                     \
         fprintf(stderr, msg);                                                  \
-        struct token tok = lexer_pop(parser->lexer);                           \
+        tok = lexer_pop(parser->lexer);                                        \
         while (tok.type != TOKEN_EOF)                                          \
         {                                                                      \
-            free(tok.value);                                                   \
+            if (tok.word)                                                      \
+                word_free(tok.word);                                           \
             tok = lexer_pop(parser->lexer);                                    \
         }                                                                      \
         return NULL;                                                           \
     }
 
-#define EXPECT_WORD(lexer, word, msg)                                          \
-    if (!eat_word(lexer, word))                                                \
+#define EXPECT_WORD(lexer, expected, msg)                                      \
+    if (!eat_word(lexer, expected))                                            \
     {                                                                          \
         fprintf(stderr, msg);                                                  \
         parser->status = PARSER_BAD_IF;                                        \
         struct token token = lexer_peek(lexer);                                \
-        free(token.value);                                                     \
+        if (token.word)                                                        \
+            word_free(token.word);                                             \
         lexer_pop(lexer);                                                      \
     }
 
-static int is_closing_word(char *word)
+static int is_closing_word(struct word *word)
 {
     const char *keywords[] = { "then", "fi", "else", "elif" };
     for (size_t i = 0; i < sizeof(keywords) / sizeof(keywords[0]); i++)
     {
-        if (strcmp(keywords[i], word) == 0)
+        if (strcmp(keywords[i], word->value.data) == 0)
             return 1;
     }
     return 0;
@@ -57,12 +59,13 @@ static int eat(struct lexer *lexer, enum token_type type)
 }
 
 // Eat a word token if it matches the given word and free it's value string
-static int eat_word(struct lexer *lexer, const char *word)
+static int eat_word(struct lexer *lexer, char *word)
 {
     struct token token = lexer_peek(lexer);
-    if (token.type == TOKEN_WORD && strcmp(token.value, word) == 0)
+    if (token.type == TOKEN_WORD && token.word
+        && strcmp(token.word->value.data, word) == 0)
     {
-        free(token.value);
+        word_free(token.word);
         lexer_pop(lexer);
         return 1;
     }
@@ -82,10 +85,11 @@ struct ast *compound_list(struct parser *parser)
     skip_eol(parser->lexer);
     struct ast *root = ast_new(COMMAND_LIST);
     root->left = and_or(parser);
+    struct token tok;
     CHECK_STATUS(parser, root,
                  "Error after parsing and_or (compound_list)[0]\n");
 
-    struct token tok = lexer_peek(parser->lexer);
+    tok = lexer_peek(parser->lexer);
     struct ast *current = root;
     while (tok.type == TOKEN_SEMICOLON || tok.type == TOKEN_EOL)
     {
@@ -94,7 +98,7 @@ struct ast *compound_list(struct parser *parser)
 
         tok = lexer_peek(parser->lexer);
         // if the next token is a closing keyword, we stop the compound_list
-        if (tok.type == TOKEN_WORD && is_closing_word(tok.value))
+        if (tok.type == TOKEN_WORD && is_closing_word(tok.word))
             break;
         current->right = ast_new(COMMAND_LIST);
         current = current->right;
@@ -122,6 +126,7 @@ else_clause =
 */
 static struct ast *else_clause(struct parser *parser)
 {
+    struct token tok;
     if (eat_word(parser->lexer, "else"))
     {
         struct ast *ast = compound_list(parser);
@@ -147,6 +152,7 @@ static struct ast *else_clause(struct parser *parser)
 // 'if' compound_list 'then' compound_list [ else_clause ] 'fi' ;
 static struct ast *rule_if(struct parser *parser)
 {
+    struct token tok;
     EXPECT_WORD(parser->lexer, "if", "Expected 'if' keyword (rule_if)\n");
     CHECK_STATUS(parser, NULL, "Error bad if\n");
 
@@ -186,7 +192,7 @@ shell_command =
 */
 struct ast *shell_command(struct parser *parser)
 {
-    if (strcmp(lexer_peek(parser->lexer).value, "if") == 0)
+    if (strcmp(lexer_peek(parser->lexer).word->value.data, "if") == 0)
         return rule_if(parser);
     parser->status = PARSER_UNEXPECTED_TOKEN;
     fprintf(stderr, "Error: Expected a shell command (shell_command)\n");
@@ -210,7 +216,7 @@ struct ast *command(struct parser *parser)
     {
         struct token token = lexer_peek(parser->lexer);
         if (token.type == TOKEN_WORD)
-            if (strcmp(shell_commands[i], token.value) == 0)
+            if (strcmp(shell_commands[i], token.word->value.data) == 0)
                 return shell_command(parser);
     }
     return simple_command(parser);
@@ -242,6 +248,7 @@ struct ast *list(struct parser *parser)
 {
     struct ast *root = ast_new(COMMAND_LIST);
     root->left = and_or(parser);
+    struct token tok;
     CHECK_STATUS(parser, root, "Error after parsing and_or (list)\n");
 
     struct token token = lexer_peek(parser->lexer);
