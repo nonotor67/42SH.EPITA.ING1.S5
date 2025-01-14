@@ -2,10 +2,8 @@
 
 // redirection = [IONUMBER] ( '>' | '<' | '>>' | '>&' | '<&' | '>|' | '<>' )
 // WORD ;
-int exec_redir(int size, char **values, char **redir)
+int exec_redir(struct ast *ast)
 {
-    (void)size;
-    (void)values;
-    (void)redir;
+    (void)ast;
     return 0;
 }

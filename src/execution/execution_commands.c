@@ -50,7 +50,7 @@ int dispatch_command(struct ast *ast)
 int execute_command(struct ast *ast)
 {
     if (ast->redir)
-        return exec_redir(ast->size, ast->expanded_values, ast->redir);
+        return exec_redir(ast);
     return dispatch_command(ast);
 }
 
