@@ -4,7 +4,7 @@
 #include "hashMap.h"
 #include "strings.h"
 #include "variable.h"
-#include "xmalloc.h"
 #include "word.h"
+#include "xmalloc.h"
 
 #endif /* !UTILS_H */
