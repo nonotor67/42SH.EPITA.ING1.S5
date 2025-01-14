@@ -15,7 +15,9 @@ libexecution_a_SOURCES =  \
   execution_commands.c \
   execution_commands.h \
   execution_redir.c \
-  execution_redir.h
+  execution_redir.h \
+  execution_or_and.c \
+  execution_or_and.h
 
 libexecution_a_CPPFLAGS = -I$(top_srcdir)/src
 

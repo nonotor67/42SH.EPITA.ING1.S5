@@ -8,6 +8,7 @@
 #include "builtins_exit.h"
 #include "execution_commands.h"
 #include "execution_conditions.h"
+#include "execution_or_and.h"
 
 /*
 @description:
