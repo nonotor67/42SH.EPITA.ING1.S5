@@ -2,7 +2,7 @@
 
 #include <malloc.h>
 
-#include "utils/word.h"
+#include "utils/utils.h"
 
 typedef int (*execute_function)(struct ast *);
 
