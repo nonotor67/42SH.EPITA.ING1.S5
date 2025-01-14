@@ -11,6 +11,12 @@
     struct parser *parser = parser_new(lexer);                                 \
     struct ast *ast = parse(parser);
 
+#define CLEAR_ALL                                                              \
+    ast_free(ast);                                                             \
+    lexer_free(lexer);                                                         \
+    reader_free(reader);                                                       \
+    parser_free(parser);
+
 Test(parser, test_parser_simple_command)
 {
     INIT_PARSER("echo Hello World")
@@ -22,10 +28,7 @@ Test(parser, test_parser_simple_command)
     cr_assert_str_eq(ast->values[1]->value.data, "Hello");
     cr_assert_str_eq(ast->values[2]->value.data, "World");
     cr_assert_null(ast->values[3]);
-    ast_free(ast);
-    lexer_free(lexer);
-    reader_free(reader);
-    parser_free(parser);
+    CLEAR_ALL
 }
 
 Test(parser, test_parser_command_list)
@@ -46,10 +49,7 @@ Test(parser, test_parser_command_list)
     cr_assert_str_eq(ast->right->left->values[0]->value.data, "echo");
     cr_assert_str_eq(ast->right->left->values[1]->value.data, "World");
     cr_assert_null(ast->right->left->values[2]);
-    ast_free(ast);
-    lexer_free(lexer);
-    reader_free(reader);
-    parser_free(parser);
+    CLEAR_ALL
 }
 
 Test(parser, test_parser_if)
@@ -69,11 +69,7 @@ Test(parser, test_parser_if)
     cr_assert_str_eq(ast->middle->values[0]->value.data, "echo");
     cr_assert_str_eq(ast->middle->values[1]->value.data, "World");
     cr_assert_null(ast->middle->values[2]);
-
-    ast_free(ast);
-    lexer_free(lexer);
-    reader_free(reader);
-    parser_free(parser);
+    CLEAR_ALL
 }
 
 Test(parser, test_parser_if_else)
@@ -97,10 +93,7 @@ Test(parser, test_parser_if_else)
     cr_assert_str_eq(ast->right->values[0]->value.data, "echo");
     cr_assert_str_eq(ast->right->values[1]->value.data, "Bye");
     cr_assert_null(ast->right->values[2]);
-    ast_free(ast);
-    lexer_free(lexer);
-    reader_free(reader);
-    parser_free(parser);
+    CLEAR_ALL
 }
 
 Test(parser, test_parser_if_elif)
@@ -132,10 +125,7 @@ Test(parser, test_parser_if_elif)
     cr_assert_str_eq(ast->right->middle->values[0]->value.data, "echo");
     cr_assert_str_eq(ast->right->middle->values[1]->value.data, "Test");
     cr_assert_null(ast->right->middle->values[2]);
-    ast_free(ast);
-    lexer_free(lexer);
-    reader_free(reader);
-    parser_free(parser);
+    CLEAR_ALL
 }
 
 Test(parser, test_parser_nested_if)
@@ -161,8 +151,166 @@ Test(parser, test_parser_nested_if)
     cr_assert_str_eq(ast->middle->middle->values[0]->value.data, "echo");
     cr_assert_str_eq(ast->middle->middle->values[1]->value.data, "Bye");
     cr_assert_null(ast->middle->middle->values[2]);
-    ast_free(ast);
-    lexer_free(lexer);
-    reader_free(reader);
-    parser_free(parser);
+    CLEAR_ALL
+}
+
+Test(parser, test_redir_simple)
+{
+    INIT_PARSER("echo Hello > file")
+    cr_assert_not_null(ast);
+    cr_assert_eq(ast->type, SIMPLE_COMMAND);
+    cr_assert_not_null(ast->values);
+    cr_assert_str_eq(ast->values[0]->value.data, "echo");
+    cr_assert_str_eq(ast->values[1]->value.data, "Hello");
+    cr_assert_str_eq(ast->redir[0]->value.data, ">");
+    cr_assert_str_eq(ast->redir[1]->value.data, "file");
+    cr_assert_null(ast->values[2]);
+    cr_assert_null(ast->redir[2]);
+    CLEAR_ALL
+}
+
+Test(parser, test_redir_prefix_before)
+{
+    INIT_PARSER("> file echo Hello")
+    cr_assert_not_null(ast);
+    cr_assert_eq(ast->type, SIMPLE_COMMAND);
+    cr_assert_not_null(ast->values);
+    cr_assert_str_eq(ast->values[0]->value.data, "echo");
+    cr_assert_str_eq(ast->values[1]->value.data, "Hello");
+    cr_assert_str_eq(ast->redir[0]->value.data, ">");
+    cr_assert_str_eq(ast->redir[1]->value.data, "file");
+    cr_assert_null(ast->values[2]);
+    cr_assert_null(ast->redir[2]);
+    CLEAR_ALL
+}
+
+Test(parser, test_redir_prefix_before_and_after)
+{
+    INIT_PARSER("> file echo Hello 0> file.txt")
+    cr_assert_not_null(ast);
+    cr_assert_eq(ast->type, SIMPLE_COMMAND);
+    cr_assert_not_null(ast->values);
+    cr_assert_str_eq(ast->values[0]->value.data, "echo");
+    cr_assert_str_eq(ast->values[1]->value.data, "Hello");
+    cr_assert_str_eq(ast->redir[0]->value.data, ">");
+    cr_assert_str_eq(ast->redir[1]->value.data, "file");
+    cr_assert_str_eq(ast->redir[2]->value.data, "0>");
+    cr_assert_str_eq(ast->redir[3]->value.data, "file.txt");
+    cr_assert_null(ast->values[2]);
+    cr_assert_null(ast->redir[4]);
+    CLEAR_ALL
+}
+
+Test(parser, test_redir_lots)
+{
+    INIT_PARSER("echo Hello > file 0> file.txt 15<< EOF <&"
+    " a.txt < b.txt >> c.txt 2>> d.txt >| e.txt 2>& ok <> f.txt")
+    cr_assert_not_null(ast);
+    cr_assert_eq(ast->type, SIMPLE_COMMAND);
+    cr_assert_not_null(ast->values);
+    cr_assert_str_eq(ast->values[0]->value.data, "echo");
+    cr_assert_str_eq(ast->values[1]->value.data, "Hello");
+    cr_assert_str_eq(ast->redir[0]->value.data, ">");
+    cr_assert_str_eq(ast->redir[1]->value.data, "file");
+    cr_assert_str_eq(ast->redir[2]->value.data, "0>");
+    cr_assert_str_eq(ast->redir[3]->value.data, "file.txt");
+    cr_assert_str_eq(ast->redir[4]->value.data, "15<<");
+    cr_assert_str_eq(ast->redir[5]->value.data, "EOF");
+    cr_assert_str_eq(ast->redir[6]->value.data, "<&");
+    cr_assert_str_eq(ast->redir[7]->value.data, "a.txt");
+    cr_assert_str_eq(ast->redir[8]->value.data, "<");
+    cr_assert_str_eq(ast->redir[9]->value.data, "b.txt");
+    cr_assert_str_eq(ast->redir[10]->value.data, ">>");
+    cr_assert_str_eq(ast->redir[11]->value.data, "c.txt");
+    cr_assert_str_eq(ast->redir[12]->value.data, "2>>");
+    cr_assert_str_eq(ast->redir[13]->value.data, "d.txt");
+    cr_assert_str_eq(ast->redir[14]->value.data, ">|");
+    cr_assert_str_eq(ast->redir[15]->value.data, "e.txt");
+    cr_assert_str_eq(ast->redir[16]->value.data, "2>&");
+    cr_assert_str_eq(ast->redir[17]->value.data, "ok");
+    cr_assert_str_eq(ast->redir[18]->value.data, "<>");
+    cr_assert_str_eq(ast->redir[19]->value.data, "f.txt");
+    cr_assert_null(ast->values[2]);
+    cr_assert_null(ast->redir[20]);
+    CLEAR_ALL
+}
+
+Test(parser, test_redir_tricky)
+{
+    INIT_PARSER("echo Hello > file test > file2")
+    cr_assert_not_null(ast);
+    cr_assert_eq(ast->type, SIMPLE_COMMAND);
+    cr_assert_not_null(ast->values);
+    cr_assert_str_eq(ast->values[0]->value.data, "echo");
+    cr_assert_str_eq(ast->values[1]->value.data, "Hello");
+    cr_assert_str_eq(ast->values[2]->value.data, "test");
+    cr_assert_str_eq(ast->redir[0]->value.data, ">");
+    cr_assert_str_eq(ast->redir[1]->value.data, "file");
+    cr_assert_str_eq(ast->redir[2]->value.data, ">");
+    cr_assert_str_eq(ast->redir[3]->value.data, "file2");
+    cr_assert_null(ast->values[3]);
+    cr_assert_null(ast->redir[4]);
+    CLEAR_ALL
+}
+
+Test(parser, test_redir_only)
+{
+    INIT_PARSER("> file < file2")
+    cr_assert_not_null(ast);
+    cr_assert_eq(ast->type, SIMPLE_COMMAND);
+    cr_assert_not_null(ast->values);
+    cr_assert_null(ast->values[0]);
+    cr_assert_str_eq(ast->redir[0]->value.data, ">");
+    cr_assert_str_eq(ast->redir[1]->value.data, "file");
+    cr_assert_str_eq(ast->redir[2]->value.data, "<");
+    cr_assert_str_eq(ast->redir[3]->value.data, "file2");
+    cr_assert_null(ast->redir[4]);
+    CLEAR_ALL
+}
+
+Test(parser, test_redir_if)
+{
+    INIT_PARSER("if echo Hello ; then echo World; fi > file")
+    cr_assert_not_null(ast);
+    cr_assert_eq(ast->type, CONDITIONS);
+    cr_assert_not_null(ast->left);
+    cr_assert_not_null(ast->middle);
+    cr_assert_null(ast->right);
+    cr_assert_eq(ast->left->type, SIMPLE_COMMAND);
+    cr_assert_eq(ast->middle->type, SIMPLE_COMMAND);
+    cr_assert_str_eq(ast->left->values[0]->value.data, "echo");
+    cr_assert_str_eq(ast->left->values[1]->value.data, "Hello");
+    cr_assert_null(ast->left->values[2]);
+    cr_assert_str_eq(ast->middle->values[0]->value.data, "echo");
+    cr_assert_str_eq(ast->middle->values[1]->value.data, "World");
+    cr_assert_null(ast->middle->values[2]);
+    cr_assert_str_eq(ast->redir[0]->value.data, ">");
+    cr_assert_str_eq(ast->redir[1]->value.data, "file");
+    cr_assert_null(ast->redir[2]);
+    CLEAR_ALL
+}
+
+Test(parser, test_redir_nested_if)
+{
+    INIT_PARSER("if echo Hello ; then echo World > file2; fi > file")
+    cr_assert_not_null(ast);
+    cr_assert_eq(ast->type, CONDITIONS);
+    cr_assert_not_null(ast->left);
+    cr_assert_not_null(ast->middle);
+    cr_assert_null(ast->right);
+    cr_assert_eq(ast->left->type, SIMPLE_COMMAND);
+    cr_assert_eq(ast->middle->type, SIMPLE_COMMAND);
+    cr_assert_str_eq(ast->left->values[0]->value.data, "echo");
+    cr_assert_str_eq(ast->left->values[1]->value.data, "Hello");
+    cr_assert_null(ast->left->values[2]);
+    cr_assert_str_eq(ast->middle->values[0]->value.data, "echo");
+    cr_assert_str_eq(ast->middle->values[1]->value.data, "World");
+    cr_assert_null(ast->middle->values[2]);
+    cr_assert_str_eq(ast->redir[0]->value.data, ">");
+    cr_assert_str_eq(ast->redir[1]->value.data, "file");
+    cr_assert_null(ast->redir[2]);
+    cr_assert_str_eq(ast->middle->redir[0]->value.data, ">");
+    cr_assert_str_eq(ast->middle->redir[1]->value.data, "file2");
+    cr_assert_null(ast->middle->redir[2]);
+    CLEAR_ALL
 }
