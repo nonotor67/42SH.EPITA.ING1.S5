@@ -6,6 +6,17 @@
 #include "ast/ast.h"
 #include "builtins_bool.h"
 #include "builtins_echo.h"
+#include "execution_redir.h"
+
+/*
+@brief: Execute all commands
+@params:
+    size: size of the values array
+    values: array of command arguments ending with NULL
+@return:
+    exit status of the command
+ */
+int dispatch_command(int size, char **values);
 
 /*
 @params:
