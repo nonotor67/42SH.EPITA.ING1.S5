@@ -24,7 +24,7 @@ void word_free(struct word *word)
     if (word->variables)
     {
         for (size_t i = 0; i < word->var_length; i++)
-            string_free(&word->variables[i].name);
+            free(word->variables[i].name.data);
         free(word->variables);
     }
     free(word);

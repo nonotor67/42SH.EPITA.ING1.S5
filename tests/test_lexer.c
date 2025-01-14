@@ -2,6 +2,7 @@
 #include <io/io.h>
 #include <lexer/lexer.h>
 #include <lexer/token.h>
+#include <parser/parser_struct.h>
 
 Test(lexer, peek_pop)
 {
@@ -40,7 +41,7 @@ Test(lexer, peek_pop)
     token = lexer_pop(lexer);                                                  \
     cr_assert_eq(token.type, typ);
 
-#define EXPECT_WORD(str)                                                       \
+#define EAT_WORD(str)                                                          \
     token = lexer_pop(lexer);                                                  \
     cr_assert_eq(token.type, TOKEN_WORD);                                      \
     cr_assert_str_eq(token.word->value.data, str);                             \
@@ -58,11 +59,11 @@ Test(lexer, words_semicolon)
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
-    EXPECT_WORD("echo")
-    EXPECT_WORD("Hello")
+    EAT_WORD("echo")
+    EAT_WORD("Hello")
     EXPECT(TOKEN_SEMICOLON)
-    EXPECT_WORD("echo")
-    EXPECT_WORD("World")
+    EAT_WORD("echo")
+    EAT_WORD("World")
     EXPECT(TOKEN_EOF)
 
     free(lexer);
@@ -75,11 +76,11 @@ Test(lexer, words_newline)
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
-    EXPECT_WORD("echo")
-    EXPECT_WORD("Hello")
+    EAT_WORD("echo")
+    EAT_WORD("Hello")
     EXPECT(TOKEN_EOL)
-    EXPECT_WORD("echo")
-    EXPECT_WORD("World")
+    EAT_WORD("echo")
+    EAT_WORD("World")
     EXPECT(TOKEN_EOF)
 
     free(lexer);
@@ -92,8 +93,22 @@ Test(lexer, simple_quotes)
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
-    EXPECT_WORD("echo")
-    EXPECT_WORD("Hello World")
+    EAT_WORD("echo")
+    EAT_WORD("Hello World")
+    EXPECT(TOKEN_EOF)
+
+    free(lexer);
+    free(reader);
+}
+
+Test(lexer, quotes_quotes)
+{
+    struct reader *reader = reader_from_string("echo 'Hello''World'");
+    struct lexer *lexer = lexer_new(reader);
+
+    struct token token;
+    EAT_WORD("echo")
+    EAT_WORD("HelloWorld")
     EXPECT(TOKEN_EOF)
 
     free(lexer);
@@ -106,8 +121,8 @@ Test(lexer, escaped_quotes)
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
-    EXPECT_WORD("echo")
-    EXPECT_WORD("'Hello'")
+    EAT_WORD("echo")
+    EAT_WORD("'Hello'")
     EXPECT(TOKEN_EOF)
 
     free(lexer);
@@ -120,8 +135,8 @@ Test(lexer, escaped_spaces)
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
-    EXPECT_WORD("echo")
-    EXPECT_WORD("Hello World")
+    EAT_WORD("echo")
+    EAT_WORD("Hello World")
     EXPECT(TOKEN_EOF)
 
     free(lexer);
@@ -134,8 +149,8 @@ Test(lexer, escaped_quotes_and_spaces)
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
-    EXPECT_WORD("echo")
-    EXPECT_WORD("Hello\\ World")
+    EAT_WORD("echo")
+    EAT_WORD("Hello\\ World")
     EXPECT(TOKEN_EOF)
 
     free(lexer);
@@ -148,8 +163,8 @@ Test(lexer, lexer_comments)
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
-    EXPECT_WORD("echo")
-    EXPECT_WORD("Hello")
+    EAT_WORD("echo")
+    EAT_WORD("Hello")
     EXPECT(TOKEN_EOF)
 
     free(lexer);
@@ -162,8 +177,8 @@ Test(lexer, double_quoted_comment)
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
-    EXPECT_WORD("echo")
-    EXPECT_WORD("Hello # World")
+    EAT_WORD("echo")
+    EAT_WORD("Hello # World")
     EXPECT(TOKEN_EOF)
 
     free(lexer);
@@ -176,9 +191,9 @@ Test(lexer, points)
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
-    EXPECT_WORD("echo");
-    EXPECT_WORD("Hello.");
-    EXPECT_WORD("World.");
+    EAT_WORD("echo");
+    EAT_WORD("Hello.");
+    EAT_WORD("World.");
     EXPECT(TOKEN_EOF)
 
     free(lexer);
@@ -191,9 +206,9 @@ Test(lexer, commas)
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
-    EXPECT_WORD("echo")
-    EXPECT_WORD("Hello,");
-    EXPECT_WORD("World,");
+    EAT_WORD("echo")
+    EAT_WORD("Hello,");
+    EAT_WORD("World,");
     EXPECT(TOKEN_EOF)
 
     free(lexer);
@@ -210,8 +225,8 @@ Test(lexer, very_long)
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
-    EXPECT_WORD("echo")
-    EXPECT_WORD(
+    EAT_WORD("echo")
+    EAT_WORD(
         "Loremipsumdolorsitamet,consecteturadipiscingelit."
         "Aliquamconsequatmassasedurnavenenatisbibendum.Praesentavariusenim,"
         "necvehiculanulla.Utatlectusaliquam,consecteturmagnased,suscipitipsum."
@@ -228,8 +243,8 @@ Test(lexer, weird_chars)
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
-    EXPECT_WORD("echo")
-    EXPECT_WORD("Hello@World")
+    EAT_WORD("echo")
+    EAT_WORD("Hello@World")
     EXPECT(TOKEN_EOF)
 
     free(lexer);
@@ -242,9 +257,9 @@ Test(lexer, weird_chars2)
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
-    EXPECT_WORD("echo")
-    EXPECT_WORD("^chouette")
-    EXPECT_WORD("%po-u*et")
+    EAT_WORD("echo")
+    EAT_WORD("^chouette")
+    EAT_WORD("%po-u*et")
     EXPECT(TOKEN_EOF)
 
     free(lexer);
@@ -257,8 +272,8 @@ Test(lexer, dollar_tail)
     struct lexer *lexer = lexer_new(reader);
 
     struct token token;
-    EXPECT_WORD("echo")
-    EXPECT_WORD("Hello$")
+    EAT_WORD("echo")
+    EAT_WORD("Hello$")
     EXPECT(TOKEN_EOF)
 
     free(lexer);
@@ -273,10 +288,10 @@ Test(lexer, dollar_tail)
 Test(lexer, redirections_simple)
 {
     INIT_LEXER_TEST("echo Hello >> file.txt")
-    EXPECT_WORD("echo")
-    EXPECT_WORD("Hello")
+    EAT_WORD("echo")
+    EAT_WORD("Hello")
     EXPECT_REDIR(">>")
-    EXPECT_WORD("file.txt")
+    EAT_WORD("file.txt")
     EXPECT(TOKEN_EOF)
 
     free(lexer);
@@ -286,9 +301,9 @@ Test(lexer, redirections_simple)
 Test(lexer, redirections_number)
 {
     INIT_LEXER_TEST("echo 12> file.txt")
-    EXPECT_WORD("echo")
+    EAT_WORD("echo")
     EXPECT_REDIR("12>")
-    EXPECT_WORD("file.txt")
+    EAT_WORD("file.txt")
     EXPECT(TOKEN_EOF)
 
     free(lexer);
@@ -298,10 +313,10 @@ Test(lexer, redirections_number)
 Test(lexer, redirections_trap)
 {
     INIT_LEXER_TEST("echo \\2> file.txt")
-    EXPECT_WORD("echo")
-    EXPECT_WORD("2")
+    EAT_WORD("echo")
+    EAT_WORD("2")
     EXPECT_REDIR(">")
-    EXPECT_WORD("file.txt")
+    EAT_WORD("file.txt")
     EXPECT(TOKEN_EOF)
 
     free(lexer);
@@ -311,10 +326,10 @@ Test(lexer, redirections_trap)
 Test(lexer, redirections_trap2)
 {
     INIT_LEXER_TEST("echo '2'> file.txt")
-    EXPECT_WORD("echo")
-    EXPECT_WORD("2")
+    EAT_WORD("echo")
+    EAT_WORD("2")
     EXPECT_REDIR(">")
-    EXPECT_WORD("file.txt")
+    EAT_WORD("file.txt")
     EXPECT(TOKEN_EOF)
 
     free(lexer);
@@ -324,12 +339,47 @@ Test(lexer, redirections_trap2)
 Test(lexer, redirections_double)
 {
     INIT_LEXER_TEST("echo Hello >> file.txt 2>&1")
-    EXPECT_WORD("echo")
-    EXPECT_WORD("Hello")
+    EAT_WORD("echo")
+    EAT_WORD("Hello")
     EXPECT_REDIR(">>")
-    EXPECT_WORD("file.txt")
+    EAT_WORD("file.txt")
     EXPECT_REDIR("2>&")
-    EXPECT_WORD("1")
+    EAT_WORD("1")
+    EXPECT(TOKEN_EOF)
+
+    free(lexer);
+    free(reader);
+}
+
+Test(lexer, simple_variable)
+{
+    INIT_LEXER_TEST("echo $HOME")
+    EAT_WORD("echo")
+    token = lexer_pop(lexer);
+    cr_assert_str_eq(token.word->value.data, "");
+    cr_assert_eq(token.word->var_length, 1);
+    cr_assert_not_null(token.word->variables);
+    cr_assert_str_eq(token.word->variables[0].name.data, "HOME");
+    cr_assert_eq(token.word->variables[0].pos, 0);
+    word_free(token.word);
+    EXPECT(TOKEN_EOF)
+
+    free(lexer);
+    free(reader);
+}
+
+Test(lexer, variable_in_word_tricky)
+{
+    INIT_LEXER_TEST("echo '$a'$b'$c'")
+    EAT_WORD("echo")
+    token = lexer_pop(lexer);
+    cr_assert_str_eq(token.word->value.data, "$a$c");
+    cr_assert_eq(token.word->var_length, 1);
+    cr_assert_not_null(token.word->variables);
+    cr_assert_str_eq(token.word->variables[0].name.data, "b");
+    fprintf(stderr, "pos: %zu\n", token.word->variables[0].pos);
+    cr_assert_eq(token.word->variables[0].pos, 2);
+    word_free(token.word);
     EXPECT(TOKEN_EOF)
 
     free(lexer);
