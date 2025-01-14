@@ -51,7 +51,7 @@ static int lexer_is_word_char(struct lexer *lexer)
     const int c = last_char(lexer);
     if (c == EOF)
         return 0;
-    static const char reserved[] = " \t\n;#|&<>'\"";
+    static const char reserved[] = " \t\n;#|&<>";
     for (size_t i = 0; i < sizeof(reserved) - 1; i++)
         if (c == reserved[i])
             return 0;
@@ -95,6 +95,41 @@ static int lexer_try_redir(struct lexer *lexer, struct word *word)
     return 1;
 }
 
+static int lexer_is_name_char(struct lexer *lexer)
+{
+    const int c = last_char(lexer);
+    return isalnum(c) || c == '_';
+}
+
+// returns true and populates var if it parsed a variable, false otherwise
+int lexer_lex_variable(struct lexer *lexer, struct variable *var)
+{
+    if (last_char(lexer) == EOF)
+        return 0;
+    static const char accepted_single[] = "$*!@#?-";
+    const char c = (char)last_char(lexer);
+    // try special vars first
+    for (size_t i = 0; i < sizeof(accepted_single) - 1; i++)
+        if (c == accepted_single[i])
+        {
+            string_init(&var->name);
+            string_push(&var->name, c);
+            next_char(lexer);
+            return 1;
+        }
+
+    // try normal vars
+    if (!lexer_is_name_char(lexer))
+        return 0;
+    string_init(&var->name);
+    while (lexer_is_name_char(lexer))
+    {
+        string_push(&var->name, (char)last_char(lexer));
+        next_char(lexer);
+    }
+    return 1;
+}
+
 // Create a word token or a keyword token
 static struct token lexer_next_handle_word(struct lexer *lexer)
 {
@@ -120,12 +155,31 @@ static struct token lexer_next_handle_word(struct lexer *lexer)
         }
 
         BLIND_PUSH_WHEN(lexer->mode == LEXING_QUOTED);
-        // TODO: add expanding logic
+        if (c == '$')
+        {
+            next_char(lexer);
+            struct variable var;
+            if (lexer_lex_variable(lexer, &var))
+            {
+                var.pos = word->value.length;
+                word_push_variable(word, var);
+            }
+            else
+                string_push(&word->value, c);
+            continue;
+        }
         BLIND_PUSH_WHEN(lexer->mode == LEXING_DOUBLE_QUOTED);
 
         if (c == '\\' && lexer->mode == LEXING_NORMAL)
         {
             lexer->escape_next = 1;
+            next_char(lexer);
+            continue;
+        }
+
+        if (c == '\'' || c == '"')
+        {
+            lexer->mode = c == '\'' ? LEXING_QUOTED : LEXING_DOUBLE_QUOTED;
             next_char(lexer);
             continue;
         }
