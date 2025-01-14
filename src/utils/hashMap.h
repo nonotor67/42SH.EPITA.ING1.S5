@@ -10,6 +10,9 @@ struct HashMap
     struct Variable *map[TABLE_SIZE];
 };
 
+// global variable to store the variables
+extern struct HashMap *global_variables;
+
 /*
     @brief Create a new hash table
     @return A pointer to the newly created hash table

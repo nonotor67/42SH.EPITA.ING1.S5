@@ -4,14 +4,102 @@
 #include <io/io.h>
 #include <lexer/lexer.h>
 #include <parser/parser.h>
+#include <utils/utils.h>
+
+struct HashMap *global_variables;
 
 #define DEBUG(str)                                                             \
     if (verbose)                                                               \
     printf("%s\n", str)
 
-int execute_loop(struct lexer *lexer, char **argv)
+static char *my_itoa(int value, char *s)
 {
-    // TODO: populate $n with argv
+    if (value == 0)
+    {
+        s[0] = '0';
+        s[1] = '\0';
+        return s;
+    }
+    size_t i = 0;
+    if (value < 0)
+    {
+        s[i] = '-';
+        i++;
+        value = -value;
+    }
+    long value_rev = 0;
+    int nb_zero = 0;
+    while (value != 0)
+    {
+        if (value % 10 == 0 && value_rev == 0)
+            nb_zero++;
+        value_rev *= 10;
+        value_rev += value % 10;
+        value /= 10;
+    }
+    for (; value_rev != 0; i++)
+    {
+        s[i] = value_rev % 10 + '0';
+        value_rev /= 10;
+    }
+    for (; nb_zero > 0; i++)
+    {
+        s[i] = '0';
+        nb_zero--;
+    }
+    s[i] = '\0';
+    return s;
+}
+
+static void env_init(int argc, char **argv)
+{
+    // Initialize the global variables in the hash table
+    global_variables = create_hash_table();
+
+    char *argument_list = xmalloc(1024);
+    unsigned int argument_list_size = 1024;
+    unsigned int actual_list_size = 0;
+    for (int i = 0; i < argc; i++)
+    {
+        while (actual_list_size + strlen(argv[i]) >= argument_list_size)
+        {
+            argument_list_size *= 2;
+            argument_list = xrealloc(argument_list, argument_list_size);
+        }
+        strcpy(argument_list + actual_list_size, argv[i]);
+        actual_list_size += strlen(argv[i]);
+        argument_list[actual_list_size] = ' ';
+        actual_list_size++;
+
+        // Insert the $n variable in the hash table
+        char *s = xmalloc(256);
+        insertVariable(global_variables, my_itoa(i, s), argv[i]);
+        free(s);
+    }
+    argument_list[actual_list_size - 1] = '\0';
+
+    char *int_tmp = xmalloc(256);
+    // InsertVariables allocate a new string, so we can free or use the old one
+    insertVariable(global_variables, "#", my_itoa(argc - 1, int_tmp));
+
+    insertVariable(global_variables, "@", argument_list);
+    insertVariable(global_variables, "*", argument_list);
+    free(argument_list);
+
+    insertVariable(global_variables, "?", "0");
+
+    insertVariable(global_variables, "$", my_itoa(getpid(), int_tmp));
+    insertVariable(global_variables, "UID", my_itoa(getuid(), int_tmp));
+    free(int_tmp);
+
+    insertVariable(global_variables, "OLDPWD", getenv("PWD"));
+    insertVariable(global_variables, "PWD", getenv("PWD"));
+    insertVariable(global_variables, "IFS", " \t\n");
+}
+
+static int execute_loop(struct lexer *lexer, int argc, char **argv)
+{
+    env_init(argc, argv);
     (void)argv; // avoid unused
     int res = 0;
     while (lexer->current.type != TOKEN_EOF)
@@ -68,7 +156,7 @@ int main(int argc, char **argv)
     DEBUG("Created lexer");
 
     // Default
-    int res = execute_loop(lexer, real_argv);
+    int res = execute_loop(lexer, real_argc, real_argv);
     DEBUG("Done executing loop");
     reader_free(reader);
     lexer_free(lexer);
