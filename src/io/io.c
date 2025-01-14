@@ -16,6 +16,7 @@ struct reader *reader_new(const int argc, char *argv[])
     struct reader *reader = malloc(sizeof(struct reader));
     EXIT_ON_NULL(reader, "Error: Could not allocate reader\n");
 
+    reader->status = READER_OK;
     if (argc == 2)
     {
         reader->type = INPUT_FILE;
@@ -53,12 +54,24 @@ int reader_is_stdin(const struct reader *reader)
 
 int reader_next(struct reader *reader)
 {
+    if (reader->status == READER_EOF)
+    {
+        fprintf(stderr, "Error: Reader is at EOF\n");
+        exit(1);
+    }
+    int res = 0;
     if (reader->type == INPUT_STRING)
     {
         const char c = reader->input.string[reader->current++];
-        return c != '\0' ? c : EOF;
+        // replace the null terminator with EOF
+        res = c != '\0' ? c : EOF;
     }
-
-    FILE *input = reader->type == INPUT_FILE ? reader->input.file : stdin;
-    return fgetc(input);
+    else
+    {
+        FILE *input = reader->type == INPUT_FILE ? reader->input.file : stdin;
+        res = fgetc(input);
+    }
+    if (res == EOF)
+        reader->status = READER_EOF;
+    return res;
 }
