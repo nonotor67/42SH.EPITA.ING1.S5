@@ -48,6 +48,7 @@ static void handle_redirection(struct parser *parser, struct ast *node,
         }
     }
 }
+
 /*
 prefix = redirection
         | ASSIGNMENT_WORD
