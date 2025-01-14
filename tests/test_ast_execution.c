@@ -267,3 +267,107 @@ Test(execute_node, pipeline_with_builtin)
 
     ast_free(node);
 }
+
+Test(execute_node, simple_or_condition)
+{
+    cr_redirect_stdout();
+    struct ast *node = ast_new(OR);
+    node->left = ast_new(SIMPLE_COMMAND);
+    node->left->size = 1;
+    struct word **value_left = malloc(sizeof(char *) * 2);
+    node->left->values = value_left;
+    node->left->values[0] = my_strdup("false");
+    node->left->values[1] = NULL;
+
+    node->right = ast_new(SIMPLE_COMMAND);
+    node->right->size = 2;
+    struct word **value_right = malloc(sizeof(char *) * 3);
+    node->right->values = value_right;
+    node->right->values[0] = my_strdup("echo");
+    node->right->values[1] = my_strdup("Hello, world!");
+    node->right->values[2] = NULL;
+
+    cr_assert_eq(execute_node(node), 0);
+
+    fflush(stdout);
+    cr_assert_stdout_eq_str("Hello, world!\n");
+    ast_free(node);
+}
+
+Test(execute_node, simple_or_lazy)
+{
+    cr_redirect_stdout();
+    struct ast *node = ast_new(OR);
+    node->left = ast_new(SIMPLE_COMMAND);
+    node->left->size = 1;
+    struct word **value_left = malloc(sizeof(char *) * 2);
+    node->left->values = value_left;
+    node->left->values[0] = my_strdup("true");
+    node->left->values[1] = NULL;
+
+    node->right = ast_new(SIMPLE_COMMAND);
+    node->right->size = 2;
+    struct word **value_right = malloc(sizeof(char *) * 3);
+    node->right->values = value_right;
+    node->right->values[0] = my_strdup("echo");
+    node->right->values[1] = my_strdup("Hello, world!");
+    node->right->values[2] = NULL;
+
+    cr_assert_eq(execute_node(node), 0);
+
+    fflush(stdout);
+    cr_assert_stdout_eq_str("");
+    ast_free(node);
+}
+
+Test(execute_node, simple_and_condition)
+{
+    cr_redirect_stdout();
+    struct ast *node = ast_new(AND);
+    node->left = ast_new(SIMPLE_COMMAND);
+    node->left->size = 1;
+    struct word **value_left = malloc(sizeof(char *) * 2);
+    node->left->values = value_left;
+    node->left->values[0] = my_strdup("true");
+    node->left->values[1] = NULL;
+
+    node->right = ast_new(SIMPLE_COMMAND);
+    node->right->size = 2;
+    struct word **value_right = malloc(sizeof(char *) * 3);
+    node->right->values = value_right;
+    node->right->values[0] = my_strdup("echo");
+    node->right->values[1] = my_strdup("Hello, world!");
+    node->right->values[2] = NULL;
+
+    cr_assert_eq(execute_node(node), 0);
+
+    fflush(stdout);
+    cr_assert_stdout_eq_str("Hello, world!\n");
+    ast_free(node);
+}
+
+Test(execute_node, simple_and_lazy)
+{
+    cr_redirect_stdout();
+    struct ast *node = ast_new(AND);
+    node->left = ast_new(SIMPLE_COMMAND);
+    node->left->size = 1;
+    struct word **value_left = malloc(sizeof(char *) * 2);
+    node->left->values = value_left;
+    node->left->values[0] = my_strdup("false");
+    node->left->values[1] = NULL;
+
+    node->right = ast_new(SIMPLE_COMMAND);
+    node->right->size = 2;
+    struct word **value_right = malloc(sizeof(char *) * 3);
+    node->right->values = value_right;
+    node->right->values[0] = my_strdup("echo");
+    node->right->values[1] = my_strdup("Hello, world!");
+    node->right->values[2] = NULL;
+
+    cr_assert_eq(execute_node(node), 1);
+
+    fflush(stdout);
+    cr_assert_stdout_eq_str("");
+    ast_free(node);
+}
