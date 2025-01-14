@@ -53,6 +53,11 @@ static char *my_itoa(int value, char *s)
     return s;
 }
 
+/**
+ * Initialize the environment variables
+ * @param argc The number of arguments
+ * @param argv The arguments
+ */
 static void env_init(int argc, char **argv)
 {
     // Initialize the global variables in the hash table
