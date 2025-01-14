@@ -4,7 +4,8 @@
 #include <lexer/token.h>
 #include <parser/parser_struct.h>
 
-Test(lexer, peek_pop) {
+Test(lexer, peek_pop)
+{
     struct reader *reader = reader_from_string("echo Hello World");
     struct lexer *lexer = lexer_new(reader);
 
@@ -40,7 +41,7 @@ Test(lexer, peek_pop) {
     token = lexer_pop(lexer);                                                  \
     cr_assert_eq(token.type, typ);
 
-#define EAT_WORD(str)                                                       \
+#define EAT_WORD(str)                                                          \
     token = lexer_pop(lexer);                                                  \
     cr_assert_eq(token.type, TOKEN_WORD);                                      \
     cr_assert_str_eq(token.word->value.data, str);                             \
