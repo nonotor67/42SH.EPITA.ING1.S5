@@ -289,60 +289,30 @@ Test(lexer, dollar_tail)
     free(lexer);                                                               \
     free(reader);
 
-Test(lexer, redirections_simple)
-{
-    INIT_LEXER_TEST("echo Hello >> file.txt")
-    EAT_WORD("echo")
-    EAT_WORD("Hello")
-    EXPECT_REDIR(">>")
-    EAT_WORD("file.txt")
-    EXPECT(TOKEN_EOF)
-    CLEAR_ALL
+Test(lexer, redirections_simple){
+    INIT_LEXER_TEST("echo Hello >> file.txt") EAT_WORD("echo") EAT_WORD("Hello")
+        EXPECT_REDIR(">>") EAT_WORD("file.txt") EXPECT(TOKEN_EOF) CLEAR_ALL
 }
 
-Test(lexer, redirections_number)
-{
-    INIT_LEXER_TEST("echo 12> file.txt")
-    EAT_WORD("echo")
-    EXPECT_REDIR("12>")
-    EAT_WORD("file.txt")
-    EXPECT(TOKEN_EOF)
-    CLEAR_ALL
-}
+Test(lexer, redirections_number){ INIT_LEXER_TEST("echo 12> file.txt")
+                                      EAT_WORD("echo") EXPECT_REDIR("12>")
+                                          EAT_WORD("file.txt") EXPECT(TOKEN_EOF)
+                                              CLEAR_ALL }
 
-Test(lexer, redirections_trap)
-{
-    INIT_LEXER_TEST("echo \\2> file.txt")
-    EAT_WORD("echo")
-    EAT_WORD("2")
-    EXPECT_REDIR(">")
-    EAT_WORD("file.txt")
-    EXPECT(TOKEN_EOF)
-    CLEAR_ALL
-}
+Test(lexer, redirections_trap){ INIT_LEXER_TEST("echo \\2> file.txt")
+                                    EAT_WORD("echo") EAT_WORD("2")
+                                        EXPECT_REDIR(">") EAT_WORD("file.txt")
+                                            EXPECT(TOKEN_EOF) CLEAR_ALL }
 
-Test(lexer, redirections_trap2)
-{
-    INIT_LEXER_TEST("echo '2'> file.txt")
-    EAT_WORD("echo")
-    EAT_WORD("2")
-    EXPECT_REDIR(">")
-    EAT_WORD("file.txt")
-    EXPECT(TOKEN_EOF)
-    CLEAR_ALL
-}
+Test(lexer, redirections_trap2){ INIT_LEXER_TEST("echo '2'> file.txt")
+                                     EAT_WORD("echo") EAT_WORD("2")
+                                         EXPECT_REDIR(">") EAT_WORD("file.txt")
+                                             EXPECT(TOKEN_EOF) CLEAR_ALL }
 
-Test(lexer, redirections_double)
-{
-    INIT_LEXER_TEST("echo Hello >> file.txt 2>&1")
-    EAT_WORD("echo")
-    EAT_WORD("Hello")
-    EXPECT_REDIR(">>")
-    EAT_WORD("file.txt")
-    EXPECT_REDIR("2>&")
-    EAT_WORD("1")
-    EXPECT(TOKEN_EOF)
-    CLEAR_ALL
+Test(lexer, redirections_double){
+    INIT_LEXER_TEST("echo Hello >> file.txt 2>&1") EAT_WORD("echo")
+        EAT_WORD("Hello") EXPECT_REDIR(">>") EAT_WORD("file.txt")
+            EXPECT_REDIR("2>&") EAT_WORD("1") EXPECT(TOKEN_EOF) CLEAR_ALL
 }
 
 Test(lexer, simple_variable)
@@ -376,66 +346,33 @@ Test(lexer, variable_in_word_tricky)
     CLEAR_ALL
 }
 
-Test(lexer, lexer_OR)
-{
-    INIT_LEXER_TEST("echo Hello || echo World")
-    EAT_WORD("echo")
-    EAT_WORD("Hello")
-    EXPECT(TOKEN_OR)
-    EAT_WORD("echo")
-    EAT_WORD("World")
-    EXPECT(TOKEN_EOF)
-    CLEAR_ALL
+Test(lexer, lexer_OR){ INIT_LEXER_TEST("echo Hello || echo World")
+                           EAT_WORD("echo") EAT_WORD("Hello") EXPECT(TOKEN_OR)
+                               EAT_WORD("echo") EAT_WORD("World")
+                                   EXPECT(TOKEN_EOF) CLEAR_ALL }
+
+Test(lexer, lexer_AND){ INIT_LEXER_TEST("echo Hello && echo World")
+                            EAT_WORD("echo") EAT_WORD("Hello") EXPECT(TOKEN_AND)
+                                EAT_WORD("echo") EAT_WORD("World")
+                                    EXPECT(TOKEN_EOF) CLEAR_ALL }
+
+Test(lexer,
+     lexer_PIPE){ INIT_LEXER_TEST("echo Hello | echo World") EAT_WORD("echo")
+                      EAT_WORD("Hello") EXPECT(TOKEN_PIPE) EAT_WORD("echo")
+                          EAT_WORD("World") EXPECT(TOKEN_EOF) CLEAR_ALL }
+
+Test(lexer, lexer_NEGATION){ // echo !Hello does an error in posix
+                             // But it's the parser that will handle it
+                             INIT_LEXER_TEST("echo !Hello") EAT_WORD("echo")
+                                 EXPECT(TOKEN_NEGATION) EAT_WORD("Hello")
+                                     EXPECT(TOKEN_EOF) CLEAR_ALL
 }
 
-Test(lexer, lexer_AND)
-{
-    INIT_LEXER_TEST("echo Hello && echo World")
-    EAT_WORD("echo")
-    EAT_WORD("Hello")
-    EXPECT(TOKEN_AND)
-    EAT_WORD("echo")
-    EAT_WORD("World")
-    EXPECT(TOKEN_EOF)
-    CLEAR_ALL
-}
-
-Test(lexer, lexer_PIPE)
-{
-    INIT_LEXER_TEST("echo Hello | echo World")
-    EAT_WORD("echo")
-    EAT_WORD("Hello")
-    EXPECT(TOKEN_PIPE)
-    EAT_WORD("echo")
-    EAT_WORD("World")
-    EXPECT(TOKEN_EOF)
-    CLEAR_ALL
-}
-
-Test(lexer, lexer_NEGATION)
-{
-    // echo !Hello does an error in posix
-    // But it's the parser that will handle it
-    INIT_LEXER_TEST("echo !Hello")
-    EAT_WORD("echo")
-    EXPECT(TOKEN_NEGATION)
-    EAT_WORD("Hello")
-    EXPECT(TOKEN_EOF)
-    CLEAR_ALL
-}
-
-Test(lexer, lexer_PIPE_NOT)
-{
-    INIT_LEXER_TEST("! echo Hello | echo World")
-    EXPECT(TOKEN_NEGATION)
-    EAT_WORD("echo")
-    EAT_WORD("Hello")
-    EXPECT(TOKEN_PIPE)
-    EAT_WORD("echo")
-    EAT_WORD("World")
-    EXPECT(TOKEN_EOF)
-    CLEAR_ALL
-}
+Test(lexer, lexer_PIPE_NOT){ INIT_LEXER_TEST("! echo Hello | echo World")
+                                 EXPECT(TOKEN_NEGATION) EAT_WORD("echo")
+                                     EAT_WORD("Hello") EXPECT(TOKEN_PIPE)
+                                         EAT_WORD("echo") EAT_WORD("World")
+                                             EXPECT(TOKEN_EOF) CLEAR_ALL }
 
 Test(lexer, lexer_no_space)
 {
