@@ -6,6 +6,9 @@
 
 int execute_pipeline(struct ast *ast)
 {
+    if (ast->right == NULL)
+        return execute_node(ast->left);
+
     int pipefd[2];
     pid_t pid_left, pid_right;
     int status_left = 0;

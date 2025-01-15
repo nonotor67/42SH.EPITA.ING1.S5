@@ -21,6 +21,7 @@ run_test_script "$path_to_tests/test_command.sh"
 run_test_script "$path_to_tests/test_condition.sh"
 run_test_script "$path_to_tests/test_comments.sh"
 run_test_script "$path_to_tests/test_script.sh"
+run_test_script "$path_to_tests/test_pipeline.sh"
 
 # Résumé global
 echo
