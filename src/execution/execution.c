@@ -19,7 +19,8 @@ static const struct execute_entry execute_table[] = {
     { PIPELINE, execute_pipeline },
     { NEGATION, execute_negation },
     { WHILE_LOOP, execution_while },
-    { UNTIL_LOOP, execution_until }
+    { UNTIL_LOOP, execution_until },
+    { FOR_LOOP, execution_for }
 };
 
 /*
@@ -35,9 +36,25 @@ static void expand_values(char ***target, struct word **source)
     size_t size = 0;
     while (source[size])
         size++;
-    *target = xmalloc((size + 1) * sizeof(char *));
-    for (size_t i = 0; i < size; i++)
-        (*target)[i] = word_eval(source[i]);
+
+    if (!*target)
+    {
+        *target = xmalloc((size + 1) * sizeof(char *));
+        for (size_t i = 0; i < size; i++)
+        {
+            (*target)[i] = word_eval(source[i]);
+        }
+    }
+    else
+    {
+        for (size_t i = 0; i < size; i++)
+        {
+            if ((*target)[i])
+                free((*target)[i]);
+            (*target)[i] = word_eval(source[i]);
+        }
+    }
+
     (*target)[size] = NULL;
 }
 
