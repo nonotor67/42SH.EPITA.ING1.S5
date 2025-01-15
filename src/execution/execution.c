@@ -1,7 +1,5 @@
 #include "execution.h"
 
-#include <malloc.h>
-
 #include "utils/utils.h"
 
 typedef int (*execute_function)(struct ast *);
@@ -20,6 +18,8 @@ static const struct execute_entry execute_table[] = {
     { AND, execution_and },
     { PIPELINE, execute_pipeline },
     { NEGATION, execute_negation },
+    { WHILE_LOOP, execution_while },
+    { UNTIL_LOOP, execution_until }
 };
 
 /*
@@ -35,9 +35,9 @@ static void expand_values(char ***target, struct word **source)
     size_t size = 0;
     while (source[size])
         size++;
-    *target = malloc((size + 1) * sizeof(char *));
+    *target = xmalloc((size + 1) * sizeof(char *));
     for (size_t i = 0; i < size; i++)
-        (*target)[i] = word_eval(source[i], NULL, NULL);
+        (*target)[i] = word_eval(source[i]);
     (*target)[size] = NULL;
 }
 
