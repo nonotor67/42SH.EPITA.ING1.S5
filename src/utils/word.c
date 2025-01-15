@@ -58,13 +58,13 @@ char *word_eval(struct word *word)
     struct string str;
     string_init(&str);
     size_t var_idx = 0;
-    for (size_t pos = 0; ; pos++)
+    for (size_t pos = 0;; pos++)
     {
         if (word->variables && var_idx < word->var_length
             && pos == word->variables[var_idx].pos)
         {
-            struct Variable var = getVariable(global_variables,
-                                              word->variables[var_idx].name.data);
+            struct Variable var =
+                getVariable(word->variables[var_idx].name.data);
             if (var.value)
                 string_append(&str, var.value);
             var_idx++;

@@ -44,40 +44,30 @@ Test(test_free_variable, free_variable)
     cr_assert_not_null(var);
 }
 
-Test(test_create_hash_table, create_hash_table)
-{
-    struct HashMap *ht = create_hash_table();
-    cr_assert_not_null(ht);
-    free_hash_map(ht);
-}
-
 Test(test_insert, insert)
 {
-    struct HashMap *ht = create_hash_table();
-    insertVariable(ht, "test", "value");
-    struct Variable var = getVariable(ht, "test");
+    insertVariable("test", "value");
+    struct Variable var = getVariable("test");
     cr_assert_str_eq(var.name, "test");
     cr_assert_str_eq(var.value, "value");
-    free_hash_map(ht);
+    free_hash_map();
 }
 
 Test(test_get, getVariable)
 {
-    struct HashMap *ht = create_hash_table();
-    insertVariable(ht, "test", "value");
-    struct Variable var = getVariable(ht, "test");
+    insertVariable("test", "value");
+    struct Variable var = getVariable("test");
     cr_assert_str_eq(var.name, "test");
     cr_assert_str_eq(var.value, "value");
-    free_hash_map(ht);
+    free_hash_map();
 }
 
 Test(test_update, updateVariable)
 {
-    struct HashMap *ht = create_hash_table();
-    insertVariable(ht, "test", "value");
-    updateVariable(ht, "test", "new_value");
-    struct Variable var = getVariable(ht, "test");
+    insertVariable("test", "value");
+    updateVariable("test", "new_value");
+    struct Variable var = getVariable("test");
     cr_assert_str_eq(var.name, "test");
     cr_assert_str_eq(var.value, "new_value");
-    free_hash_map(ht);
+    free_hash_map();
 }

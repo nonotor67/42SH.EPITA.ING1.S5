@@ -8,7 +8,7 @@
 #include <string.h>
 #include <utils/utils.h>
 
-struct HashMap *global_variables;
+#include "utils/hashMap.h"
 
 #define DEBUG(str)                                                             \
     if (verbose)                                                               \
@@ -60,9 +60,6 @@ static char *my_itoa(int value, char *s)
  */
 static void env_init(int argc, char **argv)
 {
-    // Initialize the global variables in the hash table
-    global_variables = create_hash_table();
-
     char *argument_list = xmalloc(1024);
     unsigned int argument_list_size = 1024;
     unsigned int actual_list_size = 0;
@@ -79,32 +76,32 @@ static void env_init(int argc, char **argv)
         argument_list[actual_list_size] = ' ';
         actual_list_size++;
         char *int_tmp = xmalloc(256);
-        insertVariable(global_variables, my_itoa(i, int_tmp), argv[i]);
+        insertVariable(my_itoa(i, int_tmp), argv[i]);
         free(int_tmp);
     }
 
-    insertVariable(global_variables, "0", argv[0]);
+    insertVariable("0", argv[0]);
 
     if (actual_list_size > 0)
     {
         argument_list[actual_list_size - 1] = '\0';
-        insertVariable(global_variables, "@", argument_list);
-        insertVariable(global_variables, "*", argument_list);
+        insertVariable("@", argument_list);
+        insertVariable("*", argument_list);
     }
     free(argument_list);
 
     // InsertVariables allocate a new string, so we can free or use the old one
     char *int_tmp = xmalloc(256);
-    insertVariable(global_variables, "#", my_itoa(argc, int_tmp));
-    insertVariable(global_variables, "$", my_itoa(getpid(), int_tmp));
-    insertVariable(global_variables, "UID", my_itoa(getuid(), int_tmp));
+    insertVariable("#", my_itoa(argc, int_tmp));
+    insertVariable("$", my_itoa(getpid(), int_tmp));
+    insertVariable("UID", my_itoa(getuid(), int_tmp));
     free(int_tmp);
 
-    insertVariable(global_variables, "?", "0");
+    insertVariable("?", "0");
 
-    insertVariable(global_variables, "OLDPWD", getenv("PWD"));
-    insertVariable(global_variables, "PWD", getenv("PWD"));
-    insertVariable(global_variables, "IFS", " \t\n");
+    insertVariable("OLDPWD", getenv("PWD"));
+    insertVariable("PWD", getenv("PWD"));
+    insertVariable("IFS", " \t\n");
 }
 
 static int execute_loop(struct lexer *lexer, int real_argc, char **real_argv)
