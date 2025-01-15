@@ -26,6 +26,7 @@ struct token
 {
     enum token_type type; // The kind of token
     struct word *word; // The value of the token
+    int has_escaped; // If the token has escaped characters
 };
 
 void token_print(struct token token);
