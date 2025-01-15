@@ -36,9 +36,16 @@ static void expand_values(char ***target, struct word **source)
     while (source[size])
         size++;
     *target = xmalloc((size + 1) * sizeof(char *));
+    size_t j = 0;
     for (size_t i = 0; i < size; i++)
-        (*target)[i] = word_eval(source[i]);
-    (*target)[size] = NULL;
+    {
+        char *val = word_eval(source[i]);
+        if (val && (*val != '\0' || source[i - 1]->has_escaped))
+            (*target)[j++] = val;
+        else
+            free(val);
+    }
+    (*target)[j] = NULL;
 }
 
 int execute_node(struct ast *node)

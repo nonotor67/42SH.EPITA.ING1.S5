@@ -136,15 +136,18 @@ int lexer_lex_variable(struct lexer *lexer, struct variable *var)
 static struct token lexer_next_handle_word(struct lexer *lexer)
 {
     struct word *word = word_new();
-    int has_escaped = 0;
+    int met_equal = 0;
     while (lexer_is_word_char(lexer) || lexer->escape_next
            || lexer->mode == LEXING_QUOTED
            || lexer->mode == LEXING_DOUBLE_QUOTED)
     {
         // has_escaped can only go from 0 to 1 and never back to 0 thanks to |=
-        has_escaped |= lexer->escape_next || lexer->mode == LEXING_QUOTED
+        word->has_escaped |= lexer->escape_next || lexer->mode == LEXING_QUOTED
             || lexer->mode == LEXING_DOUBLE_QUOTED;
+        word->valid_assignment &= met_equal || !word->has_escaped;
         char c = (char)last_char(lexer);
+        if (c == '=')
+            met_equal = 1;
 
         BLIND_PUSH_WHEN(lexer->escape_next);
 
@@ -191,9 +194,8 @@ static struct token lexer_next_handle_word(struct lexer *lexer)
 
     struct token token;
     token.type = TOKEN_WORD;
-    token.has_escaped = has_escaped;
 
-    if (!has_escaped && lexer_try_redir(lexer, word))
+    if (!word->has_escaped && lexer_try_redir(lexer, word))
         token.type = TOKEN_REDIR;
 
     token.word = word;

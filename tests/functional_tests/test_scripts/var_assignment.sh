@@ -7,3 +7,9 @@ echo $non
 echo $a
 echo $b
 echo $c
+
+pouet=machin truc=bidule echo on annule
+echo $pouet
+echo $truc
+
+echo $coucou
