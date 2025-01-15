@@ -582,4 +582,3 @@ Test(parser, until_loop_double)
     cr_assert_null(ast->right->right->left->values[1]);
     CLEAR_ALL
 }
-
