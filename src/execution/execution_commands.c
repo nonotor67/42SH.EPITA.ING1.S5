@@ -51,7 +51,8 @@ static int is_assignment(const char *value)
 int dispatch_command(struct ast *ast)
 {
     int skipped_assignments = 0;
-    while (is_assignment(ast->values[skipped_assignments]->value.data))
+    while (ast->values[skipped_assignments]
+           && is_assignment(ast->values[skipped_assignments]->value.data))
         skipped_assignments++;
     if (skipped_assignments == ast->size)
     {
@@ -67,6 +68,7 @@ int dispatch_command(struct ast *ast)
             insertVariable(var, equal_sign + 1);
             *equal_sign = '='; // put the equal sign back
         }
+        return 0;
     }
     char **real_argv = ast->expanded_values + skipped_assignments;
     if (strcmp(ast->expanded_values[0], "echo") == 0)
