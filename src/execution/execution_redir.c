@@ -228,7 +228,8 @@ int exec_redir(struct ast *ast)
     }
     else if (strcmp(ast->expanded_redir[i], "<>") == 0)
     {
-        status = fd_write_read_redir(atoi(ast->expanded_redir[i + 1]), io_number, ast);
+        status = fd_write_read_redir(atoi(ast->expanded_redir[i + 1]),
+                                     io_number, ast);
     }
     else if (strcmp(ast->expanded_redir[i], "<") == 0)
     {
@@ -240,7 +241,8 @@ int exec_redir(struct ast *ast)
     }
     else if (strcmp(ast->expanded_redir[i], "<&") == 0)
     {
-        status = fd_input_redir(atoi(ast->expanded_redir[i + 1]), io_number, ast);
+        status =
+            fd_input_redir(atoi(ast->expanded_redir[i + 1]), io_number, ast);
     }
     return status;
 }
