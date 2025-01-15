@@ -38,10 +38,11 @@ static int run_command(char **argv)
     return 0;
 }
 
-static int is_assignment(const char *value)
+static int is_assignment(struct word *word)
 {
-    if (value == NULL)
+    if (word == NULL || !word->valid_assignment)
         return 0;
+    char *value = word->value.data;
     size_t i = 0;
     while (isalnum(value[i]) || value[i] == '_')
         i++;
@@ -52,7 +53,7 @@ int dispatch_command(struct ast *ast)
 {
     int skipped_assignments = 0;
     while (ast->values[skipped_assignments]
-           && is_assignment(ast->values[skipped_assignments]->value.data))
+           && is_assignment(ast->values[skipped_assignments]))
         skipped_assignments++;
     if (skipped_assignments == ast->size)
     {
@@ -71,12 +72,15 @@ int dispatch_command(struct ast *ast)
         return 0;
     }
     char **real_argv = ast->expanded_values + skipped_assignments;
+    int argc = 0;
+    while (real_argv[argc])
+        argc++;
     if (strcmp(ast->expanded_values[0], "echo") == 0)
-        return exec_echo(ast->size, ast->expanded_values);
+        return exec_echo(argc, ast->expanded_values);
     if (strcmp(ast->expanded_values[0], "true") == 0)
-        return exec_true(ast->size, ast->expanded_values);
+        return exec_true(argc, ast->expanded_values);
     if (strcmp(ast->expanded_values[0], "false") == 0)
-        return exec_false(ast->size, ast->expanded_values);
+        return exec_false(argc, ast->expanded_values);
     return run_command(real_argv);
 }
 

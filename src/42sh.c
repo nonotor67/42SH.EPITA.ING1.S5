@@ -173,6 +173,7 @@ int main(int argc, char **argv)
     DEBUG("Done executing loop");
     reader_free(reader);
     lexer_free(lexer);
+    free_hash_map();
 
     return res;
 }
