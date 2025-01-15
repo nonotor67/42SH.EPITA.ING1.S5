@@ -83,9 +83,12 @@ static void env_init(int argc, char **argv)
         free(int_tmp);
     }
 
-    argument_list[actual_list_size - 1] = '\0';
-    insertVariable(global_variables, "@", argument_list);
-    insertVariable(global_variables, "*", argument_list);
+    if (actual_list_size > 0)
+    {
+        argument_list[actual_list_size - 1] = '\0';
+        insertVariable(global_variables, "@", argument_list);
+        insertVariable(global_variables, "*", argument_list);
+    }
     free(argument_list);
 
     // InsertVariables allocate a new string, so we can free or use the old one
