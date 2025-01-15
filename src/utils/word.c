@@ -1,5 +1,6 @@
 #include "word.h"
 
+#include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -65,7 +66,21 @@ char *word_eval(struct word *word)
             struct Variable var =
                 getVariable(word->variables[var_idx].name.data);
             if (var.value)
-                string_append(&str, var.value);
+            {
+                char *value = var.value;
+                while (*value)
+                {
+                    if (isspace(*value))
+                    {
+                        while (isspace(*value))
+                            value++;
+                        if (*value)
+                            string_push(&str, ' ');
+                        continue;
+                    }
+                    string_push(&str, *value++);
+                }
+            }
             var_idx++;
         }
         if (pos == word->value.length)
