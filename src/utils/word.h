@@ -17,6 +17,8 @@ struct word
     struct variable *variables;
     size_t var_length;
     size_t var_capacity;
+    int has_escaped; // If the word has escaped characters
+    int valid_assignment; // If the word can be an assignment
 };
 
 struct word *word_new(void);
