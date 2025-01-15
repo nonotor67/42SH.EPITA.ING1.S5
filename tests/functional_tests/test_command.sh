@@ -75,6 +75,16 @@ echo "==== Test Summary for $(basename "$0") ===="
 echo "Total tests: $total_tests"
 echo "Failed tests: $failed_tests"
 
+# Test with variables
+
+test_functional "Simple echo with variable" "echo \$PWD"
+test_functional "Simple echo with variable" "echo \$@"
+test_functional "Simple echo with variable" "echo \$?"
+test_functional "Simple echo with variable" "echo \$1"
+toto=pouet
+test_functional "Simple echo with variable" "echo \$toto"
+
+
 if [[ $failed_tests -gt 0 ]]; then
     exit 1
 else
