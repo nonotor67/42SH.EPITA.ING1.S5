@@ -1,9 +1,10 @@
-#include "parser.h"
-
 #include <string.h>
+
+#include "parser.h"
 /*
 rule_for =
-    'for' WORD ( [';'] | [ {'\n'} 'in' { WORD } ( ';' | '\n' ) ] ) {'\n'} 'do' compound_list 'done' ;
+    'for' WORD ( [';'] | [ {'\n'} 'in' { WORD } ( ';' | '\n' ) ] ) {'\n'} 'do'
+compound_list 'done' ;
 */
 static struct ast *rule_for(struct parser *parser)
 {
@@ -37,13 +38,15 @@ static struct ast *rule_for(struct parser *parser)
             tok = lexer_pop(parser->lexer);
             if (middle->size >= 16)
             {
-                middle->values = realloc(middle->values, sizeof(struct word *) * middle->size * 2);
+                middle->values = realloc(
+                    middle->values, sizeof(struct word *) * middle->size * 2);
             }
             middle->values[middle->size++] = tok.word;
             middle->values[middle->size] = NULL;
         }
         root->middle = middle;
-        if (!eat(parser->lexer, TOKEN_SEMICOLON) && !eat(parser->lexer, TOKEN_EOL))
+        if (!eat(parser->lexer, TOKEN_SEMICOLON)
+            && !eat(parser->lexer, TOKEN_EOL))
         {
             parser->status = PARSER_UNEXPECTED_TOKEN;
             fprintf(stderr, "Error: Expected ';' or EOL (rule_for)\n");

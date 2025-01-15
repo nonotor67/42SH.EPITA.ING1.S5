@@ -340,7 +340,8 @@ Test(parser, simple_for_loop)
 
 Test(parser, for_loop_eol_land)
 {
-    INIT_PARSER("for word\n\n\nin coucou hello hallo gutentag\n\n\n\ndo\n\n\necho coucou\n\n\n\ndone")
+    INIT_PARSER("for word\n\n\nin coucou hello hallo "
+                "gutentag\n\n\n\ndo\n\n\necho coucou\n\n\n\ndone")
     cr_assert_not_null(ast);
     cr_assert_eq(ast->type, FOR_LOOP);
     cr_assert_not_null(ast->left);

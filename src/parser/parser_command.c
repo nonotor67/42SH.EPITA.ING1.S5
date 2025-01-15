@@ -156,9 +156,7 @@ command =
 */
 struct ast *command(struct parser *parser)
 {
-    const char shell_commands[][32] = {
-        "if", "for", "while", "until"
-    };
+    const char shell_commands[][32] = { "if", "for", "while", "until" };
     for (size_t i = 0; i < sizeof(shell_commands) / sizeof(shell_commands[0]);
          i++)
     {
