@@ -80,6 +80,41 @@ static int input_redir(char *filename, int io_number, struct ast *ast)
     return status;
 }
 
+// Handle >>
+static int append_redir(char *filename, int io_number, struct ast *ast)
+{
+    if (io_number == -1)
+    {
+        io_number = STDOUT_FILENO;
+    }
+    // Open the file
+    int fd = open(filename, O_CREAT | O_WRONLY | O_APPEND, 0644);
+    if (fd == -1)
+    {
+        perror("open");
+        return -1;
+    }
+    // Redirect the file descriptor
+    if (dup2(fd, io_number) == -1)
+    {
+        perror("dup2");
+        close(fd);
+        return -1;
+    }
+    // Close the file descriptor
+    close(fd);
+    // Execute the command
+    int status = dispatch_command(ast);
+    // Restore the file descriptor
+    if (dup2(STDOUT_FILENO, io_number) == -1)
+    {
+        perror("dup2");
+        return -1;
+    }
+
+    return status;
+}
+
 // Handle >&
 static int fd_redir(int fd, int io_number, struct ast *ast)
 {
@@ -100,6 +135,62 @@ static int fd_redir(int fd, int io_number, struct ast *ast)
     int status = dispatch_command(ast);
     // Restore the file descriptor
     if (dup2(STDOUT_FILENO, io_number) == -1)
+    {
+        perror("dup2");
+        return -1;
+    }
+
+    return status;
+}
+
+// Handle <&
+static int fd_input_redir(int fd, int io_number, struct ast *ast)
+{
+    if (io_number == -1)
+    {
+        io_number = STDIN_FILENO;
+    }
+    // Redirect the file descriptor
+    if (dup2(fd, io_number) == -1)
+    {
+        perror("dup2");
+        close(fd);
+        return -1;
+    }
+    // Close the file descriptor
+    close(fd);
+    // Execute the command
+    int status = dispatch_command(ast);
+    // Restore the file descriptor
+    if (dup2(STDIN_FILENO, io_number) == -1)
+    {
+        perror("dup2");
+        return -1;
+    }
+
+    return status;
+}
+
+// Handle <>
+static int fd_write_read_redir(int fd, int io_number, struct ast *ast)
+{
+    if (io_number == -1)
+    {
+        io_number = STDIN_FILENO;
+    }
+    // Redirect the file descriptor
+    if (dup2(fd, io_number) == -1)
+    {
+        perror("dup2");
+        close(fd);
+        return -1;
+    }
+    // Close the file descriptor
+    close(fd);
+    // Execute the command
+    int status = dispatch_command(ast);
+    // Restore the file descriptor
+    if (dup2(STDIN_FILENO, io_number) == -1)
     {
         perror("dup2");
         return -1;
@@ -137,16 +228,19 @@ int exec_redir(struct ast *ast)
     }
     else if (strcmp(ast->expanded_redir[i], "<>") == 0)
     {
+        status = fd_write_read_redir(atoi(ast->expanded_redir[i + 1]), io_number, ast);
     }
     else if (strcmp(ast->expanded_redir[i], "<") == 0)
     {
-        input_redir(ast->expanded_redir[i + 1], io_number, ast);
+        status = input_redir(ast->expanded_redir[i + 1], io_number, ast);
     }
     else if (strcmp(ast->expanded_redir[i], ">>") == 0)
     {
+        status = append_redir(ast->expanded_redir[i + 1], io_number, ast);
     }
     else if (strcmp(ast->expanded_redir[i], "<&") == 0)
     {
+        status = fd_input_redir(atoi(ast->expanded_redir[i + 1]), io_number, ast);
     }
     return status;
 }
