@@ -12,7 +12,7 @@ Contains the base of the parser
 
 int is_closing_word(struct word *word)
 {
-    const char *keywords[] = { "then", "fi", "else", "elif" };
+    const char *keywords[] = { "then", "fi", "else", "elif", "do", "done" };
     for (size_t i = 0; i < sizeof(keywords) / sizeof(keywords[0]); i++)
     {
         if (strcmp(keywords[i], word->value.data) == 0)
