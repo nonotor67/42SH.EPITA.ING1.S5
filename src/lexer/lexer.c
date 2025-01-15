@@ -191,6 +191,7 @@ static struct token lexer_next_handle_word(struct lexer *lexer)
 
     struct token token;
     token.type = TOKEN_WORD;
+    token.has_escaped = has_escaped;
 
     if (!has_escaped && lexer_try_redir(lexer, word))
         token.type = TOKEN_REDIR;
