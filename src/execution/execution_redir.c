@@ -220,6 +220,7 @@ static int fd_write_read_redir(int fd, int io_number, struct ast *ast)
 }
 
 // redirection = [IONUMBER] ( '>' | '<' | '>>' | '>&' | '<&' | '>|' | '<>' )
+// WORD ;
 int exec_redir(struct ast *ast)
 {
     int io_number = -1;

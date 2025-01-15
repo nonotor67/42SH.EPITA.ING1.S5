@@ -1,10 +1,11 @@
 #include "word.h"
 
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "utils/strings.h"
+#include "utils/utils.h"
 
 struct word *word_new(void)
 {
@@ -15,6 +16,8 @@ struct word *word_new(void)
     word->variables = NULL;
     word->var_length = 0;
     word->var_capacity = 0;
+    word->has_escaped = 0;
+    word->valid_assignment = 1; // default to true
     return word;
 }
 
@@ -53,20 +56,38 @@ int word_equals(struct word *word1, struct word *word2)
     return strcmp(word1->value.data, word2->value.data) == 0;
 }
 
-char *word_eval(struct word *word, evaluator eval, void *data)
+char *word_eval(struct word *word)
 {
     struct string str;
     string_init(&str);
     size_t var_idx = 0;
-    for (size_t pos = 0; pos < word->value.length; pos++)
+    for (size_t pos = 0;; pos++)
     {
         if (word->variables && var_idx < word->var_length
-            && pos == word->variables[var_idx].pos && eval)
+            && pos == word->variables[var_idx].pos)
         {
-            char *var = eval(word->variables[var_idx].name.data, data);
-            string_append(&str, var);
+            struct Variable var =
+                getVariable(word->variables[var_idx].name.data);
+            if (var.value)
+            {
+                char *value = var.value;
+                while (*value)
+                {
+                    if (isspace(*value))
+                    {
+                        while (isspace(*value))
+                            value++;
+                        if (*value)
+                            string_push(&str, ' ');
+                        continue;
+                    }
+                    string_push(&str, *value++);
+                }
+            }
             var_idx++;
         }
+        if (pos == word->value.length)
+            break;
         string_push(&str, word->value.data[pos]);
     }
     return str.data;

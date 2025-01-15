@@ -8,7 +8,9 @@ libparser_a_SOURCES =  \
   parser_operator.h \
   parser_operator.c \
   parser_struct.h \
-  parser_struct.c
+  parser_struct.c \
+  parser_shell_command.h \
+  parser_shell_command.c
 
 libparser_a_CPPFLAGS = -I$(top_srcdir)/src
 
