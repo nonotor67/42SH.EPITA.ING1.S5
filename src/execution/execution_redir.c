@@ -21,13 +21,11 @@ static int simple_redir(char *filename, int io_number, struct ast *ast)
     int fd = open(filename, O_CREAT | O_WRONLY | O_TRUNC, 0644);
     if (fd == -1)
     {
-        perror("open");
         return 1;
     }
     // Redirect the file descriptor
     if (dup2(fd, io_number) == -1)
     {
-        perror("dup2");
         close(fd);
         return 1;
     }
@@ -38,7 +36,6 @@ static int simple_redir(char *filename, int io_number, struct ast *ast)
     // Restore the file descriptor
     if (dup2(STDOUT_FILENO, io_number) == -1)
     {
-        perror("dup2");
         return 1;
     }
 
@@ -89,7 +86,6 @@ static int append_redir(char *filename, int io_number, struct ast *ast)
     int fd = open(filename, O_CREAT | O_WRONLY | O_APPEND, 0644);
     if (fd == -1)
     {
-        perror("open");
         return 1;
     }
 
@@ -97,7 +93,6 @@ static int append_redir(char *filename, int io_number, struct ast *ast)
     int saved_stdout = dup(io_number);
     if (saved_stdout == -1)
     {
-        perror("dup");
         close(fd);
         return 1;
     }
@@ -105,7 +100,6 @@ static int append_redir(char *filename, int io_number, struct ast *ast)
     // Rediriger la sortie standard
     if (dup2(fd, io_number) == -1)
     {
-        perror("dup2");
         close(fd);
         close(saved_stdout);
         return 1;
@@ -120,7 +114,6 @@ static int append_redir(char *filename, int io_number, struct ast *ast)
     // Restaurer la sortie standard
     if (dup2(saved_stdout, io_number) == -1)
     {
-        perror("dup2");
         close(saved_stdout);
         return 1;
     }
@@ -141,7 +134,6 @@ static int fd_redir(int fd, int io_number, struct ast *ast)
     // Redirect the file descriptor
     if (dup2(fd, io_number) == -1)
     {
-        perror("dup2");
         close(fd);
         return 1;
     }
@@ -152,7 +144,6 @@ static int fd_redir(int fd, int io_number, struct ast *ast)
     // Restore the file descriptor
     if (dup2(STDOUT_FILENO, io_number) == -1)
     {
-        perror("dup2");
         return 1;
     }
 
@@ -169,7 +160,6 @@ static int fd_input_redir(int fd, int io_number, struct ast *ast)
     // Redirect the file descriptor
     if (dup2(fd, io_number) == -1)
     {
-        perror("dup2");
         close(fd);
         return 1;
     }
@@ -180,7 +170,6 @@ static int fd_input_redir(int fd, int io_number, struct ast *ast)
     // Restore the file descriptor
     if (dup2(STDIN_FILENO, io_number) == -1)
     {
-        perror("dup2");
         return 1;
     }
 
@@ -199,7 +188,6 @@ static int fd_write_read_redir(int fd, int io_number, struct ast *ast)
     int saved_fd = dup(io_number);
     if (saved_fd == -1)
     {
-        perror("dup");
         close(fd);
         return 1;
     }
@@ -207,7 +195,6 @@ static int fd_write_read_redir(int fd, int io_number, struct ast *ast)
     // Rediriger le descripteur de fichier
     if (dup2(fd, io_number) == -1)
     {
-        perror("dup2");
         close(fd);
         close(saved_fd);
         return 1;
@@ -222,7 +209,6 @@ static int fd_write_read_redir(int fd, int io_number, struct ast *ast)
     // Restaurer l'ancien descripteur
     if (dup2(saved_fd, io_number) == -1)
     {
-        perror("dup2");
         close(saved_fd);
         return 1;
     }
@@ -234,49 +220,55 @@ static int fd_write_read_redir(int fd, int io_number, struct ast *ast)
 }
 
 // redirection = [IONUMBER] ( '>' | '<' | '>>' | '>&' | '<&' | '>|' | '<>' )
-// WORD ;
 int exec_redir(struct ast *ast)
 {
     int io_number = -1;
-    int i = 0;
-    // Parse io number
-    if (isdigit(ast->expanded_redir[0][0]))
+
+    // Parse IO number directly from the first string
+    char *redir_op = ast->expanded_redir[0];
+    char *start = redir_op;
+
+    while (isdigit(*start)) // Skip digits
     {
-        io_number = ast->expanded_redir[0][0] - '0';
-        // Remove the io number from the list
-        for (i = 0; i < ast->redir_size - 2; i++)
-        {
-            ast->expanded_redir[i] = ast->expanded_redir[i + 2];
-        }
+        if (io_number == -1)
+            io_number = 0;
+        io_number = io_number * 10 + (*start - '0');
+        start++;
     }
 
-    int status = 1;
-    if (strcmp(ast->expanded_redir[i], ">") == 0
-        || strcmp(ast->expanded_redir[i], ">|") == 0)
+    // If digits were found, adjust redir_op to point after them
+    if (start != redir_op)
     {
-        status = simple_redir(ast->expanded_redir[i + 1], io_number, ast);
+        redir_op = start;
     }
-    else if (strcmp(ast->expanded_redir[i], ">&") == 0)
+
+    // Handle redirection operators
+    char *target = ast->expanded_redir[1];
+
+    if (strcmp(redir_op, ">") == 0 || strcmp(redir_op, ">|") == 0)
     {
-        status = fd_redir(atoi(ast->expanded_redir[i + 1]), io_number, ast);
+        return simple_redir(target, io_number, ast);
     }
-    else if (strcmp(ast->expanded_redir[i], "<>") == 0)
+    else if (strcmp(redir_op, ">&") == 0)
     {
-        status = fd_write_read_redir(atoi(ast->expanded_redir[i + 1]),
-                                     io_number, ast);
+        return fd_redir(atoi(target), io_number, ast);
     }
-    else if (strcmp(ast->expanded_redir[i], "<") == 0)
+    else if (strcmp(redir_op, "<>") == 0)
     {
-        status = input_redir(ast->expanded_redir[i + 1], io_number, ast);
+        return fd_write_read_redir(atoi(target), io_number, ast);
     }
-    else if (strcmp(ast->expanded_redir[i], ">>") == 0)
+    else if (strcmp(redir_op, "<") == 0)
     {
-        status = append_redir(ast->expanded_redir[i + 1], io_number, ast);
+        return input_redir(target, io_number, ast);
     }
-    else if (strcmp(ast->expanded_redir[i], "<&") == 0)
+    else if (strcmp(redir_op, ">>") == 0)
     {
-        status =
-            fd_input_redir(atoi(ast->expanded_redir[i + 1]), io_number, ast);
+        return append_redir(target, io_number, ast);
     }
-    return status;
+    else if (strcmp(redir_op, "<&") == 0)
+    {
+        return fd_input_redir(atoi(target), io_number, ast);
+    }
+
+    return 1;
 }
