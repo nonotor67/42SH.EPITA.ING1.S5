@@ -22,14 +22,14 @@ static int simple_redir(char *filename, int io_number, struct ast *ast)
     if (fd == -1)
     {
         perror("open");
-        return -1;
+        return 1;
     }
     // Redirect the file descriptor
-    if (dup2(fd, io_number) == -1)
+    if (dup2(fd, io_number) == 1)
     {
         perror("dup2");
         close(fd);
-        return -1;
+        return 1;
     }
     // Close the file descriptor
     close(fd);
@@ -39,7 +39,7 @@ static int simple_redir(char *filename, int io_number, struct ast *ast)
     if (dup2(STDOUT_FILENO, io_number) == -1)
     {
         perror("dup2");
-        return -1;
+        return 1;
     }
 
     return status;
@@ -56,15 +56,13 @@ static int input_redir(char *filename, int io_number, struct ast *ast)
     int fd = open(filename, O_RDONLY);
     if (fd == -1)
     {
-        perror("open");
-        return -1;
+        return 1;
     }
     // Redirect the file descriptor
     if (dup2(fd, io_number) == -1)
     {
-        perror("dup2");
         close(fd);
-        return -1;
+        return 1;
     }
     // Close the file descriptor
     close(fd);
@@ -73,8 +71,7 @@ static int input_redir(char *filename, int io_number, struct ast *ast)
     // Restore the file descriptor
     if (dup2(STDIN_FILENO, io_number) == -1)
     {
-        perror("dup2");
-        return -1;
+        return 1;
     }
 
     return status;
@@ -87,30 +84,49 @@ static int append_redir(char *filename, int io_number, struct ast *ast)
     {
         io_number = STDOUT_FILENO;
     }
-    // Open the file
+
+    // Ouvrir le fichier
     int fd = open(filename, O_CREAT | O_WRONLY | O_APPEND, 0644);
     if (fd == -1)
     {
         perror("open");
-        return -1;
+        return 1;
     }
-    // Redirect the file descriptor
+
+    // Sauvegarder l'ancien descripteur
+    int saved_stdout = dup(io_number);
+    if (saved_stdout == -1)
+    {
+        perror("dup");
+        close(fd);
+        return 1;
+    }
+
+    // Rediriger la sortie standard
     if (dup2(fd, io_number) == -1)
     {
         perror("dup2");
         close(fd);
-        return -1;
+        close(saved_stdout);
+        return 1;
     }
-    // Close the file descriptor
+
+    // Fermer le descripteur de fichier redirigé
     close(fd);
-    // Execute the command
+
+    // Exécuter la commande
     int status = dispatch_command(ast);
-    // Restore the file descriptor
-    if (dup2(STDOUT_FILENO, io_number) == -1)
+
+    // Restaurer la sortie standard
+    if (dup2(saved_stdout, io_number) == -1)
     {
         perror("dup2");
-        return -1;
+        close(saved_stdout);
+        return 1;
     }
+
+    // Fermer le descripteur sauvegardé
+    close(saved_stdout);
 
     return status;
 }
@@ -127,7 +143,7 @@ static int fd_redir(int fd, int io_number, struct ast *ast)
     {
         perror("dup2");
         close(fd);
-        return -1;
+        return 1;
     }
     // Close the file descriptor
     close(fd);
@@ -137,7 +153,7 @@ static int fd_redir(int fd, int io_number, struct ast *ast)
     if (dup2(STDOUT_FILENO, io_number) == -1)
     {
         perror("dup2");
-        return -1;
+        return 1;
     }
 
     return status;
@@ -155,7 +171,7 @@ static int fd_input_redir(int fd, int io_number, struct ast *ast)
     {
         perror("dup2");
         close(fd);
-        return -1;
+        return 1;
     }
     // Close the file descriptor
     close(fd);
@@ -165,7 +181,7 @@ static int fd_input_redir(int fd, int io_number, struct ast *ast)
     if (dup2(STDIN_FILENO, io_number) == -1)
     {
         perror("dup2");
-        return -1;
+        return 1;
     }
 
     return status;
@@ -183,7 +199,7 @@ static int fd_write_read_redir(int fd, int io_number, struct ast *ast)
     {
         perror("dup2");
         close(fd);
-        return -1;
+        return 1;
     }
     // Close the file descriptor
     close(fd);
@@ -193,7 +209,7 @@ static int fd_write_read_redir(int fd, int io_number, struct ast *ast)
     if (dup2(STDIN_FILENO, io_number) == -1)
     {
         perror("dup2");
-        return -1;
+        return 1;
     }
 
     return status;
