@@ -67,7 +67,7 @@ static void env_init(int argc, char **argv)
     unsigned int argument_list_size = 1024;
     unsigned int actual_list_size = 0;
 
-    for (int i = 0; i < argc; i++)
+    for (int i = 1; i < argc; i++)
     {
         if (actual_list_size + strlen(argv[i]) + 1 >= argument_list_size)
         {
@@ -83,6 +83,8 @@ static void env_init(int argc, char **argv)
         free(int_tmp);
     }
 
+    insertVariable(global_variables, "0", argv[0]);
+
     if (actual_list_size > 0)
     {
         argument_list[actual_list_size - 1] = '\0';
@@ -93,7 +95,7 @@ static void env_init(int argc, char **argv)
 
     // InsertVariables allocate a new string, so we can free or use the old one
     char *int_tmp = xmalloc(256);
-    insertVariable(global_variables, "#", my_itoa(argc - 1, int_tmp));
+    insertVariable(global_variables, "#", my_itoa(argc, int_tmp));
     insertVariable(global_variables, "$", my_itoa(getpid(), int_tmp));
     insertVariable(global_variables, "UID", my_itoa(getuid(), int_tmp));
     free(int_tmp);
