@@ -29,7 +29,8 @@ int execution_for(struct ast *ast)
     int i = 0;
     while (ast->middle->values[i])
     {
-        insertVariable(ast->left->values[0]->value.data, ast->middle->values[i]->value.data);
+        insertVariable(ast->left->values[0]->value.data,
+                       ast->middle->values[i]->value.data);
         status = execute_node(ast->right);
         i++;
     }
