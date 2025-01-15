@@ -1,8 +1,8 @@
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#include <ctype.h>
 
 #include "execution.h"
 #include "utils/utils.h"
