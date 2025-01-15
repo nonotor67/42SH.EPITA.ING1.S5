@@ -339,7 +339,6 @@ Test(lexer, variable_in_word_tricky)
     cr_assert_eq(token.word->var_length, 1);
     cr_assert_not_null(token.word->variables);
     cr_assert_str_eq(token.word->variables[0].name.data, "b");
-    fprintf(stderr, "pos: %zu\n", token.word->variables[0].pos);
     cr_assert_eq(token.word->variables[0].pos, 2);
     word_free(token.word);
     EXPECT(TOKEN_EOF)

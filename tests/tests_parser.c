@@ -314,3 +314,109 @@ Test(parser, test_redir_nested_if)
     cr_assert_null(ast->middle->redir[2]);
     CLEAR_ALL
 }
+
+Test(parser, test_and)
+{
+    INIT_PARSER("echo Hello && echo World")
+    cr_assert_not_null(ast);
+    cr_assert_eq(ast->type, AND);
+    cr_assert_not_null(ast->left);
+    cr_assert_not_null(ast->right);
+    cr_assert_eq(ast->left->type, SIMPLE_COMMAND);
+    cr_assert_eq(ast->right->type, SIMPLE_COMMAND);
+    cr_assert_str_eq(ast->left->values[0]->value.data, "echo");
+    cr_assert_str_eq(ast->left->values[1]->value.data, "Hello");
+    cr_assert_null(ast->left->values[2]);
+    cr_assert_str_eq(ast->right->values[0]->value.data, "echo");
+    cr_assert_str_eq(ast->right->values[1]->value.data, "World");
+    cr_assert_null(ast->right->values[2]);
+    CLEAR_ALL
+}
+
+Test(parser, test_or)
+{
+    INIT_PARSER("echo Hello || echo World")
+    cr_assert_not_null(ast);
+    cr_assert_eq(ast->type, OR);
+    cr_assert_not_null(ast->left);
+    cr_assert_not_null(ast->right);
+    cr_assert_eq(ast->left->type, SIMPLE_COMMAND);
+    cr_assert_eq(ast->right->type, SIMPLE_COMMAND);
+    cr_assert_str_eq(ast->left->values[0]->value.data, "echo");
+    cr_assert_str_eq(ast->left->values[1]->value.data, "Hello");
+    cr_assert_null(ast->left->values[2]);
+    cr_assert_str_eq(ast->right->values[0]->value.data, "echo");
+    cr_assert_str_eq(ast->right->values[1]->value.data, "World");
+    cr_assert_null(ast->right->values[2]);
+    CLEAR_ALL
+}
+
+Test(parser, test_parser_pipe)
+{
+    INIT_PARSER("echo Hello | echo World")
+    cr_assert_not_null(ast);
+    cr_assert_eq(ast->type, PIPELINE);
+    cr_assert_not_null(ast->left);
+    cr_assert_not_null(ast->right);
+    cr_assert_eq(ast->left->type, SIMPLE_COMMAND);
+    cr_assert_eq(ast->right->type, PIPELINE);
+    cr_assert_eq(ast->right->left->type, SIMPLE_COMMAND);
+    cr_assert_str_eq(ast->left->values[0]->value.data, "echo");
+    cr_assert_str_eq(ast->left->values[1]->value.data, "Hello");
+    cr_assert_null(ast->left->values[2]);
+    cr_assert_str_eq(ast->right->left->values[0]->value.data, "echo");
+    cr_assert_str_eq(ast->right->left->values[1]->value.data, "World");
+    cr_assert_null(ast->right->left->values[2]);
+    cr_assert_null(ast->right->right);
+    CLEAR_ALL
+}
+
+Test(parser, test_parser_pipe_multiple)
+{
+    INIT_PARSER("echo Hello | echo World | echo Test")
+    cr_assert_not_null(ast);
+    cr_assert_eq(ast->type, PIPELINE);
+    cr_assert_not_null(ast->left);
+    cr_assert_not_null(ast->right);
+    cr_assert_eq(ast->left->type, SIMPLE_COMMAND);
+    cr_assert_eq(ast->right->type, PIPELINE);
+    cr_assert_eq(ast->right->left->type, SIMPLE_COMMAND);
+    cr_assert_str_eq(ast->left->values[0]->value.data, "echo");
+    cr_assert_str_eq(ast->left->values[1]->value.data, "Hello");
+    cr_assert_null(ast->left->values[2]);
+    cr_assert_str_eq(ast->right->left->values[0]->value.data, "echo");
+    cr_assert_str_eq(ast->right->left->values[1]->value.data, "World");
+    cr_assert_null(ast->right->left->values[2]);
+    cr_assert_eq(ast->right->right->type, PIPELINE);
+    cr_assert_eq(ast->right->right->left->type, SIMPLE_COMMAND);
+    cr_assert_str_eq(ast->right->right->left->values[0]->value.data, "echo");
+    cr_assert_str_eq(ast->right->right->left->values[1]->value.data, "Test");
+    cr_assert_null(ast->right->right->left->values[2]);
+    cr_assert_null(ast->right->right->right);
+    CLEAR_ALL
+}
+
+Test(parser, test_mix_pipeline_and_or)
+{
+    INIT_PARSER("echo Hello | echo World && echo Test")
+    cr_assert_not_null(ast);
+    cr_assert_eq(ast->type, AND);
+    cr_assert_not_null(ast->left);
+    cr_assert_not_null(ast->right);
+    cr_assert_eq(ast->left->type, PIPELINE);
+    cr_assert_eq(ast->right->type, SIMPLE_COMMAND);
+    cr_assert_str_eq(ast->right->values[0]->value.data, "echo");
+    cr_assert_str_eq(ast->right->values[1]->value.data, "Test");
+    cr_assert_null(ast->right->values[2]);
+    cr_assert_eq(ast->left->left->type, SIMPLE_COMMAND);
+    cr_assert_str_eq(ast->left->left->values[0]->value.data, "echo");
+    cr_assert_str_eq(ast->left->left->values[1]->value.data, "Hello");
+    cr_assert_null(ast->left->left->values[2]);
+    cr_assert_eq(ast->left->right->type, PIPELINE);
+    cr_assert_eq(ast->left->right->left->type, SIMPLE_COMMAND);
+    cr_assert_str_eq(ast->left->right->left->values[0]->value.data, "echo");
+    cr_assert_str_eq(ast->left->right->left->values[1]->value.data, "World");
+    cr_assert_null(ast->left->right->left->values[2]);
+    cr_assert_null(ast->left->right->right);
+    CLEAR_ALL
+}
