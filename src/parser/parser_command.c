@@ -24,9 +24,10 @@ static void handle_redirection(struct parser *parser, struct ast *node,
         if (!node->redir)
         {
             node->redir = malloc(sizeof(struct word *) * buffer_size_redir);
+            node->redir_size = 0;
             CHECK_ALLOCATION(node->redir);
         }
-        if (node->redir_size >= buffer_size_redir - 1)
+        if (node->redir_size >= buffer_size_redir - 2)
         {
             buffer_size_redir *= 2;
             node->redir =
@@ -35,10 +36,12 @@ static void handle_redirection(struct parser *parser, struct ast *node,
         }
         struct word *redir = lexer_pop(parser->lexer).word;
         node->redir[node->redir_size++] = redir;
+        node->redir[node->redir_size] = NULL;
         struct token token = lexer_peek(parser->lexer);
         if (token.type == TOKEN_WORD)
         {
             node->redir[node->redir_size++] = token.word;
+            node->redir[node->redir_size] = NULL;
             lexer_pop(parser->lexer);
         }
         else
@@ -97,6 +100,8 @@ struct ast *simple_command(struct parser *parser)
             token = lexer_peek(parser->lexer);
         }
         node->values[node->size] = NULL;
+        if (node->redir)
+            node->redir[node->redir_size] = NULL;
         return node;
     }
     fprintf(stderr, "Error: Expected a word token (simple_command)\n");
@@ -253,6 +258,8 @@ struct ast *command(struct parser *parser)
                 {
                     handle_redirection(parser, ast, buffer_size_redir);
                 }
+                if (ast->redir)
+                    ast->redir[ast->redir_size] = NULL;
                 return ast;
             }
     }

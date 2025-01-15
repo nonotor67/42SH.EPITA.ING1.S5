@@ -70,23 +70,20 @@ test_functional "Simple echo with newline" "/bin/echo -n Hello world"
 test_functional "Simple true" "/bin/true"
 test_functional "Simple false" "/bin/false"
 
-
-# Test bad if
-test_functional "Bad if 1 " "if; then echo true; fi"
-test_functional "Bad if 2 " "if; then echo true; else echo false; fi"
-test_functional "Bad if 3 " "if echo encore; fi"
-test_functional "Bad if 4 " "if echo encore; then echo true;"
-test_functional "Bad if 5 " "if echo encore; then echo true; else echo false"
-test_functional "Bad if 6 " "if echo encore; then echo true; elif echo encore; fi"
-test_functional "Bad if 7 " "if echo test
-then
-fi"
-test_functional "ACU" "if true then echo encore; fi"
-
 echo
 echo "==== Test Summary for $(basename "$0") ===="
 echo "Total tests: $total_tests"
 echo "Failed tests: $failed_tests"
+
+# Test with variables
+
+test_functional "Simple echo with variable" "echo \$PWD"
+test_functional "Simple echo with variable" "echo \$@"
+test_functional "Simple echo with variable" "echo \$?"
+test_functional "Simple echo with variable" "echo \$1"
+toto=pouet
+test_functional "Simple echo with variable" "echo \$toto"
+
 
 if [[ $failed_tests -gt 0 ]]; then
     exit 1

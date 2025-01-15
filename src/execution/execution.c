@@ -18,7 +18,8 @@ static const struct execute_entry execute_table[] = {
     { CONDITIONS, execute_condition },
     { OR, execution_or },
     { AND, execution_and },
-    { PIPELINE, execute_pipeline }
+    { PIPELINE, execute_pipeline },
+    { NEGATION, execute_negation },
 };
 
 /*
@@ -36,7 +37,7 @@ static void expand_values(char ***target, struct word **source)
         size++;
     *target = malloc((size + 1) * sizeof(char *));
     for (size_t i = 0; i < size; i++)
-        (*target)[i] = word_eval(source[i], NULL, NULL);
+        (*target)[i] = word_eval(source[i]);
     (*target)[size] = NULL;
 }
 
