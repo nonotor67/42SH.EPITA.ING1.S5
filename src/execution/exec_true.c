@@ -1,5 +1,3 @@
-#include <stdio.h>
-
 #include "execution.h"
 
 int exec_true(__attribute__((unused)) int argc,
