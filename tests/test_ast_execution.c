@@ -372,6 +372,36 @@ Test(execute_node, simple_and_lazy)
     ast_free(node);
 }
 
+Test(execute_node, simple_negation)
+{
+    struct ast *node = ast_new(NEGATION);
+    node->left = ast_new(SIMPLE_COMMAND);
+    node->left->size = 1;
+    struct word **value_left = malloc(sizeof(char *) * 2);
+    node->left->values = value_left;
+    node->left->values[0] = my_strdup("false");
+    node->left->values[1] = NULL;
+
+    cr_assert_eq(execute_node(node), 0);
+
+    ast_free(node);
+}
+
+Test(execute_node, simple_negation_true)
+{
+    struct ast *node = ast_new(NEGATION);
+    node->left = ast_new(SIMPLE_COMMAND);
+    node->left->size = 1;
+    struct word **value_left = malloc(sizeof(char *) * 2);
+    node->left->values = value_left;
+    node->left->values[0] = my_strdup("true");
+    node->left->values[1] = NULL;
+
+    cr_assert_eq(execute_node(node), 1);
+
+    ast_free(node);
+}
+
 Test(execute_node, simple_while)
 {
     cr_redirect_stdout();
