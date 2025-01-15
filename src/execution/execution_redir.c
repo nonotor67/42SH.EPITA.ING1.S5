@@ -187,30 +187,48 @@ static int fd_input_redir(int fd, int io_number, struct ast *ast)
     return status;
 }
 
-// Handle <>
+// Handle <>, read and write
 static int fd_write_read_redir(int fd, int io_number, struct ast *ast)
 {
     if (io_number == -1)
     {
         io_number = STDIN_FILENO;
     }
-    // Redirect the file descriptor
+
+    // Sauvegarder l'ancien descripteur
+    int saved_fd = dup(io_number);
+    if (saved_fd == -1)
+    {
+        perror("dup");
+        close(fd);
+        return 1;
+    }
+
+    // Rediriger le descripteur de fichier
     if (dup2(fd, io_number) == -1)
     {
         perror("dup2");
         close(fd);
+        close(saved_fd);
         return 1;
     }
-    // Close the file descriptor
+
+    // Fermer le descripteur redirigé
     close(fd);
-    // Execute the command
+
+    // Exécuter la commande
     int status = dispatch_command(ast);
-    // Restore the file descriptor
-    if (dup2(STDIN_FILENO, io_number) == -1)
+
+    // Restaurer l'ancien descripteur
+    if (dup2(saved_fd, io_number) == -1)
     {
         perror("dup2");
+        close(saved_fd);
         return 1;
     }
+
+    // Fermer le descripteur sauvegardé
+    close(saved_fd);
 
     return status;
 }
