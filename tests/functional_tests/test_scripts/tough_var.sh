@@ -1,6 +1,6 @@
 a='salut
 
-jean      jacques
+jean		jacques
 
 
 '
