@@ -421,7 +421,7 @@ Test(execute_node, simple_while)
     node->right->values[1] = my_strdup("Hello, world!");
     node->right->values[2] = NULL;
 
-    cr_assert_eq(execution_while(node), 0);
+    cr_assert_eq(execute_node(node), 0);
 
     fflush(stdout);
     cr_assert_stdout_eq_str("");
@@ -447,7 +447,7 @@ Test(execute_node, simple_until)
     node->right->values[1] = my_strdup("Hello, world!");
     node->right->values[2] = NULL;
 
-    cr_assert_eq(execution_until(node), 0);
+    cr_assert_eq(execute_node(node), 0);
 
     fflush(stdout);
     cr_assert_stdout_eq_str("");
