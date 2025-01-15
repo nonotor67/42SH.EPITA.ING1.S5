@@ -3,6 +3,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "utils/utils.h"
 
@@ -15,6 +16,8 @@ struct word *word_new(void)
     word->variables = NULL;
     word->var_length = 0;
     word->var_capacity = 0;
+    word->has_escaped = 0;
+    word->valid_assignment = 1; // default to true
     return word;
 }
 

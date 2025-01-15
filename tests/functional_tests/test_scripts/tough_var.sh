@@ -6,3 +6,5 @@ jean		jacques
 '
 
 echo $a
+
+echo $empty $empty
