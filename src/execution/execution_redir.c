@@ -1,7 +1,7 @@
 #include "execution_redir.h"
 
-#include <stdio.h>
 #include <ctype.h>
+#include <stdio.h>
 
 #include "execution.h"
 
