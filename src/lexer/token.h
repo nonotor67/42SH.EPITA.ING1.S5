@@ -20,6 +20,10 @@ enum token_type
     TOKEN_SEMICOLON,
     TOKEN_WORD,
     TOKEN_REDIR,
+    TOKEN_PIPE,
+    TOKEN_AND,
+    TOKEN_OR,
+    TOKEN_NEGATION
 };
 
 struct token
