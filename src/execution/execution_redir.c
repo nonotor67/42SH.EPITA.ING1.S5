@@ -25,7 +25,7 @@ static int simple_redir(char *filename, int io_number, struct ast *ast)
         return 1;
     }
     // Redirect the file descriptor
-    if (dup2(fd, io_number) == 1)
+    if (dup2(fd, io_number) == -1)
     {
         perror("dup2");
         close(fd);
