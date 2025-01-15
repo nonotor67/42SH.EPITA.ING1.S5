@@ -126,7 +126,8 @@ int exec_redir(struct ast *ast)
     }
 
     int status = 1;
-    if (strcmp(ast->expanded_redir[i], ">") == 0 || strcmp(ast->expanded_redir[i], ">|") == 0)
+    if (strcmp(ast->expanded_redir[i], ">") == 0
+        || strcmp(ast->expanded_redir[i], ">|") == 0)
     {
         status = simple_redir(ast->expanded_redir[i + 1], io_number, ast);
     }
@@ -136,7 +137,6 @@ int exec_redir(struct ast *ast)
     }
     else if (strcmp(ast->expanded_redir[i], "<>") == 0)
     {
-
     }
     else if (strcmp(ast->expanded_redir[i], "<") == 0)
     {
@@ -144,11 +144,9 @@ int exec_redir(struct ast *ast)
     }
     else if (strcmp(ast->expanded_redir[i], ">>") == 0)
     {
-
     }
     else if (strcmp(ast->expanded_redir[i], "<&") == 0)
     {
-
     }
     return status;
 }
