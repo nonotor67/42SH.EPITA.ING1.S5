@@ -19,7 +19,8 @@ static const struct execute_entry execute_table[] = {
     { PIPELINE, execute_pipeline },
     { NEGATION, execute_negation },
     { WHILE_LOOP, execution_while },
-    { UNTIL_LOOP, execution_until }
+    { UNTIL_LOOP, execution_until },
+    { FOR_LOOP, execution_for }
 };
 
 /*

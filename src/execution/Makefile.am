@@ -22,8 +22,8 @@ libexecution_a_SOURCES =  \
   execution_or_and.h \
   execution_pipeline.c \
   execution_pipeline.h \
-  execution_while.c \
-  execution_while.h
+  execution_loop.c \
+  execution_loop.h
 
 libexecution_a_CPPFLAGS = -I$(top_srcdir)/src
 
