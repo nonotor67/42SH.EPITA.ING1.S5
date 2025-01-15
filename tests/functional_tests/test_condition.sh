@@ -64,6 +64,18 @@ test_functional "Commands list with conditions" "echo toto; if true; then echo t
 test_functional "Simple condition with binary" "if true; then /bin/echo \"true\"; fi"
 test_functional "Simple condition with else and binary" "if false; then /bin/echo \"true\"; else /bin/echo \"false\"; fi"
 
+# Test bad if
+test_functional "Bad if 1 " "if; then echo true; fi"
+test_functional "Bad if 2 " "if; then echo true; else echo false; fi"
+test_functional "Bad if 3 " "if echo encore; fi"
+test_functional "Bad if 4 " "if echo encore; then echo true;"
+test_functional "Bad if 5 " "if echo encore; then echo true; else echo false"
+test_functional "Bad if 6 " "if echo encore; then echo true; elif echo encore; fi"
+test_functional "Bad if 7 " "if echo test
+then
+fi"
+test_functional "ACU" "if true then echo encore; fi"
+
 echo
 echo "==== Test Summary for $(basename "$0") ===="
 echo "Total tests: $total_tests"
