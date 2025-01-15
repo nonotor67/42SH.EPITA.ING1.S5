@@ -18,7 +18,8 @@ static const struct execute_entry execute_table[] = {
     { CONDITIONS, execute_condition },
     { OR, execution_or },
     { AND, execution_and },
-    { PIPELINE, execute_pipeline }
+    { PIPELINE, execute_pipeline },
+    { NEGATION, execute_negation },
 };
 
 /*
