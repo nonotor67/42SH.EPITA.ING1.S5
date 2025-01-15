@@ -420,3 +420,23 @@ Test(parser, test_mix_pipeline_and_or)
     cr_assert_null(ast->left->right->right);
     CLEAR_ALL
 }
+
+Test(parser, test_pipe_negation)
+{
+    INIT_PARSER("! echo Hello | echo World")
+    cr_assert_not_null(ast);
+    cr_assert_eq(ast->type, NEGATION);
+    cr_assert_not_null(ast->left);
+    cr_assert_eq(ast->left->type, PIPELINE);
+    cr_assert_eq(ast->left->left->type, SIMPLE_COMMAND);
+    cr_assert_eq(ast->left->right->type, PIPELINE);
+    cr_assert_str_eq(ast->left->left->values[0]->value.data, "echo");
+    cr_assert_str_eq(ast->left->left->values[1]->value.data, "Hello");
+    cr_assert_null(ast->left->left->values[2]);
+    cr_assert_eq(ast->left->right->left->type, SIMPLE_COMMAND);
+    cr_assert_str_eq(ast->left->right->left->values[0]->value.data, "echo");
+    cr_assert_str_eq(ast->left->right->left->values[1]->value.data, "World");
+    cr_assert_null(ast->left->right->left->values[2]);
+    cr_assert_null(ast->left->right->right);
+    CLEAR_ALL
+}
