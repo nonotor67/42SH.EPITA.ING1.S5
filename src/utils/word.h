@@ -31,8 +31,7 @@ void word_push_variable(struct word *word, struct variable var);
 // returns 1 if words are equal, 0 otherwise
 int word_equals(struct word *word1, struct word *word2);
 
-typedef char *(*evaluator)(const char *, void *);
 // returns a new string with variables evaluated
-char *word_eval(struct word *word, evaluator eval, void *data);
+char *word_eval(struct word *word);
 
 #endif // !WORD_H
