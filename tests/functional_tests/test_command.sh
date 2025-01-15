@@ -84,6 +84,13 @@ test_functional "Simple echo with variable" "echo \$1"
 toto=pouet
 test_functional "Simple echo with variable" "echo \$toto"
 
+# Test with for
+test_functional "Simple for" "for i in 1 2 3; do echo \$i; done"
+test_functional "Simple for" "for i in 1; do echo \$i; done"
+test_functional "Bad for" "for i in 1 2; do echo \$i"
+# TODO: fix test_functional "Bad for" "for i in 1 2; do echo \$i; done; done"
+test_functional "Bad for" "for i in 1 2; do echo \$i done"
+
 
 if [[ $failed_tests -gt 0 ]]; then
     exit 1
