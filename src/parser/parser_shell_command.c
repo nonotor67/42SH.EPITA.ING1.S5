@@ -65,15 +65,49 @@ static struct ast *rule_for(struct parser *parser)
 // rule_while = 'while' compound_list 'do' compound_list 'done' ;
 static struct ast *rule_while(struct parser *parser)
 {
-    (void)parser;
-    return NULL;
+    struct token tok;
+    EXPECT_WORD(parser->lexer, "while", "Expected 'while' keyword (rule_while)\n");
+    CHECK_STATUS(parser, NULL, "Error bad while\n");
+
+    struct ast *root = ast_new(WHILE_LOOP);
+
+    root->left = compound_list(parser);
+    CHECK_STATUS(parser, root, "Error after parsing compound_list (while[0])\n");
+
+    EXPECT_WORD(parser->lexer, "do", "Expected 'do' keyword (rule_while)\n");
+    CHECK_STATUS(parser, root, "Error bad while\n");
+
+    root->right = compound_list(parser);
+    CHECK_STATUS(parser, root, "Error after parsing compound_list (while[1])\n");
+
+    EXPECT_WORD(parser->lexer, "done", "Expected 'done' keyword (rule_while)\n");
+    CHECK_STATUS(parser, root, "Error bad while\n");
+
+    return root;
 }
 
 // rule_until = 'until' compound_list 'do' compound_list 'done' ;
 static struct ast *rule_until(struct parser *parser)
 {
-    (void)parser;
-    return NULL;
+    struct token tok;
+    EXPECT_WORD(parser->lexer, "until", "Expected 'until' keyword (rule_until)\n");
+    CHECK_STATUS(parser, NULL, "Error bad until\n");
+
+    struct ast *root = ast_new(UNTIL_LOOP);
+
+    root->left = compound_list(parser);
+    CHECK_STATUS(parser, root, "Error after parsing compound_list (until[0])\n");
+
+    EXPECT_WORD(parser->lexer, "do", "Expected 'do' keyword (rule_until)\n");
+    CHECK_STATUS(parser, root, "Error bad until\n");
+
+    root->right = compound_list(parser);
+    CHECK_STATUS(parser, root, "Error after parsing compound_list (until[1])\n");
+
+    EXPECT_WORD(parser->lexer, "done", "Expected 'done' keyword (rule_until)\n");
+    CHECK_STATUS(parser, root, "Error bad until\n");
+
+    return root;
 }
 
 /*
