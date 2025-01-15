@@ -20,6 +20,7 @@ run_test_script "$path_to_tests/test_builtin.sh"
 run_test_script "$path_to_tests/test_command.sh"
 run_test_script "$path_to_tests/test_condition.sh"
 run_test_script "$path_to_tests/test_comments.sh"
+run_test_script "$path_to_tests/test_redirection.sh"
 run_test_script "$path_to_tests/test_script.sh"
 
 # Résumé global
