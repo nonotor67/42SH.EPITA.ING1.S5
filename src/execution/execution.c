@@ -36,6 +36,12 @@ static void expand_values(char ***target, struct word **source)
     size_t size = 0;
     while (source[size])
         size++;
+    if (*target)
+    {
+        for (size_t i = 0; i < size; i++)
+            free((*target)[i]);
+        free(*target);
+    }
     *target = xmalloc((size + 1) * sizeof(char *));
     size_t j = 0;
     for (size_t i = 0; i < size; i++)
