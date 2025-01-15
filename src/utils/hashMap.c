@@ -1,26 +1,17 @@
 #include <stddef.h>
+#include <stdio.h>
 #include <string.h>
 
 #include "utils.h"
 
-struct HashMap *create_hash_table()
-{
-    struct HashMap *ht = xmalloc(sizeof(struct HashMap));
-    // Initialize the hash table with NULL values
-    for (int i = 0; i < TABLE_SIZE; i++)
-    {
-        ht->map[i] = NULL;
-    }
+static struct HashMap global_variables = { { NULL } };
 
-    return ht;
-}
-
-void free_hash_map(struct HashMap *ht)
+void free_hash_map()
 {
     // Free the memory allocated for each variable
     for (int i = 0; i < TABLE_SIZE; i++)
     {
-        struct Variable *var = ht->map[i];
+        struct Variable *var = global_variables.map[i];
         // Free the linked list
         while (var != NULL)
         {
@@ -28,8 +19,8 @@ void free_hash_map(struct HashMap *ht)
             free_variable(var);
             var = next;
         }
+        global_variables.map[i] = NULL;
     }
-    free(ht);
 }
 
 unsigned int hash(char *name)
@@ -43,23 +34,23 @@ unsigned int hash(char *name)
     return hash % TABLE_SIZE;
 }
 
-void insertVariable(struct HashMap *ht, char *name, char *value)
+void insertVariable(char *name, char *value)
 {
-    if (getVariable(ht, name).name != NULL)
+    if (getVariable(name).name != NULL)
     {
-        updateVariable(ht, name, value);
+        updateVariable(name, value);
         return;
     }
     unsigned int index = hash(name);
     struct Variable *var = create_variable(name, value);
-    var->next = ht->map[index];
-    ht->map[index] = var;
+    var->next = global_variables.map[index];
+    global_variables.map[index] = var;
 }
 
-struct Variable getVariable(struct HashMap *ht, char *name)
+struct Variable getVariable(char *name)
 {
     unsigned int index = hash(name);
-    struct Variable *var = ht->map[index];
+    struct Variable *var = global_variables.map[index];
     // Search for the variable in the linked list
     while (var != NULL)
     {
@@ -73,10 +64,10 @@ struct Variable getVariable(struct HashMap *ht, char *name)
     return (struct Variable){ NULL, NULL, NULL };
 }
 
-void updateVariable(struct HashMap *ht, char *name, char *value)
+void updateVariable(char *name, char *value)
 {
     unsigned int index = hash(name);
-    struct Variable *var = ht->map[index];
+    struct Variable *var = global_variables.map[index];
     // Search for the variable in the linked list
     while (var != NULL)
     {
