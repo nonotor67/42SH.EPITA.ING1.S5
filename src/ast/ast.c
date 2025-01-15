@@ -58,7 +58,7 @@ void ast_free(struct ast *ast)
     if (ast->redir)
     {
         for (size_t i = 0; ast->redir[i]; i++)
-            free(ast->redir[i]);
+            word_free(ast->redir[i]);
         free(ast->redir);
     }
 
