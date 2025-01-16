@@ -164,7 +164,12 @@ static struct token lexer_next_handle_word(struct lexer *lexer)
         {
             next_char(lexer);
             struct variable var;
-            if (lexer_lex_variable(lexer, &var))
+
+            size_t length = word->value.length;
+            if (length > 0 && word->value.data[length - 1] == '\\')
+                // replace the backslash with '$'
+                word->value.data[length - 1] = '$';
+            else if (lexer_lex_variable(lexer, &var))
             {
                 var.pos = word->value.length;
                 word_push_variable(word, var);
