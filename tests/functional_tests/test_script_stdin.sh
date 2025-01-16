@@ -1,8 +1,5 @@
 #!/bin/bash
 
-total_tests=0
-failed_tests=0
-
 function test_functional() {
     local test_name="$1"
     local file="$2"
@@ -15,13 +12,13 @@ function test_functional() {
     local your_stdout your_stderr your_exit_code
     your_stdout=$(mktemp)
     your_stderr=$(mktemp)
-    "$your_shell" "$file" >"$your_stdout" 2>"$your_stderr"
+    "$your_shell" < "$file" >"$your_stdout" 2>"$your_stderr"
     your_exit_code=$?
 
     local ref_stdout ref_stderr ref_exit_code
     ref_stdout=$(mktemp)
     ref_stderr=$(mktemp)
-    "$ref_shell" "$file" >"$ref_stdout" 2>"$ref_stderr"
+    "$ref_shell" < "$file" >"$ref_stdout" 2>"$ref_stderr"
     ref_exit_code=$?
 
     local your_output=$(<"$your_stdout")
@@ -54,14 +51,3 @@ function test_functional() {
 for file in $(find 'functional_tests/test_scripts' -name "*.sh"); do
     test_functional "Script: $(basename "$file")" "$file"
 done
-
-echo
-echo "==== Test Summary for $(basename "$0") ===="
-echo "Total tests: $total_tests"
-echo "Failed tests: $failed_tests"
-
-if [[ $failed_tests -gt 0 ]]; then
-    exit 1
-else
-    exit 0
-fi

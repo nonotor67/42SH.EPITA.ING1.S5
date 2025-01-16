@@ -25,32 +25,39 @@ static struct ast *rule_for(struct parser *parser)
     root->left->values[1] = NULL;
     root->left->size = 1;
 
-    if (!eat_word(parser->lexer, ";"))
+    if (!eat(parser->lexer, TOKEN_SEMICOLON))
     {
         skip_eol(parser->lexer);
-        EXPECT_WORD(parser->lexer, "in", "Expected 'in' (rule_for)\n");
-        CHECK_STATUS(parser, root, "Error after parsing word (rule_for)\n");
-        struct ast *middle = ast_new(WORD_COMPONENTS);
-        middle->values = malloc(sizeof(struct word *) * 16);
-        middle->size = 0;
-        while (lexer_peek(parser->lexer).type == TOKEN_WORD)
+        tok = lexer_peek(parser->lexer);
+        if (tok.type == TOKEN_WORD && strcmp(tok.word->value.data, "in") == 0)
         {
-            tok = lexer_pop(parser->lexer);
-            if (middle->size >= 16)
+            EXPECT_WORD(parser->lexer, "in", "Expected 'in' (rule_for)\n");
+            CHECK_STATUS(parser, root, "Error after parsing word (rule_for)\n");
+            struct ast *middle = ast_new(WORD_COMPONENTS);
+            middle->values = malloc(sizeof(struct word *) * 16);
+            middle->size = 0;
+            while (lexer_peek(parser->lexer).type == TOKEN_WORD)
             {
-                middle->values = realloc(
-                    middle->values, sizeof(struct word *) * middle->size * 2);
+                tok = lexer_pop(parser->lexer);
+                if (middle->size >= 16)
+                {
+                    middle->values =
+                        realloc(middle->values,
+                                sizeof(struct word *) * middle->size * 2);
+                }
+                middle->values[middle->size++] = tok.word;
+                middle->values[middle->size] = NULL;
             }
-            middle->values[middle->size++] = tok.word;
+            root->middle = middle;
             middle->values[middle->size] = NULL;
-        }
-        root->middle = middle;
-        if (!eat(parser->lexer, TOKEN_SEMICOLON)
-            && !eat(parser->lexer, TOKEN_EOL))
-        {
-            parser->status = PARSER_UNEXPECTED_TOKEN;
-            fprintf(stderr, "Error: Expected ';' or EOL (rule_for)\n");
-            return NULL;
+
+            if (!eat(parser->lexer, TOKEN_SEMICOLON)
+                && !eat(parser->lexer, TOKEN_EOL))
+            {
+                parser->status = PARSER_UNEXPECTED_TOKEN;
+                fprintf(stderr, "Error: Expected ';' or EOL (rule_for)\n");
+                return NULL;
+            }
         }
     }
     skip_eol(parser->lexer);
