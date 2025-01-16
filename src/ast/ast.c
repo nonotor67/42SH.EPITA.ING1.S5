@@ -62,4 +62,3 @@ void ast_free(struct ast *ast)
 
     free(ast);
 }
-
