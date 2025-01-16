@@ -12,4 +12,4 @@ autoreconf --install
 make check || true
 
 # Calculer la couverture de code avec gcovr
-gcovr src/
+gcovr src/ --gcov-ignore-parse-errors
