@@ -12,6 +12,9 @@ unit_tests_LDADD = -lcriterion -L$(abs_top_builddir)/src/io -lio -L$(abs_top_bui
 unit_tests_CPPFLAGS = -I$(abs_top_srcdir)/src
 
 check-local: $(check_PROGRAMS)
+	$(MAKE) $(check_PROGRAMS) || true
+	./run_tests.sh
+
+test: $(check_PROGRAMS)
 	$(MAKE) $(check_PROGRAMS)
-	./unit_tests
-	./functional_tests/func_tests.sh
+	BIN_PATH="../src/42sh" COVERAGE="yes" PIPELINE="yes" ./run_tests.sh

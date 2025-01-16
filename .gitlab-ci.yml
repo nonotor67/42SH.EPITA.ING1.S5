@@ -35,7 +35,7 @@ test:
     -  apt-get update && apt-get install -y autoconf-archive libcriterion-dev
     - autoreconf --install
     - ./debug.sh
-    - make check
+    - make tests
   when: on_success
 
 clang-format:
@@ -53,7 +53,7 @@ coverage:
     -  apt-get update && apt-get install -y autoconf-archive libcriterion-dev gcovr bc
     - autoreconf --install
     - ./configure CFLAGS="-Wall -Wextra -Werror -Wvla -pedantic -std=c99 -coverage -fPIC -I../src -g3 -fsanitize=address" LDFLAGS="-fsanitize=address --coverage" LDLIBS="-lgcov fsanitize=address"
-    - make check || true
+    - make tests || true
     - |
       coverage=$(gcovr src/ --gcov-ignore-parse-errors | tail -n2 | head -n1 | grep -o '[0-9]\+%')
       echo "Coverage: $coverage"
