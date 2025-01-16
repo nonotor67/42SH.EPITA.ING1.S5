@@ -23,6 +23,7 @@ run_test_script "$path_to_tests/test_comments.sh"
 run_test_script "$path_to_tests/test_redirection.sh"
 run_test_script "$path_to_tests/test_script.sh"
 run_test_script "$path_to_tests/test_pipeline.sh"
+run_test_script "$path_to_tests/test_script_stdin.sh"
 
 # Résumé global
 echo
