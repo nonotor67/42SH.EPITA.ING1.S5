@@ -12,6 +12,7 @@ Makefile.in
 */Makefile.in
 missing
 install-sh
+install-sh~
 depcomp
 configure
 configure~
