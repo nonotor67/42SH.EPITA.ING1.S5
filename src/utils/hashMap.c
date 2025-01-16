@@ -1,5 +1,6 @@
 #include <stddef.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "utils.h"
@@ -47,8 +48,16 @@ void insertVariable(char *name, char *value)
     global_variables.map[index] = var;
 }
 
+static char rand_buf[16];
+
 struct Variable getVariable(char *name)
 {
+    if (strcmp(name, "RANDOM") == 0)
+    {
+        sprintf(rand_buf, "%d", rand() % 32767);
+        return (struct Variable){ "RANDOM", rand_buf, NULL };
+    }
+
     unsigned int index = hash(name);
     struct Variable *var = global_variables.map[index];
     // Search for the variable in the linked list
