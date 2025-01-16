@@ -27,7 +27,7 @@ int execution_for(struct ast *ast)
     int status = 0;
 
     int i = 0;
-    while (ast->middle->values[i])
+    while (ast->middle && ast->middle->values[i])
     {
         insertVariable(ast->left->values[0]->value.data,
                        ast->middle->values[i]->value.data);
