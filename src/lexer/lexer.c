@@ -119,15 +119,26 @@ int lexer_lex_variable(struct lexer *lexer, struct variable *var)
             return 1;
         }
     }
+    const int bracket = c == '{';
+    if (bracket)
+        next_char(lexer);
 
     // try normal vars
-    if (!lexer_is_name_char(lexer))
+    if (!bracket && !lexer_is_name_char(lexer))
         return 0;
+
     string_init(&var->name);
     while (lexer_is_name_char(lexer))
     {
         string_push(&var->name, (char)last_char(lexer));
         next_char(lexer);
+    }
+    if (bracket)
+    {
+        if (last_char(lexer) != '}')
+            var->name.length = 0;
+        else
+            next_char(lexer);
     }
     return 1;
 }

@@ -56,6 +56,15 @@ int word_equals(struct word *word1, struct word *word2)
     return strcmp(word1->value.data, word2->value.data) == 0;
 }
 
+int is_word_valid(struct word *word)
+{
+    int valid = 1;
+    for (size_t i = 0; i < word->var_length; i++)
+        if (word->variables[i].name.length == 0)
+            valid = 0;
+    return valid;
+}
+
 char *word_eval(struct word *word)
 {
     struct string str;
