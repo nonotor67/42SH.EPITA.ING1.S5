@@ -54,6 +54,7 @@ coverage:
     -  apt-get update && apt-get install -y autoconf-archive libcriterion-dev gcovr bc
     - autoreconf --install
     - ./configure CFLAGS="-Wall -Wextra -Werror -Wvla -pedantic -std=c99 -coverage -fPIC -I../src -g3 -fsanitize=address" LDFLAGS="-fsanitize=address --coverage" LDLIBS="-lgcov fsanitize=address"
+    - make
     - cd tests
     - make test || true
     - |
