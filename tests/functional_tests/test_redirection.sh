@@ -4,6 +4,9 @@
 failed_tests=0
 BIN=$1
 
+# Obtain the test status
+. ./test_status.sh
+
 bash --posix -c 'echo hello > actual'
 $BIN -c 'echo hello > expected'
 
@@ -72,3 +75,8 @@ if [ $failed_tests -gt 0 ]; then
   echo "❌ $failed_tests tests failed"
   exit 1
 fi
+
+TOTAL_TEST=$((TOTAL_TEST + 6))
+FAIL_TEST=$((FAIL_TEST + failed_tests))
+echo "TOTAL_TEST=$TOTAL_TEST" >test_status.sh
+echo "FAIL_TEST=$FAIL_TEST" >>test_status.sh

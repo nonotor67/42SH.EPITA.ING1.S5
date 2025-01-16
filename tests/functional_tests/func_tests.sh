@@ -5,6 +5,7 @@ total_tests=0
 failed_tests=0
 
 BIN=$1
+printf "TOTAL_TEST=0\nFAIL_TEST=0" > test_status.sh
 
 run_test_script() {
     script="$1"
@@ -25,7 +26,7 @@ run_test_script "$path_to_tests/test_comments.sh"
 run_test_script "$path_to_tests/test_redirection.sh"
 run_test_script "$path_to_tests/test_script.sh"
 run_test_script "$path_to_tests/test_pipeline.sh"
-# run_test_script "$path_to_tests/test_script_stdin.sh"
+run_test_script "$path_to_tests/test_script_stdin.sh"
 
 # Résumé global
 echo

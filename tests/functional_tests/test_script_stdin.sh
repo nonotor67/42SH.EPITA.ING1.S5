@@ -2,6 +2,9 @@
 
 BIN=$1
 
+# Obtain the test status
+. ./test_status.sh
+
 test_functional() {
     test_name="$1"
     file="$2"
@@ -59,8 +62,10 @@ echo "==== Test Summary ===="
 echo "Total tests: $total_tests"
 echo "Failed tests: $failed_tests"
 
-echo $TOTAL_TESTS
-TOTAL_TESTS=$((TOTAL_TESTS + total_tests))
+TOTAL_TEST=$((TOTAL_TEST + total_tests))
+FAIL_TEST=$((FAIL_TEST + failed_tests))
+echo "TOTAL_TEST=$TOTAL_TEST" >test_status.sh
+echo "FAIL_TEST=$FAIL_TEST" >>test_status.sh
 
 if [ $failed_tests -gt 0 ]; then
     exit 1

@@ -1,6 +1,12 @@
 #!/bin/sh
 
+total_tests=0
+failed_tests=0
+
 BIN=$1
+
+# Obtain the test status
+. ./test_status.sh
 
 test_functional() {
     test_name="$1"
@@ -48,3 +54,8 @@ test_functional() {
 for file in $(find 'tests/functional_tests/test_scripts' -name "*.sh"); do
     test_functional "Script: $(basename "$file")" "$file"
 done
+
+TOTAL_TEST=$((TOTAL_TEST + total_tests))
+FAIL_TEST=$((FAIL_TEST + failed_tests))
+echo "TOTAL_TEST=$TOTAL_TEST" >test_status.sh
+echo "FAIL_TEST=$FAIL_TEST" >>test_status.sh
