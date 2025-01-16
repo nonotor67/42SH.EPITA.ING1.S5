@@ -3,13 +3,14 @@
 total_tests=0
 failed_tests=0
 
+BIN="$1"
+
 test_functional() {
     test_name="$1"
     command="$2"
-    your_shell="../src/42sh"
+    your_shell="$BIN"
     ref_shell="bash"
 
-    echo "Running test: $test_name"
     total_tests=$((total_tests + 1))
 
     your_stdout=$(mktemp)

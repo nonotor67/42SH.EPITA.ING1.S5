@@ -13,5 +13,4 @@ unit_tests_CPPFLAGS = -I$(abs_top_srcdir)/src
 
 check-local: $(check_PROGRAMS)
 	$(MAKE) $(check_PROGRAMS)
-	./unit_tests
-	./functional_tests/func_tests.sh
+	BIN_PATH="../src/42sh" ./run_tests.sh

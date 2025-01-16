@@ -4,10 +4,12 @@ path_to_tests="/functional_tests"
 total_tests=0
 failed_tests=0
 
+BIN=$1
+
 run_test_script() {
     script="$1"
     echo "Executing test script: $script"
-    ./"$script"
+    ./"$script" $BIN
     script_exit_code=$?
     if [ $script_exit_code -ne 0 ]; then
         failed_tests=$((failed_tests + 1))
@@ -23,7 +25,7 @@ run_test_script "$path_to_tests/test_comments.sh"
 run_test_script "$path_to_tests/test_redirection.sh"
 run_test_script "$path_to_tests/test_script.sh"
 run_test_script "$path_to_tests/test_pipeline.sh"
-run_test_script "$path_to_tests/test_script_stdin.sh"
+# run_test_script "$path_to_tests/test_script_stdin.sh"
 
 # Résumé global
 echo

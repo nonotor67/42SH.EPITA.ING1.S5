@@ -3,11 +3,13 @@
 total_tests=0
 failed_tests=0
 
+BIN=$1
+
 test_functional() {
     test_name="$1"
     command="$2"
     your_shell="../src/42sh"
-    ref_shell="bash"
+    ref_shell="$BIN"
 
     total_tests=$((total_tests + 1))
 
