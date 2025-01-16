@@ -1,5 +1,7 @@
 #include "execution.h"
 
+#include <stdio.h>
+
 #include "utils/utils.h"
 
 typedef int (*execute_function)(struct ast *);
@@ -30,8 +32,9 @@ array.
 the evaluated values.
 @param source Array of pointers to 'word' structures, which contains the
 elements to be evaluated.
+@return 0 if the expansion was successful, 1 otherwise.
  */
-static void expand_values(char ***target, struct word **source)
+static int expand_values(char ***target, struct word **source)
 {
     size_t size = 0;
     while (source[size])
@@ -44,8 +47,10 @@ static void expand_values(char ***target, struct word **source)
     }
     *target = xmalloc((size + 1) * sizeof(char *));
     size_t j = 0;
+    int failed = 0;
     for (size_t i = 0; i < size; i++)
     {
+        failed = failed || !is_word_valid(source[i]);
         char *val = word_eval(source[i]);
         if (val && (*val != '\0' || source[i - 1]->has_escaped))
             (*target)[j++] = val;
@@ -53,26 +58,29 @@ static void expand_values(char ***target, struct word **source)
             free(val);
     }
     (*target)[j] = NULL;
+    return failed;
 }
+
+#define EXPAND_VALUES(vect, target)                                            \
+    if (vect && expand_values(&target, vect))                                  \
+    {                                                                          \
+        fprintf(stderr, "Failed to expand values\n");                          \
+        return 1;                                                              \
+    }
 
 int execute_node(struct ast *node)
 {
     static const size_t table_size =
         sizeof(execute_table) / sizeof(execute_table[0]);
 
-    if (node->values)
-        expand_values(&node->expanded_values, node->values);
-
-    if (node->redir)
-        expand_values(&node->expanded_redir, node->redir);
+    // returns 1 when expansion fails
+    EXPAND_VALUES(node->values, node->expanded_values)
+    EXPAND_VALUES(node->redir, node->expanded_redir)
 
     for (size_t i = 0; i < table_size; i++)
-    {
         if (execute_table[i].type == node->type)
-        {
             return execute_table[i].func(node);
-        }
-    }
+
     return 1;
 }
 
