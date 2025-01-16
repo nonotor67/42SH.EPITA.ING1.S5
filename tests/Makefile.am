@@ -17,4 +17,4 @@ check-local: $(check_PROGRAMS)
 
 test: $(check_PROGRAMS)
 	$(MAKE) $(check_PROGRAMS)
-	BIN_PATH="../src/42sh" COVERAGE="yes" ./run_tests.sh
+	BIN_PATH="../src/42sh" COVERAGE="yes" PIPELINE="yes" ./run_tests.sh

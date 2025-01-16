@@ -22,7 +22,7 @@ fi
 
 rm -f test_status.sh
 
-if [ $FAIL_TEST -gt 0 ]; then
+if [ $FAIL_TEST -gt 0 ] && [ $PIPELINE  = "yes" ]; then
   exit 1
 else
   exit 0
