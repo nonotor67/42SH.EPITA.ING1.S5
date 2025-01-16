@@ -21,3 +21,9 @@ if [ -n "$OUTPUT_FILE" ] ; then
 fi
 
 rm -f test_status.sh
+
+if [ $FAIL_TEST -gt 0 ]; then
+  exit 1
+else
+  exit 0
+fi
