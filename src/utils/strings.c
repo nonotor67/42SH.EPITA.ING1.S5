@@ -4,22 +4,27 @@
 
 #define BUFFER_STEP 16
 
+void string_init(struct string *string)
+{
+    string->data = malloc(BUFFER_STEP);
+    if (string->data == NULL)
+    {
+        free(string);
+        return;
+    }
+
+    string->length = 0;
+    string->capacity = BUFFER_STEP;
+    string->data[0] = '\0';
+}
+
 struct string *string_new(void)
 {
     struct string *string = malloc(sizeof(struct string));
     if (string == NULL)
         return NULL;
 
-    string->data = malloc(BUFFER_STEP);
-    if (string->data == NULL)
-    {
-        free(string);
-        return NULL;
-    }
-
-    string->length = 0;
-    string->capacity = BUFFER_STEP;
-    string->data[0] = '\0';
+    string_init(string);
     return string;
 }
 

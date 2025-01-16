@@ -13,10 +13,20 @@ libexecution_a_SOURCES =  \
   execution_conditions.c \
   execution_conditions.h \
   execution_commands.c \
-  execution_commands.h
+  execution_commands.h \
+  execution_redir.c \
+  execution_redir.h \
+  execution_negation.c \
+  execution_negation.h \
+  execution_or_and.c \
+  execution_or_and.h \
+  execution_pipeline.c \
+  execution_pipeline.h \
+  execution_loop.c \
+  execution_loop.h
 
 libexecution_a_CPPFLAGS = -I$(top_srcdir)/src
 
-libexecution_a_CFLAGS = -std=c99 -Werror -Wall -Wextra -Wvla -pedantic -g3 -fsanitize=address,undefined
+libexecution_a_CFLAGS = -std=c99 -Werror -Wall -Wextra -Wvla -pedantic
 
 noinst_LIBRARIES = libexecution.a

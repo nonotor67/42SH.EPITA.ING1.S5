@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "utils/word.h"
+
 enum token_type
 {
     // End of file, can be called to refill the lexer
@@ -17,14 +19,19 @@ enum token_type
 
     TOKEN_SEMICOLON,
     TOKEN_WORD,
+    TOKEN_REDIR,
+    TOKEN_PIPE,
+    TOKEN_AND,
+    TOKEN_OR,
+    TOKEN_NEGATION
 };
 
 struct token
 {
     enum token_type type; // The kind of token
-    char *value; // If the token is a word
+    struct word *word; // The value of the token
 };
 
-void token_print(struct token token);
+// void token_print(struct token token);
 
 #endif /* !TOKEN_H */
