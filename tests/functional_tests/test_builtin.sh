@@ -33,6 +33,7 @@ test_functional() {
         if [ -n "$ref_error" ] && [ -z "$your_error" ]; then
             echo "❌ Test failed: Expected stderr but none was produced"
             failed_tests=$((failed_tests + 1))
+        fi
     else
         echo "❌ Test failed: Outputs or exit codes differ"
         echo "Command: $command"
