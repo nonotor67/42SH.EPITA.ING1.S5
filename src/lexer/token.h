@@ -32,6 +32,6 @@ struct token
     struct word *word; // The value of the token
 };
 
-void token_print(struct token token);
+//void token_print(struct token token);
 
 #endif /* !TOKEN_H */
