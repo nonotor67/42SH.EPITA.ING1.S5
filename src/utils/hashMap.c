@@ -1,7 +1,7 @@
 #include <stddef.h>
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "utils.h"
 
@@ -55,8 +55,7 @@ struct Variable getVariable(char *name)
     if (strcmp(name, "RANDOM") == 0)
     {
         sprintf(rand_buf, "%d", rand() % 32767);
-        return (struct Variable){
-            "RANDOM", rand_buf, NULL};
+        return (struct Variable){ "RANDOM", rand_buf, NULL };
     }
 
     unsigned int index = hash(name);
