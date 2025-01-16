@@ -24,3 +24,9 @@ aclocal.m4
 autom4te.cache
 */.deps
 */*/.deps
+*/*/*.gcda
+*/*/*.gcno
+*/*.gcda
+*/*.gcno
+*/*.gcov
+*.gcno

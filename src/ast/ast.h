@@ -50,7 +50,7 @@ struct ast *ast_new(enum ast_type type);
 void ast_free(struct ast *ast);
 
 // Save AST in DOT format
-void ast_print(struct ast *ast);
+// void ast_print(struct ast *ast);
 
 /*
 Step 1 :
