@@ -2,8 +2,21 @@
 
 #include <ctype.h>
 #include <stdio.h>
+#include <utils/word.h>
 
 #include "execution.h"
+
+static int aux_exec_redir(struct ast *ast);
+
+// Remove the redirection from the AST by creating a new list starting at index
+// 2 Obligated to do this because of the way the AST is built (which is not
+// optimal for redirections)
+static void removeRedir(struct ast *ast)
+{
+    free(ast->expanded_redir[0]);
+    free(ast->expanded_redir[1]);
+    ast->expanded_redir = ast->expanded_redir + 2;
+}
 
 // Handle >
 static int simple_redir(char *filename, int io_number, struct ast *ast)
@@ -31,8 +44,10 @@ static int simple_redir(char *filename, int io_number, struct ast *ast)
     }
     // Close the file descriptor
     close(fd);
+    // Remove the redirection from the AST
+    removeRedir(ast);
     // Execute the command
-    int status = dispatch_command(ast);
+    int status = aux_exec_redir(ast);
     // Restore the file descriptor
     if (dup2(STDOUT_FILENO, io_number) == -1)
     {
@@ -63,8 +78,10 @@ static int input_redir(char *filename, int io_number, struct ast *ast)
     }
     // Close the file descriptor
     close(fd);
+    // Remove the redirection from the AST
+    removeRedir(ast);
     // Execute the command
-    int status = dispatch_command(ast);
+    int status = aux_exec_redir(ast);
     // Restore the file descriptor
     if (dup2(STDIN_FILENO, io_number) == -1)
     {
@@ -108,8 +125,10 @@ static int append_redir(char *filename, int io_number, struct ast *ast)
     // Fermer le descripteur de fichier redirigé
     close(fd);
 
-    // Exécuter la commande
-    int status = dispatch_command(ast);
+    // Remove the redirection from the AST
+    removeRedir(ast);
+    // Execute the command
+    int status = aux_exec_redir(ast);
 
     // Restaurer la sortie standard
     if (dup2(saved_stdout, io_number) == -1)
@@ -139,8 +158,10 @@ static int fd_redir(int fd, int io_number, struct ast *ast)
     }
     // Close the file descriptor
     close(fd);
+    // Remove the redirection from the AST
+    removeRedir(ast);
     // Execute the command
-    int status = dispatch_command(ast);
+    int status = aux_exec_redir(ast);
     // Restore the file descriptor
     if (dup2(STDOUT_FILENO, io_number) == -1)
     {
@@ -165,8 +186,10 @@ static int fd_input_redir(int fd, int io_number, struct ast *ast)
     }
     // Close the file descriptor
     close(fd);
+    // Remove the redirection from the AST
+    removeRedir(ast);
     // Execute the command
-    int status = dispatch_command(ast);
+    int status = aux_exec_redir(ast);
     // Restore the file descriptor
     if (dup2(STDIN_FILENO, io_number) == -1)
     {
@@ -203,8 +226,10 @@ static int fd_write_read_redir(int fd, int io_number, struct ast *ast)
     // Fermer le descripteur redirigé
     close(fd);
 
-    // Exécuter la commande
-    int status = dispatch_command(ast);
+    // Remove the redirection from the AST
+    removeRedir(ast);
+    // Execute the command
+    int status = aux_exec_redir(ast);
 
     // Restaurer l'ancien descripteur
     if (dup2(saved_fd, io_number) == -1)
@@ -219,10 +244,23 @@ static int fd_write_read_redir(int fd, int io_number, struct ast *ast)
     return status;
 }
 
-// redirection = [IONUMBER] ( '>' | '<' | '>>' | '>&' | '<&' | '>|' | '<>' )
-// WORD ;
-int exec_redir(struct ast *ast)
+static int has_redir(struct ast *ast)
 {
+    for (char *redir = ast->expanded_redir[0]; *redir; redir++)
+    {
+        if (*redir == '>' || *redir == '<')
+        {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+static int aux_exec_redir(struct ast *ast)
+{
+    if (!ast->expanded_redir[0] || !has_redir(ast))
+        return dispatch_command(ast);
+
     int io_number = -1;
 
     // Parse IO number directly from the first string
@@ -272,4 +310,14 @@ int exec_redir(struct ast *ast)
     }
 
     return 1;
+}
+
+// redirection = [IONUMBER] ( '>' | '<' | '>>' | '>&' | '<&' | '>|' | '<>' )
+// WORD ;
+int exec_redir(struct ast *ast)
+{
+    char **redir = ast->expanded_redir;
+    int status = aux_exec_redir(ast);
+    free(redir);
+    return status;
 }

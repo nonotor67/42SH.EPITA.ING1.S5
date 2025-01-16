@@ -51,6 +51,22 @@ fi
 
 rm -f stderr_bash.txt stderr_42sh.txt
 
+# Test multiple redirections
+bash --posix -c 'echo hello > actual 2> stderr_bash.txt'
+../src/42sh -c 'echo hello > expected 2> stderr_42sh.txt'
+
+if ! diff actual expected; then
+    echo "❌ Test failed: Outputs differ"
+    ((failed_tests++))
+fi
+
+if ! diff stderr_bash.txt stderr_42sh.txt; then
+    echo "❌ Test failed: Outputs differ"
+    ((failed_tests++))
+fi
+
+rm -f actual expected stderr_bash.txt stderr_42sh.txt
+
 if [[ $failed_tests -gt 0 ]]; then
   exit 1
 fi
