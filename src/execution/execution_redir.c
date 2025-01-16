@@ -2,15 +2,15 @@
 
 #include <ctype.h>
 #include <stdio.h>
+#include <utils/word.h>
 
 #include "execution.h"
-#include <utils/word.h>
 
 static int aux_exec_redir(struct ast *ast);
 
-// Remove the redirection from the AST by creating a new list starting at index 2
-// Obligated to do this because of the way the AST is built
-// (which is not optimal for redirections)
+// Remove the redirection from the AST by creating a new list starting at index
+// 2 Obligated to do this because of the way the AST is built (which is not
+// optimal for redirections)
 static void removeRedir(struct ast *ast)
 {
     free(ast->expanded_redir[0]);
@@ -202,12 +202,10 @@ static int fd_input_redir(int fd, int io_number, struct ast *ast)
 // Handle <>, read and write
 static int fd_write_read_redir(int fd, int io_number, struct ast *ast)
 {
-
     if (io_number == -1)
     {
         io_number = STDIN_FILENO;
     }
-
 
     // Sauvegarder l'ancien descripteur
     int saved_fd = dup(io_number);
