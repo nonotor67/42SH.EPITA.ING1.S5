@@ -7,7 +7,7 @@ test_functional() {
     test_name="$1"
     command="$2"
     your_shell="../src/42sh"
-    ref_shell="/bin/sh"
+    ref_shell="bash"
 
     total_tests=$((total_tests + 1))
 
@@ -18,7 +18,7 @@ test_functional() {
 
     ref_stdout=$(mktemp)
     ref_stderr=$(mktemp)
-    "$ref_shell" -c "$command" >"$ref_stdout" 2>"$ref_stderr" --posix
+    "$ref_shell" --posix -c "$command" >"$ref_stdout" 2>"$ref_stderr"
     ref_exit_code=$?
 
     your_output=$(cat "$your_stdout")

@@ -7,9 +7,8 @@ test_functional() {
     test_name="$1"
     command="$2"
     your_shell="../src/42sh"
-    ref_shell="/bin/bash"
+    ref_shell="bash"
 
-    echo "Running test: $test_name"
     total_tests=$((total_tests + 1))
 
     your_stdout=$(mktemp)
