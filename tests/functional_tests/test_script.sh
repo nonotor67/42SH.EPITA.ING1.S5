@@ -1,39 +1,35 @@
-#!/bin/bash
+#!/bin/sh
 
-function test_functional() {
-    local test_name="$1"
-    local file="$2"
-    local your_shell="./src/42sh"
-    local ref_shell="/bin/bash"
+test_functional() {
+    test_name="$1"
+    command="$2"
+    your_shell="../src/42sh"
+    ref_shell="/bin/bash"
 
     echo "Running test: $test_name"
-    ((total_tests++))
+    total_tests=$((total_tests + 1))
 
-    local your_stdout your_stderr your_exit_code
     your_stdout=$(mktemp)
     your_stderr=$(mktemp)
-    "$your_shell" "$file" >"$your_stdout" 2>"$your_stderr"
+    "$your_shell" -c "$command" >"$your_stdout" 2>"$your_stderr"
     your_exit_code=$?
 
-    local ref_stdout ref_stderr ref_exit_code
     ref_stdout=$(mktemp)
     ref_stderr=$(mktemp)
-    "$ref_shell" "$file" >"$ref_stdout" 2>"$ref_stderr"
+    "$ref_shell" -c "$command" >"$ref_stdout" 2>"$ref_stderr"
     ref_exit_code=$?
 
-    local your_output=$(<"$your_stdout")
-    local your_error=$(<"$your_stderr")
-    local ref_output=$(<"$ref_stdout")
-    local ref_error=$(<"$ref_stderr")
+    your_output=$(cat "$your_stdout")
+    your_error=$(cat "$your_stderr")
+    ref_output=$(cat "$ref_stdout")
+    ref_error=$(cat "$ref_stderr")
 
     rm -f "$your_stdout" "$your_stderr" "$ref_stdout" "$ref_stderr"
 
-    if [[ "$your_output" == "$ref_output" && "$your_exit_code" == "$ref_exit_code" ]]; then
-        if [[ -n "$ref_error" && -z "$your_error" ]]; then
+    if [ "$your_output" = "$ref_output" ] && [ "$your_exit_code" -eq "$ref_exit_code" ]; then
+        if [ -n "$ref_error" ] && [ -z "$your_error" ]; then
             echo "❌ Test failed: Expected stderr but none was produced"
-            ((failed_tests++))
-        else
-            echo "✅ Test passed: Outputs and exit codes match"
+            failed_tests=$((failed_tests + 1))
         fi
     else
         echo "❌ Test failed: Outputs or exit codes differ"
@@ -44,7 +40,7 @@ function test_functional() {
         echo "Reference shell output: $ref_output"
         echo "Reference shell stderr: $ref_error"
         echo "Reference shell exit code: $ref_exit_code"
-        ((failed_tests++))
+        failed_tests=$((failed_tests + 1))
     fi
 }
 
