@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 static int is_ast_valid(struct ast *ast)
 {
     if (!ast)
