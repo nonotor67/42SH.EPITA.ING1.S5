@@ -18,12 +18,12 @@ test_functional() {
 
     your_stdout=$(mktemp)
     your_stderr=$(mktemp)
-    "$your_shell" -c "$command" >"$your_stdout" 2>"$your_stderr"
+    "$your_shell" "$command" >"$your_stdout" 2>"$your_stderr"
     your_exit_code=$?
 
     ref_stdout=$(mktemp)
     ref_stderr=$(mktemp)
-    "$ref_shell" -c "$command" >"$ref_stdout" 2>"$ref_stderr"
+    "$ref_shell" "$command" >"$ref_stdout" 2>"$ref_stderr"
     ref_exit_code=$?
 
     your_output=$(cat "$your_stdout")
@@ -51,7 +51,7 @@ test_functional() {
     fi
 }
 
-for file in $(find 'tests/functional_tests/test_scripts' -name "*.sh"); do
+for file in $(find 'functional_tests/test_scripts' -name "*.sh"); do
     test_functional "Script: $(basename "$file")" "$file"
 done
 
