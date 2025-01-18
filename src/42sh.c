@@ -104,6 +104,7 @@ static void env_init(int argc, char **argv)
     {
         insertVariable("OLDPWD", pwd);
         insertVariable("PWD", pwd);
+        free(pwd);
     }
     insertVariable("IFS", " \t\n");
 }
