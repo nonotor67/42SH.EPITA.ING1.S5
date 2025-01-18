@@ -11,10 +11,10 @@ static void set_error(struct parser *parser, char *msg)
 static struct ast *create_word(struct token tok)
 {
     struct ast *root = ast_new(WORD_COMPONENTS);
-    root->left->values = malloc(sizeof(struct word *) * 2);
-    root->left->values[0] = tok.word;
-    root->left->values[1] = NULL;
-    root->left->size = 1;
+    root->values = malloc(sizeof(struct word *) * 2);
+    root->values[0] = tok.word;
+    root->values[1] = NULL;
+    root->size = 1;
     return root;
 }
 
