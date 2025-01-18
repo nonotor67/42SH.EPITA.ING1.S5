@@ -101,7 +101,7 @@ static void env_init(int argc, char **argv)
 
     insertVariable("OLDPWD", getenv("PWD"));
     insertVariable("PWD", getenv("PWD"));
-    insertVariable("IFS", " \t\n");
+    insertVariable("IFS", "");
 }
 
 static int execute_loop(struct lexer *lexer, int real_argc, char **real_argv)
