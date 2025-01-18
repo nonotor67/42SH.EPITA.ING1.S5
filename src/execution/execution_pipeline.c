@@ -10,7 +10,8 @@ int execute_pipeline(struct ast *ast)
         return execute_node(ast->left);
 
     int pipefd[2];
-    pid_t pid_left, pid_right;
+    pid_t pid_left;
+    pid_t pid_right;
     int status_left = 0;
     int status_right = 0;
 
