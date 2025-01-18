@@ -1,11 +1,28 @@
 #include <string.h>
 
 #include "parser.h"
+
+static void set_error(struct parser *parser, char *msg)
+{
+    parser->status = PARSER_UNEXPECTED_TOKEN;
+    fprintf(stderr, "Error: %s\n", msg);
+}
+
+static struct ast *create_word(struct token tok)
+{
+    struct ast *root = ast_new(WORD_COMPONENTS);
+    root->left->values = malloc(sizeof(struct word *) * 2);
+    root->left->values[0] = tok.word;
+    root->left->values[1] = NULL;
+    root->left->size = 1;
+}
+
 /*
 rule_for =
     'for' WORD ( [';'] | [ {'\n'} 'in' { WORD } ( ';' | '\n' ) ] ) {'\n'} 'do'
 compound_list 'done' ;
 */
+// TODO: Refactor this function if adding more rules (38 lines)
 static struct ast *rule_for(struct parser *parser)
 {
     struct token tok;
@@ -15,15 +32,10 @@ static struct ast *rule_for(struct parser *parser)
     tok = lexer_pop(parser->lexer);
     if (tok.type != TOKEN_WORD)
     {
-        parser->status = PARSER_UNEXPECTED_TOKEN;
-        fprintf(stderr, "Error: Expected a word token (rule_for)\n");
+        set_error(parser, "Expected a word token (rule_for)\n");
         return NULL;
     }
-    root->left = ast_new(WORD_COMPONENTS);
-    root->left->values = malloc(sizeof(struct word *) * 2);
-    root->left->values[0] = tok.word;
-    root->left->values[1] = NULL;
-    root->left->size = 1;
+    root->left = create_word(tok);
 
     if (!eat(parser->lexer, TOKEN_SEMICOLON))
     {
@@ -54,8 +66,7 @@ static struct ast *rule_for(struct parser *parser)
             if (!eat(parser->lexer, TOKEN_SEMICOLON)
                 && !eat(parser->lexer, TOKEN_EOL))
             {
-                parser->status = PARSER_UNEXPECTED_TOKEN;
-                fprintf(stderr, "Error: Expected ';' or EOL (rule_for)\n");
+                set_error(parser, "Expected ';' or EOL (rule_for)\n");
                 return NULL;
             }
         }
