@@ -218,7 +218,8 @@ static struct token lexer_next_handle_word(struct lexer *lexer)
 
         if (c == '\'' || c == '"')
         {
-            change_lexer_mode(lexer, c == '\'' ? LEXING_QUOTED : LEXING_DOUBLE_QUOTED);
+            change_lexer_mode(lexer,
+                              c == '\'' ? LEXING_QUOTED : LEXING_DOUBLE_QUOTED);
             continue;
         }
 
