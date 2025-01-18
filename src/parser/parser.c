@@ -4,6 +4,23 @@
 #include <stdlib.h>
 #include <string.h>
 
+static int is_ast_valid(struct ast *ast)
+{
+    if (!ast)
+        return 1;
+    int valid = 1;
+    if (ast->type == SIMPLE_COMMAND && ast->values && ast->values[0])
+        valid = !is_closing_word(ast->values[0]);
+
+    if (valid && ast->left)
+        valid = is_ast_valid(ast->left);
+    if (valid && ast->middle)
+        valid = is_ast_valid(ast->middle);
+    if (valid && ast->right)
+        valid = is_ast_valid(ast->right);
+    return valid;
+}
+
 /*
 Contains the creation and top layer of the parser
 --> list
@@ -91,11 +108,19 @@ struct ast *input(struct parser *parser)
     if (!eat(parser->lexer, TOKEN_EOL) && !eat(parser->lexer, TOKEN_EOF))
         parser->status = PARSER_UNEXPECTED_TOKEN;
 
-    // CHECK_STATUS(parser, ast, "Error after parsing EOL or EOF (input)\n");
+    CHECK_STATUS(parser, ast, "Error after parsing EOL or EOF (input)\n");
     return ast;
 }
 
 struct ast *parse(struct parser *parser)
 {
-    return input(parser);
+    struct ast *ast = input(parser);
+    if (!is_ast_valid(ast))
+    {
+        parser->status = PARSER_UNEXPECTED_TOKEN;
+        fprintf(stderr, "Error: Unexpected token (closing word)\n");
+        ast_free(ast);
+        return NULL;
+    }
+    return ast;
 }
