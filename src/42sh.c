@@ -99,8 +99,13 @@ static void env_init(int argc, char **argv)
 
     insertVariable("?", "0");
 
-    insertVariable("OLDPWD", getenv("PWD"));
-    insertVariable("PWD", getenv("PWD"));
+    char *pwd = getcwd(NULL, 0);
+    if (pwd)
+    {
+        insertVariable("OLDPWD", pwd);
+        insertVariable("PWD", pwd);
+        free(pwd);
+    }
     insertVariable("IFS", " \t\n");
 }
 
