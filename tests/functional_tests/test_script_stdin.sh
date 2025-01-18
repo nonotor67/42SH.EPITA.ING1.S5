@@ -1,5 +1,8 @@
 #!/bin/sh
 
+total_tests=0
+failed_tests=0
+
 BIN=$1
 
 # Obtain the test status
@@ -34,8 +37,6 @@ test_functional() {
         if [ -n "$ref_error" ] && [ -z "$your_error" ]; then
             echo "❌ Test failed: Expected stderr but none was produced"
             failed_tests=$((failed_tests + 1))
-        else
-            echo "✅ Test passed: Outputs and exit codes match"
         fi
     else
         echo "❌ Test failed: Outputs or exit codes differ"
@@ -50,25 +51,11 @@ test_functional() {
     fi
 }
 
-total_tests=0
-failed_tests=0
-
 for file in $(find 'functional_tests/test_scripts' -name "*.sh"); do
     test_functional "Script: $(basename "$file")" "$file"
 done
-
-echo
-echo "==== Test Summary ===="
-echo "Total tests: $total_tests"
-echo "Failed tests: $failed_tests"
 
 TOTAL_TEST=$((TOTAL_TEST + total_tests))
 FAIL_TEST=$((FAIL_TEST + failed_tests))
 echo "TOTAL_TEST=$TOTAL_TEST" >test_status.sh
 echo "FAIL_TEST=$FAIL_TEST" >>test_status.sh
-
-if [ $failed_tests -gt 0 ]; then
-    exit 1
-else
-    exit 0
-fi
