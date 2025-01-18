@@ -106,7 +106,7 @@ static void env_init(int argc, char **argv)
         insertVariable("PWD", pwd);
         free(pwd);
     }
-    insertVariable("IFS", " \t\n");
+    insertVariable("IFS", "");
 }
 
 static int execute_loop(struct lexer *lexer, int real_argc, char **real_argv)
