@@ -14,7 +14,7 @@ struct HashMap
     @brief Free the memory allocated for the hash table
     @param ht The hash table to free
  */
-void free_hash_map();
+void free_hash_map(void);
 
 /*
     @brief Hash a string
