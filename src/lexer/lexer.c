@@ -143,7 +143,26 @@ int lexer_lex_variable(struct lexer *lexer, struct variable *var)
     return 1;
 }
 
+static void change_lexer_mode(struct lexer *lexer, enum lexing_mode mode)
+{
+    lexer->mode = mode;
+    next_char(lexer);
+}
+
+static struct token create_token(struct word *word, struct lexer *lexer)
+{
+    struct token token;
+    token.type = TOKEN_WORD;
+
+    if (!word->has_escaped && lexer_try_redir(lexer, word))
+        token.type = TOKEN_REDIR;
+
+    token.word = word;
+    return token;
+}
+
 // Create a word token or a keyword token
+// TODO: If add lines, refactor because it's too long (39 lines)
 static struct token lexer_next_handle_word(struct lexer *lexer)
 {
     struct word *word = word_new();
@@ -156,7 +175,7 @@ static struct token lexer_next_handle_word(struct lexer *lexer)
         word->has_escaped |= lexer->escape_next || lexer->mode == LEXING_QUOTED
             || lexer->mode == LEXING_DOUBLE_QUOTED;
         word->valid_assignment &= met_equal || !word->has_escaped;
-        char c = (char)last_char(lexer);
+        char c = last_char(lexer);
         if (c == '=')
             met_equal = 1;
 
@@ -165,8 +184,7 @@ static struct token lexer_next_handle_word(struct lexer *lexer)
         if ((lexer->mode == LEXING_QUOTED && c == '\'')
             || (lexer->mode == LEXING_DOUBLE_QUOTED && c == '"'))
         {
-            lexer->mode = LEXING_NORMAL;
-            next_char(lexer);
+            change_lexer_mode(lexer, LEXING_NORMAL);
             continue;
         }
 
@@ -200,22 +218,13 @@ static struct token lexer_next_handle_word(struct lexer *lexer)
 
         if (c == '\'' || c == '"')
         {
-            lexer->mode = c == '\'' ? LEXING_QUOTED : LEXING_DOUBLE_QUOTED;
-            next_char(lexer);
+            change_lexer_mode(lexer, c == '\'' ? LEXING_QUOTED : LEXING_DOUBLE_QUOTED);
             continue;
         }
 
         BLIND_PUSH_WHEN(1);
     }
-
-    struct token token;
-    token.type = TOKEN_WORD;
-
-    if (!word->has_escaped && lexer_try_redir(lexer, word))
-        token.type = TOKEN_REDIR;
-
-    token.word = word;
-    return token;
+    return create_token(word, lexer);
 }
 
 // Switch the token based on the character

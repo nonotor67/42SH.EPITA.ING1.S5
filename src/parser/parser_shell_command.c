@@ -212,5 +212,3 @@ struct ast *shell_command(struct parser *parser)
     fprintf(stderr, "Error: Expected a shell command (shell_command)\n");
     return NULL;
 }
-
-#include "parser_shell_command.h"
