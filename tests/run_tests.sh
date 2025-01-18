@@ -4,16 +4,20 @@ if [ "$COVERAGE" = "yes" ] ; then
   # Run unit tests
   ./unit_tests || true
   # Run functional tests
-  ./functional_tests/func_tests.sh $BIN_PATH
+  timeout 60s ./functional_tests/func_tests.sh $BIN_PATH
 else
   # Only test functionnal tests
-  ./functional_tests/func_tests.sh $BIN_PATH
+  timeout 60s ./functional_tests/func_tests.sh $BIN_PATH
 fi
 
 . ./test_status.sh
 
 TEST_SUCCESS=$(( TOTAL_TEST - FAIL_TEST ))
 PERCENTAGE=$(( TEST_SUCCESS * 100 / TOTAL_TEST ))
+echo "Total tests: $TOTAL_TEST"
+echo "Tests passed: $TEST_SUCCESS"
+echo "Tests failed: $FAIL_TEST"
+echo "Percentage of tests passed: $PERCENTAGE%"
 
 if [ -n "$OUTPUT_FILE" ] ; then
   # Write the % of tests passed
