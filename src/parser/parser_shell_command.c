@@ -15,6 +15,7 @@ static struct ast *create_word(struct token tok)
     root->left->values[0] = tok.word;
     root->left->values[1] = NULL;
     root->left->size = 1;
+    return root;
 }
 
 /*
