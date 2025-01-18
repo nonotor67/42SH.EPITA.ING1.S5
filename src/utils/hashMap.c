@@ -7,7 +7,7 @@
 
 static struct HashMap global_variables = { { NULL } };
 
-void free_hash_map()
+void free_hash_map(void)
 {
     // Free the memory allocated for each variable
     for (int i = 0; i < TABLE_SIZE; i++)
