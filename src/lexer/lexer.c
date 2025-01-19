@@ -1,10 +1,11 @@
 #include "lexer.h"
-#include "lexer_internal.h"
 
 #include <io/io.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "lexer_internal.h"
 
 struct lexer *lexer_new(struct reader *reader)
 {
@@ -20,6 +21,7 @@ struct lexer *lexer_new(struct reader *reader)
     lexer->current_char = UNITIALIZED_CHAR;
     lexer->escape_next = 0;
     lexer->mode = LEXING_NORMAL;
+    lexer->context = LEXING_COMMAND;
 
     return lexer;
 }
@@ -43,4 +45,9 @@ struct token lexer_pop(struct lexer *lexer)
     lexer->current.type = TOKEN_UNSET;
     lexer->current.word = NULL;
     return token;
+}
+
+void lexer_context_begin(struct lexer *lexer)
+{
+    lexer->context = LEXING_COMMAND;
 }

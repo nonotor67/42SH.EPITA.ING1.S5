@@ -47,6 +47,12 @@ Test(lexer, peek_pop)
     cr_assert_str_eq(token.word->value.data, str);                             \
     word_free(token.word);
 
+#define EAT_KEYWORD(str)                                                       \
+    token = lexer_pop(lexer);                                                  \
+    cr_assert_eq(token.type, TOKEN_KEYWORD);                                   \
+    cr_assert_str_eq(token.word->value.data, str);                             \
+    word_free(token.word);
+
 #define EXPECT_REDIR(str)                                                      \
     token = lexer_pop(lexer);                                                  \
     cr_assert_eq(token.type, TOKEN_REDIR);                                     \
@@ -388,5 +394,20 @@ Test(lexer, lexer_no_space)
     EAT_WORD("guten")
     EAT_WORD("tag")
     EXPECT(TOKEN_EOF)
+    CLEAR_ALL
+}
+
+Test(lexer, lexer_keywords)
+{
+    INIT_LEXER_TEST("if then; else\n elif fi; fi")
+    EAT_KEYWORD("if")
+    EAT_WORD("then")
+    EXPECT(TOKEN_SEMICOLON)
+    EAT_KEYWORD("else")
+    EXPECT(TOKEN_EOL)
+    EAT_KEYWORD("elif")
+    EAT_WORD("fi")
+    EXPECT(TOKEN_SEMICOLON)
+    EAT_KEYWORD("fi")
     CLEAR_ALL
 }

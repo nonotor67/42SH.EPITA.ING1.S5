@@ -28,6 +28,7 @@ struct lexer
     struct token current;
     int escape_next;
     enum lexing_mode mode;
+    enum lexing_context context;
 };
 
 // Create a new lexer based on a reader
@@ -44,7 +45,7 @@ struct token lexer_peek(struct lexer *lexer);
 // Consumes the token
 struct token lexer_pop(struct lexer *lexer);
 
-// Set the lexer mode
-void lexer_set_context(struct lexer *lexer, enum lexing_context);
+// Sets the context of the lexer to command beginning
+void lexer_context_begin(struct lexer *lexer);
 
 #endif /* !LEXER_H */

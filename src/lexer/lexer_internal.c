@@ -1,10 +1,11 @@
-#include "lexer.h"
 #include "lexer_internal.h"
 
 #include <ctype.h>
 #include <io/io.h>
-#include <utils/utils.h>
 #include <string.h>
+#include <utils/utils.h>
+
+#include "lexer.h"
 
 static int last_char(struct lexer *lexer)
 {
@@ -161,7 +162,7 @@ static int open_quoting(struct lexer *lexer, char c)
 static int close_quoting(struct lexer *lexer, char c)
 {
     if ((lexer->mode == LEXING_QUOTED && c == '\'')
-              || (c == '"' && lexer->mode == LEXING_DOUBLE_QUOTED))
+        || (c == '"' && lexer->mode == LEXING_DOUBLE_QUOTED))
         lexer->mode = LEXING_NORMAL;
     else
         return 0;
@@ -191,8 +192,9 @@ static int handle_escape(struct lexer *lexer)
     if (cond)                                                                  \
         continue;
 
-#define IS_ESCAPE_STATE (lexer->escape_next || lexer->mode == LEXING_QUOTED    \
-                         || lexer->mode == LEXING_DOUBLE_QUOTED)
+#define IS_ESCAPE_STATE                                                        \
+    (lexer->escape_next || lexer->mode == LEXING_QUOTED                        \
+     || lexer->mode == LEXING_DOUBLE_QUOTED)
 // Create a word token or a keyword token
 static struct token lexer_next_handle_word(struct lexer *lexer)
 {
@@ -226,66 +228,93 @@ static struct token lexer_next_handle_word(struct lexer *lexer)
     return token;
 }
 
-static struct token lexer_switch(struct lexer *lexer) {
+static struct token lexer_switch(struct lexer *lexer)
+{
     struct token token;
     token.word = NULL;
     switch (last_char(lexer))
     {
-        case '\n':
-            token.type = TOKEN_EOL;
-            break;
-        case ';':
-            token.type = TOKEN_SEMICOLON;
-            break;
-        case '|':
-            token.type = next_char(lexer) == '|' ? TOKEN_OR : TOKEN_PIPE;
-            break;
-        case '&':
-            token.type = next_char(lexer) == '&' ? TOKEN_AND : TOKEN_UNKNOWN;
-            break;
-        case '!':
-            token.type = TOKEN_NEGATION;
-            break;
-        case '\'':
-            lexer->mode = LEXING_QUOTED;
-            lexer->current_char = UNITIALIZED_CHAR;
-            return lexer_next_handle_word(lexer);
-        case '"':
-            lexer->mode = LEXING_DOUBLE_QUOTED;
-            lexer->current_char = UNITIALIZED_CHAR;
-            return lexer_next_handle_word(lexer);
-        case '#':
-            lexer->mode = LEXING_COMMENT;
-            lexer->current_char = UNITIALIZED_CHAR;
-            return lexer_next(lexer);
-        case '>':
-        case '<':
-            // redirections are handled in lexer_next_handle_word
-            return lexer_next_handle_word(lexer);
-        default:
-            token.type = TOKEN_UNKNOWN;
-            break;
+    case '\n':
+        token.type = TOKEN_EOL;
+        break;
+    case ';':
+        token.type = TOKEN_SEMICOLON;
+        break;
+    case '|':
+        token.type = next_char(lexer) == '|' ? TOKEN_OR : TOKEN_PIPE;
+        break;
+    case '&':
+        token.type = next_char(lexer) == '&' ? TOKEN_AND : TOKEN_UNKNOWN;
+        break;
+    case '!':
+        token.type = TOKEN_NEGATION;
+        break;
+    case '\'':
+        lexer->mode = LEXING_QUOTED;
+        lexer->current_char = UNITIALIZED_CHAR;
+        return lexer_next_handle_word(lexer);
+    case '"':
+        lexer->mode = LEXING_DOUBLE_QUOTED;
+        lexer->current_char = UNITIALIZED_CHAR;
+        return lexer_next_handle_word(lexer);
+    case '#':
+        lexer->mode = LEXING_COMMENT;
+        lexer->current_char = UNITIALIZED_CHAR;
+        return lexer_next(lexer);
+    case '>':
+    case '<':
+        // redirections are handled in lexer_next_handle_word
+        return lexer_next_handle_word(lexer);
+    default:
+        token.type = TOKEN_UNKNOWN;
+        break;
     }
     if (token.type != TOKEN_PIPE)
         lexer->current_char = UNITIALIZED_CHAR;
     return token;
 }
 
+static void lex_keyword_or_word(struct lexer *lexer, struct token *token)
+{
+    lexer->context = LEXING_ARGUMENT;
+    if (token->word->has_escaped)
+        return;
+    static const char *reserved_keywords[] = { "if",   "then",  "else",  "elif",
+                                               "fi",   "do",    "done",  "case",
+                                               "esac", "while", "until", "for",
+                                               "in",   NULL };
+    for (size_t i = 0; reserved_keywords[i] && token->type == TOKEN_WORD; i++)
+        if (strcmp(token->word->value.data, reserved_keywords[i]) == 0)
+            token->type = TOKEN_KEYWORD;
+}
+
+#define TOKEN_IS_CLOSER(tok) \
+    (tok.type != TOKEN_WORD && tok.type != TOKEN_KEYWORD)
+
 struct token lexer_next(struct lexer *lexer)
 {
     lexer_skip_whitespace(lexer);
     lexer_skip_comment(lexer);
 
+    struct token token;
     if (last_char(lexer) == EOF)
     {
-        struct token token;
         token.type = TOKEN_EOF;
         token.word = NULL;
-        return token;
     }
+    else if (lexer_is_word_char(lexer) || lexer->escape_next)
+    {
+        token = lexer_next_handle_word(lexer);
+        if (lexer->context == LEXING_COMMAND)
+            lex_keyword_or_word(lexer, &token);
+    }
+    else
+        token = lexer_switch(lexer);
 
-    if (lexer_is_word_char(lexer) || lexer->escape_next)
-        return lexer_next_handle_word(lexer);
+    if (TOKEN_IS_CLOSER(token))
+        lexer->context = LEXING_COMMAND;
+    else
+        lexer->context = LEXING_ARGUMENT;
 
-    return lexer_switch(lexer);
+    return token;
 }
