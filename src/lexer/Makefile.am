@@ -3,6 +3,8 @@ lib_LIBRARIES = liblexer.a
 liblexer_a_SOURCES =  \
   lexer.c \
   lexer.h \
+  lexer_internal.h \
+  lexer_internal.c \
   token.h
 
 liblexer_a_CPPFLAGS = -I$(top_srcdir)/src
