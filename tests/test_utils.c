@@ -50,7 +50,7 @@ Test(test_insert, insert)
     struct Variable var = getVariable("test");
     cr_assert_str_eq(var.name, "test");
     cr_assert_str_eq(var.value, "value");
-    free_hash_map();
+    free_hash_map_var();
 }
 
 Test(test_get, getVariable)
@@ -59,7 +59,7 @@ Test(test_get, getVariable)
     struct Variable var = getVariable("test");
     cr_assert_str_eq(var.name, "test");
     cr_assert_str_eq(var.value, "value");
-    free_hash_map();
+    free_hash_map_var();
 }
 
 Test(test_update, updateVariable)
@@ -69,5 +69,5 @@ Test(test_update, updateVariable)
     struct Variable var = getVariable("test");
     cr_assert_str_eq(var.name, "test");
     cr_assert_str_eq(var.value, "new_value");
-    free_hash_map();
+    free_hash_map_var();
 }

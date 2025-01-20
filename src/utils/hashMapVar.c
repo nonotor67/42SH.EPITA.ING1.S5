@@ -1,4 +1,3 @@
-#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,7 +7,7 @@
 
 static struct HashMapVar global_variables = { { NULL } };
 
-void free_hash_map(void)
+void free_hash_map_var(void)
 {
     // Free the memory allocated for each variable
     for (int i = 0; i < TABLE_SIZE; i++)

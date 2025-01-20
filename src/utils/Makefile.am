@@ -13,6 +13,8 @@ libutils_a_SOURCES =  \
   variable.c \
   word.h \
   word.c
+  hasgMapFunc.h \
+  hashMapFunc.c
 
 
 libutils_a_CPPFLAGS = -I$(top_srcdir)/src
