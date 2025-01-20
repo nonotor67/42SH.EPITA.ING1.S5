@@ -6,7 +6,7 @@
 
 #include "utils.h"
 
-static struct HashMap global_variables = { { NULL } };
+static struct HashMapVar global_variables = { { NULL } };
 
 void free_hash_map(void)
 {

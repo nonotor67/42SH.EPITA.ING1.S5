@@ -5,7 +5,7 @@
 
 #define TABLE_SIZE 256
 
-struct HashMap
+struct HashMapVar
 {
     struct Variable *map[TABLE_SIZE];
 };
