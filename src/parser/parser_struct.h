@@ -25,7 +25,7 @@ int is_closing_word(struct word *word);
 int eat(struct lexer *lexer, enum token_type type);
 
 // Eat a word token if it matches the given word and free it's value string
-int eat_word(struct lexer *lexer, char *word);
+int eat_keyword(struct lexer *lexer, char *word);
 
 // Skip all EOL tokens
 void skip_eol(struct lexer *lexer);
@@ -57,8 +57,8 @@ void skip_eol(struct lexer *lexer);
     }
 
 // Expect a word token and free it's value string if it is not the expected word
-#define EXPECT_WORD(lexer, expected, msg)                                      \
-    if (!eat_word(lexer, expected))                                            \
+#define EXPECT_KEYWORD(lexer, expected, msg)                                   \
+    if (!eat_keyword(lexer, expected))                                         \
     {                                                                          \
         fprintf(stderr, msg);                                                  \
         parser->status = PARSER_UNEXPECTED_TOKEN;                              \

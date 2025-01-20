@@ -129,7 +129,7 @@ struct ast *compound_list(struct parser *parser)
 
         tok = lexer_peek(parser->lexer);
         // if the next token is a closing keyword, we stop the compound_list
-        if (tok.type == TOKEN_WORD && is_closing_word(tok.word))
+        if (tok.type == TOKEN_KEYWORD && is_closing_word(tok.word))
             break;
         current->right = ast_new(COMMAND_LIST);
         current = current->right;
@@ -158,27 +158,21 @@ command =
 */
 struct ast *command(struct parser *parser)
 {
-    const char shell_commands[][32] = { "if", "for", "while", "until" };
-    for (size_t i = 0; i < sizeof(shell_commands) / sizeof(shell_commands[0]);
-         i++)
+    struct token token = lexer_peek(parser->lexer);
+    struct ast *ast = NULL;
+    if (token.type == TOKEN_KEYWORD)
     {
-        struct token token = lexer_peek(parser->lexer);
-        if (token.type == TOKEN_WORD)
-            if (strcmp(shell_commands[i], token.word->value.data) == 0)
-            {
-                struct token tok;
-                struct ast *ast = shell_command(parser);
-                CHECK_STATUS(parser, ast,
-                             "Error after parsing shell_command (command)\n");
-                int buffer_size_redir = 16;
-                while (lexer_peek(parser->lexer).type == TOKEN_REDIR)
-                {
-                    handle_redirection(parser, ast, buffer_size_redir);
-                }
-                if (ast->redir)
-                    ast->redir[ast->redir_size] = NULL;
-                return ast;
-            }
+        struct token tok;
+        ast = shell_command(parser);
+        CHECK_STATUS(parser, ast,
+                     "Error after parsing shell_command (command)\n");
+        int buffer_size_redir = 16;
+        while (lexer_peek(parser->lexer).type == TOKEN_REDIR)
+            handle_redirection(parser, ast, buffer_size_redir);
+        if (ast->redir)
+            ast->redir[ast->redir_size] = NULL;
     }
-    return simple_command(parser);
+    else
+        ast = simple_command(parser);
+    return ast;
 }

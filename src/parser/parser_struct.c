@@ -6,7 +6,7 @@
 Contains the base of the parser
 --> is_closing_word
 --> eat
---> eat_word
+--> eat_keyword
 --> skip_eol
 */
 
@@ -32,10 +32,10 @@ int eat(struct lexer *lexer, enum token_type type)
     return 0;
 }
 
-int eat_word(struct lexer *lexer, char *word)
+int eat_keyword(struct lexer *lexer, char *word)
 {
     struct token token = lexer_peek(lexer);
-    if (token.type == TOKEN_WORD && token.word
+    if (token.type == TOKEN_KEYWORD && token.word
         && strcmp(token.word->value.data, word) == 0)
     {
         word_free(token.word);
