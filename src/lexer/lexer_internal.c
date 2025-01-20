@@ -5,7 +5,6 @@
 #include <parser/parser.h>
 #include <string.h>
 #include <utils/utils.h>
-#include <utils/vector.h>
 
 #include "lexer.h"
 
