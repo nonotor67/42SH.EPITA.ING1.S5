@@ -7,4 +7,6 @@
 #include "word.h"
 #include "xmalloc.h"
 
+char *my_itoa(int value, char *s);
+
 #endif /* !UTILS_H */

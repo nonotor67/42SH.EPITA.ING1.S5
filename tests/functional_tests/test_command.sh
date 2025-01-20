@@ -36,3 +36,11 @@ $test $BIN "Simple for" "for i in 1; do echo \$i; done"
 $test $BIN "Bad for" "for i in 1 2; do echo \$i"
 # TODO: fix test_functional "Bad for" "for i in 1 2; do echo \$i; done; done"
 $test $BIN "Bad for" "for i in 1 2; do echo \$i done"
+
+# Test variables
+
+$test $BIN "Simple variable" "toto=42; echo \$toto"
+$test $BIN "Simple \$?" "echo \$?"
+$test $BIN "Complexe \$?" "if true; then false || echo \$?; fi"
+$test $BIN "Complexe \$?" "if true; then true && echo \$?; fi"
+$test $BIN "Complexe \$?" "if echo $?; then echo \$?; true; echo \$?; fi"
