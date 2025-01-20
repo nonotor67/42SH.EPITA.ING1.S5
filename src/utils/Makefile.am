@@ -1,6 +1,7 @@
 lib_LIBRARIES = libutils.a
 
 libutils_a_SOURCES =  \
+  utils.c \
   utils.h \
   strings.c \
   strings.h \
