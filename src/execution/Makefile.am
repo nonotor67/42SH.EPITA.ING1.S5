@@ -23,7 +23,9 @@ libexecution_a_SOURCES =  \
   execution_pipeline.c \
   execution_pipeline.h \
   execution_loop.c \
-  execution_loop.h
+  execution_loop.h \
+  exec_loop_commands.c \
+  builtins_loop.h
 
 libexecution_a_CPPFLAGS = -I$(top_srcdir)/src
 
