@@ -65,7 +65,7 @@ static int expand_values(char ***target, struct word **source)
     if (vect && expand_values(&target, vect))                                  \
     {                                                                          \
         fprintf(stderr, "Failed to expand values\n");                          \
-        return 1;                                                            \
+        return 1;                                                              \
     }
 
 int execute_node(struct ast *node)

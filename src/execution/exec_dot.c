@@ -1,11 +1,11 @@
-#include "builtins_dot.h"
-
-#include <stdio.h>
-#include <utils/utils.h>
 #include <execution/execution.h>
 #include <io/io.h>
 #include <lexer/lexer.h>
 #include <parser/parser.h>
+#include <stdio.h>
+#include <utils/utils.h>
+
+#include "builtins_dot.h"
 
 /*
 @brief: Execute the content of a file in our env
