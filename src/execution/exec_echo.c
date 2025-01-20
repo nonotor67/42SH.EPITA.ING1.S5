@@ -24,19 +24,34 @@ bool exec_echo(int argc, char **argv)
             break;
         }
 
-        if (argv[idx][1] == 'n')
+        int i = 1;
+        int flag = 0;
+        while (argv[idx][i] != '\0')
         {
-            nflag = true;
+            if (argv[idx][i] == 'n')
+            {
+                nflag = true;
+            }
+            else if (argv[idx][i] == 'e')
+            {
+                eflag = true;
+            }
+            else if (argv[idx][i] == 'E')
+            {
+                eflag = false;
+            }
+            else
+            {
+                flag = 1;
+            }
+
+            if (flag)
+            {
+                break;
+            }
+            i++;
         }
-        else if (argv[idx][1] == 'e')
-        {
-            eflag = true;
-        }
-        else if (argv[idx][1] == 'E')
-        {
-            eflag = false;
-        }
-        else
+        if (flag)
         {
             break;
         }
@@ -71,6 +86,10 @@ static void print_argument(const char *arg, bool eflag)
         {
             if (*p == '\\')
             {
+                while (*(p+1) == '\\')
+                {
+                    p++;
+                }
                 print_escaped_char(&p);
             }
             else
