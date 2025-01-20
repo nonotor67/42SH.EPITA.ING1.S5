@@ -86,7 +86,7 @@ static void print_argument(const char *arg, bool eflag)
         {
             if (*p == '\\')
             {
-                while (*(p+1) == '\\')
+                while (*(p + 1) == '\\')
                 {
                     p++;
                 }
