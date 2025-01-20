@@ -23,7 +23,7 @@ rule_for =
     'for' WORD ( [';'] | [ {'\n'} 'in' { WORD } ( ';' | '\n' ) ] ) {'\n'} 'do'
 compound_list 'done' ;
 */
-// TODO: Refactor this function if adding more rules (38 lines)
+// TODO: Refactor this function if adding more rules (40 lines)
 static struct ast *rule_for(struct parser *parser)
 {
     struct token tok;
