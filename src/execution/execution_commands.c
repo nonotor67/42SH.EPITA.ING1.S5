@@ -51,6 +51,7 @@ static int is_assignment(struct word *word)
 
 int dispatch_command(struct ast *ast)
 {
+    int status = 0;
     int skipped_assignments = 0;
     while (ast->values[skipped_assignments]
            && is_assignment(ast->values[skipped_assignments]))
@@ -69,19 +70,26 @@ int dispatch_command(struct ast *ast)
             insertVariable(var, equal_sign + 1);
             *equal_sign = '='; // put the equal sign back
         }
-        return 0;
     }
     char **real_argv = ast->expanded_values + skipped_assignments;
     int argc = 0;
     while (real_argv[argc])
         argc++;
     if (strcmp(ast->expanded_values[0], "echo") == 0)
-        return exec_echo(argc, ast->expanded_values);
-    if (strcmp(ast->expanded_values[0], "true") == 0)
-        return exec_true(argc, ast->expanded_values);
-    if (strcmp(ast->expanded_values[0], "false") == 0)
-        return exec_false(argc, ast->expanded_values);
-    return run_command(real_argv);
+        status = exec_echo(argc, ast->expanded_values);
+    else if (strcmp(ast->expanded_values[0], "true") == 0)
+        status = exec_true(argc, ast->expanded_values);
+    else if (strcmp(ast->expanded_values[0], "false") == 0)
+        status = exec_false(argc, ast->expanded_values);
+    else
+        status = run_command(real_argv);
+
+    char *buf = xmalloc(256);
+    my_itoa(status, buf);
+    insertVariable("?", buf);
+    free(buf);
+
+    return status;
 }
 
 int execute_command(struct ast *ast)

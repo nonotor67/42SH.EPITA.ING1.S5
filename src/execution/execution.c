@@ -88,12 +88,5 @@ int execution(struct ast *ast)
 {
     if (ast == NULL)
         return 0;
-    int res = execute_node(ast);
-
-    char *buf = xmalloc(256);
-    my_itoa(res, buf);
-    insertVariable("?", buf);
-    free(buf);
-
-    return res;
+    return execute_node(ast);
 }
