@@ -1,13 +1,13 @@
 #ifndef HASHMAPFUNC_H
 #define HASHMAPFUNC_H
 
-#include "ast/ast.h"
+#include "function.h"
 
 #define TABLE_SIZE 256
 
 struct HashMapFunc
 {
-    struct ast *map[TABLE_SIZE];
+    struct function *map[TABLE_SIZE];
 };
 
 /**

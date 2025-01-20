@@ -2,6 +2,7 @@
 #define UTILS_H
 
 #include "hashMapVar.h"
+#include "hashMapFunc.h"
 #include "strings.h"
 #include "variable.h"
 #include "word.h"
