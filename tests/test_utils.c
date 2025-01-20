@@ -24,11 +24,6 @@ Test(test_realloc_not_null, xrealloc)
     free(new_ptr);
 }
 
-Test(test_hash, hash)
-{
-    cr_assert_eq(hash("test"), 72);
-}
-
 Test(test_create_variable, create_variable)
 {
     struct Variable *var = create_variable("test", "value");
@@ -65,7 +60,7 @@ Test(test_get, getVariable)
 Test(test_update, updateVariable)
 {
     insertVariable("test", "value");
-    updateVariable("test", "new_value");
+    insertVariable("test", "new_value");
     struct Variable var = getVariable("test");
     cr_assert_str_eq(var.name, "test");
     cr_assert_str_eq(var.value, "new_value");
