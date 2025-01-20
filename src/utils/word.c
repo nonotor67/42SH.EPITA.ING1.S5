@@ -11,7 +11,6 @@
 #include <unistd.h>
 
 #include "utils/utils.h"
-#include "vector.h"
 
 struct word *word_new(void)
 {
