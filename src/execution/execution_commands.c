@@ -70,6 +70,12 @@ int dispatch_command(struct ast *ast)
             insertVariable(var, equal_sign + 1);
             *equal_sign = '='; // put the equal sign back
         }
+        char *buf = xmalloc(256);
+        my_itoa(status, buf);
+        insertVariable("?", buf);
+        free(buf);
+
+        return status;
     }
     char **real_argv = ast->expanded_values + skipped_assignments;
     int argc = 0;
