@@ -2,8 +2,10 @@
 
 #include <ctype.h>
 #include <io/io.h>
+#include <parser/parser.h>
 #include <string.h>
 #include <utils/utils.h>
+#include <utils/vector.h>
 
 #include "lexer.h"
 
@@ -41,7 +43,7 @@ static int lexer_is_word_char(struct lexer *lexer)
     const int c = last_char(lexer);
     if (c == EOF)
         return 0;
-    static const char reserved[] = " \t\n;#|&<>!";
+    static const char reserved[] = " \t\n;#|&<>!()";
     for (size_t i = 0; i < sizeof(reserved) - 1; i++)
         if (c == reserved[i])
             return 0;
@@ -82,6 +84,49 @@ static int lexer_try_redir(struct lexer *lexer, struct word *word)
     return 1;
 }
 
+static void parse_command_substitution(struct lexer *lexer,
+                                       struct variable *var)
+{
+    struct ast *root = ast_new(COMMAND_LIST);
+    struct ast *prev = NULL;
+    struct ast *current = root;
+    // skip the '('
+    lexer->current_char = UNITIALIZED_CHAR;
+    struct token last_tok;
+    last_tok.type = TOKEN_UNKNOWN;
+    while (last_tok.type != TOKEN_RIGHT_PAREN && last_char(lexer) != EOF)
+    {
+        struct lexer *sub_lexer = lexer_new(lexer->reader);
+        sub_lexer->current_char = last_char(lexer);
+        struct parser *parser = parser_new(sub_lexer);
+        current->left = list(parser);
+        last_tok = sub_lexer->current;
+        lexer->current_char = sub_lexer->current_char;
+        if (parser->status != PARSER_OK)
+        {
+            ast_free(current);
+            parser_free(parser);
+            lexer_free(sub_lexer);
+            fprintf(stderr, "Error parsing command substitution\n");
+            break;
+        }
+        parser_free(parser);
+        lexer_free(sub_lexer);
+        current->right = ast_new(COMMAND_LIST);
+        prev = current;
+        current = current->right;
+    }
+    free(current);
+    var->commands = NULL;
+    if (prev)
+    {
+        prev->right = NULL;
+        var->commands = root;
+    }
+    var->name.data = NULL;
+    var->name.length = 0;
+}
+
 // returns true and populates var if it parsed a variable, false otherwise
 static int lexer_lex_variable(struct lexer *lexer, struct variable *var)
 {
@@ -100,6 +145,12 @@ static int lexer_lex_variable(struct lexer *lexer, struct variable *var)
             return 1;
         }
     }
+    if (c == '(')
+    {
+        parse_command_substitution(lexer, var);
+        return 1;
+    }
+
     const int bracket = c == '{';
     if (bracket)
         next_char(lexer);
@@ -109,6 +160,7 @@ static int lexer_lex_variable(struct lexer *lexer, struct variable *var)
         return 0;
 
     string_init(&var->name);
+    var->commands = NULL;
     while (lexer_is_name_char(lexer))
     {
         string_push(&var->name, (char)last_char(lexer));
@@ -239,6 +291,12 @@ static struct token lexer_switch(struct lexer *lexer)
         break;
     case ';':
         token.type = TOKEN_SEMICOLON;
+        break;
+    case '(':
+        token.type = TOKEN_LEFT_PAREN;
+        break;
+    case ')':
+        token.type = TOKEN_RIGHT_PAREN;
         break;
     case '|':
         token.type = next_char(lexer) == '|' ? TOKEN_OR : TOKEN_PIPE;

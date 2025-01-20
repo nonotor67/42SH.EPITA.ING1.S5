@@ -5,10 +5,12 @@
 
 #include "utils/strings.h"
 
+// either name or commands is null
 struct variable
 {
     size_t pos; // position in the string
     struct string name;
+    struct ast *commands; // vector of ASTs
 };
 
 struct word
