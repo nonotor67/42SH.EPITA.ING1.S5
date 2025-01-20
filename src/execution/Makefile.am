@@ -23,7 +23,7 @@ libexecution_a_SOURCES =  \
   execution_pipeline.c \
   execution_pipeline.h \
   execution_loop.c \
-  execution_loop. \
+  execution_loop.h \
   exec_dot.c \
   builtins_dot.h
 
