@@ -288,7 +288,7 @@ static void lex_keyword_or_word(struct lexer *lexer, struct token *token)
             token->type = TOKEN_KEYWORD;
 }
 
-#define TOKEN_IS_CLOSER(tok) \
+#define TOKEN_IS_CLOSER(tok)                                                   \
     (tok.type != TOKEN_WORD && tok.type != TOKEN_KEYWORD)
 
 struct token lexer_next(struct lexer *lexer)

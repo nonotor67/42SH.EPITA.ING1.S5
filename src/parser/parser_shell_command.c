@@ -43,7 +43,8 @@ static struct ast *rule_for(struct parser *parser)
     {
         skip_eol(parser->lexer);
         tok = lexer_peek(parser->lexer);
-        if (tok.type == TOKEN_KEYWORD && strcmp(tok.word->value.data, "in") == 0)
+        if (tok.type == TOKEN_KEYWORD
+            && strcmp(tok.word->value.data, "in") == 0)
         {
             EXPECT_KEYWORD(parser->lexer, "in", "Expected 'in' (rule_for)\n");
             CHECK_STATUS(parser, root, "Error after parsing word (rule_for)\n");
@@ -87,7 +88,7 @@ static struct ast *rule_while(struct parser *parser)
 {
     struct token tok;
     EXPECT_KEYWORD(parser->lexer, "while",
-                "Expected 'while' keyword (rule_while)\n");
+                   "Expected 'while' keyword (rule_while)\n");
     CHECK_STATUS(parser, NULL, "Error bad while\n");
 
     struct ast *root = ast_new(WHILE_LOOP);
@@ -104,7 +105,7 @@ static struct ast *rule_while(struct parser *parser)
                  "Error after parsing compound_list (while[1])\n");
 
     EXPECT_KEYWORD(parser->lexer, "done",
-                "Expected 'done' keyword (rule_while)\n");
+                   "Expected 'done' keyword (rule_while)\n");
     CHECK_STATUS(parser, root, "Error bad while\n");
 
     return root;
@@ -115,7 +116,7 @@ static struct ast *rule_until(struct parser *parser)
 {
     struct token tok;
     EXPECT_KEYWORD(parser->lexer, "until",
-                "Expected 'until' keyword (rule_until)\n");
+                   "Expected 'until' keyword (rule_until)\n");
     CHECK_STATUS(parser, NULL, "Error bad until\n");
 
     struct ast *root = ast_new(UNTIL_LOOP);
@@ -132,7 +133,7 @@ static struct ast *rule_until(struct parser *parser)
                  "Error after parsing compound_list (until[1])\n");
 
     EXPECT_KEYWORD(parser->lexer, "done",
-                "Expected 'done' keyword (rule_until)\n");
+                   "Expected 'done' keyword (rule_until)\n");
     CHECK_STATUS(parser, root, "Error bad until\n");
 
     return root;
@@ -182,7 +183,8 @@ static struct ast *rule_if(struct parser *parser)
     IS_BAD_IF(parser);
     CHECK_STATUS(parser, root, "Error after parsing compound_list (if)\n");
 
-    EXPECT_KEYWORD(parser->lexer, "then", "Expected 'then' keyword (rule_if)\n");
+    EXPECT_KEYWORD(parser->lexer, "then",
+                   "Expected 'then' keyword (rule_if)\n");
     CHECK_STATUS(parser, root, "Error bad if\n");
     // begin new command after then
     lexer_context_begin(parser->lexer);
