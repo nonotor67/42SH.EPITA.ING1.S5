@@ -86,10 +86,6 @@ static void print_argument(const char *arg, bool eflag)
         {
             if (*p == '\\')
             {
-                while (*(p + 1) == '\\')
-                {
-                    p++;
-                }
                 print_escaped_char(&p);
             }
             else
