@@ -86,3 +86,24 @@ Test(exec_exit_exit_code_too_high, test_exec_exit_exit_code_too_high,
     char *argv[] = { "exit", "256", NULL };
     exec_exit(2, argv);
 }
+
+Test(exec_builtin_export, test_exec_builtin_export)
+{
+    char *argv[] = { "export", "HELLO=WORLD", NULL };
+    exec_export(2, argv);
+
+    printf("%s\n", getenv("HELLO"));
+
+    cr_assert_str_eq(getenv("HELLO"), "WORLD", "Expected HELLO to be set to WORLD");
+}
+
+Test(exec_builtin_export_unset, test_exec_builtin_export_unset)
+{
+    char *argv[] = { "export", "HELLO=WORLD", NULL };
+    exec_export(2, argv);
+
+    char *argv_unset[] = { "unset", "HELLO", NULL };
+    exec_unset(2, argv_unset);
+
+    cr_assert_null(getenv("HELLO"), "Expected HELLO to be unset");
+}
