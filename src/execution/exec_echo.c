@@ -18,7 +18,6 @@ bool exec_echo(int argc, char **argv)
         bool flag = false;
         if (argv[i][0] == '-')
         {
-            // Parse multiple options in the same '-'
             for (int j = 1; argv[i][j] != '\0'; j++)
             {
                 if (argv[i][j] == 'n')
@@ -40,9 +39,7 @@ bool exec_echo(int argc, char **argv)
                 }
             }
             if (flag)
-            {
                 break;
-            }
             idx++;
         }
         else
@@ -72,30 +69,33 @@ bool exec_echo(int argc, char **argv)
 
 static void print_argument(const char *arg, bool eflag)
 {
-    if (eflag)
+    const char *p = arg;
+    while (*p)
     {
-        for (const char *p = arg; *p; p++)
+        if (*p == '\\')
         {
-            if (*p == '\\')
+            if (eflag)
             {
                 print_escaped_char(&p);
             }
             else
             {
                 putchar(*p);
+                p++;
             }
         }
-    }
-    else
-    {
-        printf("%s", arg);
+        else
+        {
+            putchar(*p);
+            p++;
+        }
     }
 }
 
 static void print_escaped_char(const char **p)
 {
     (*p)++;
-    if (!**p)
+    if (!*p || !**p || **p == '\0')
     {
         putchar('\\');
         return;
@@ -109,8 +109,13 @@ static void print_escaped_char(const char **p)
     {
         printf("\t");
     }
+    else if (**p == '\\')
+    {
+        printf("\\");
+    }
     else
     {
         putchar(**p);
     }
+    (*p)++;
 }
