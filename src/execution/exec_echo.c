@@ -12,51 +12,43 @@ bool exec_echo(int argc, char **argv)
     bool nflag = false;
     bool eflag = false;
 
-    while (idx < argc)
+    // Parse options
+    for (int i = 1; i < argc; i++)
     {
-        if (argv[idx][0] != '-')
+        bool flag = false;
+        if (argv[i][0] == '-')
         {
-            break;
-        }
-
-        if (argv[idx][1] == '\0')
-        {
-            break;
-        }
-
-        int i = 1;
-        int flag = 0;
-        while (argv[idx][i] != '\0')
-        {
-            if (argv[idx][i] == 'n')
+            // Parse multiple options in the same '-'
+            for (int j = 1; argv[i][j] != '\0'; j++)
             {
-                nflag = true;
+                if (argv[i][j] == 'n')
+                {
+                    nflag = true;
+                }
+                else if (argv[i][j] == 'e')
+                {
+                    eflag = true;
+                }
+                else if (argv[i][j] == 'E')
+                {
+                    eflag = false;
+                }
+                else
+                {
+                    flag = true;
+                    break;
+                }
             }
-            else if (argv[idx][i] == 'e')
-            {
-                eflag = true;
-            }
-            else if (argv[idx][i] == 'E')
-            {
-                eflag = false;
-            }
-            else
-            {
-                flag = 1;
-            }
-
             if (flag)
             {
                 break;
             }
-            i++;
+            idx++;
         }
-        if (flag)
+        else
         {
             break;
         }
-
-        idx++;
     }
 
     for (int i = idx; i < argc; i++)
@@ -103,6 +95,12 @@ static void print_argument(const char *arg, bool eflag)
 static void print_escaped_char(const char **p)
 {
     (*p)++;
+    if (!**p)
+    {
+        putchar('\\');
+        return;
+    }
+
     if (**p == 'n')
     {
         printf("\n");
@@ -113,7 +111,6 @@ static void print_escaped_char(const char **p)
     }
     else
     {
-        putchar('\\');
         putchar(**p);
     }
 }
