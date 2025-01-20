@@ -4,6 +4,8 @@
 #include "io/io.h"
 #include "token.h"
 
+#define UNITIALIZED_CHAR (-5)
+
 enum lexing_mode
 {
     LEXING_NORMAL,
@@ -13,6 +15,12 @@ enum lexing_mode
     // Add more modes if needed
 };
 
+enum lexing_context
+{
+    LEXING_COMMAND, // beginning of string
+    LEXING_ARGUMENT,
+};
+
 struct lexer
 {
     struct reader *reader;
@@ -20,6 +28,7 @@ struct lexer
     struct token current;
     int escape_next;
     enum lexing_mode mode;
+    enum lexing_context context;
 };
 
 // Create a new lexer based on a reader
@@ -27,11 +36,6 @@ struct lexer *lexer_new(struct reader *reader);
 
 // Free the lexer
 void lexer_free(struct lexer *lexer);
-
-// INTERNAL, do not use if not aware,
-// Use peek or pop instead
-// Get the next token
-struct token lexer_next(struct lexer *lexer);
 
 // Peek the next token
 // Does not consume the token
@@ -41,7 +45,7 @@ struct token lexer_peek(struct lexer *lexer);
 // Consumes the token
 struct token lexer_pop(struct lexer *lexer);
 
-// Set the lexer mode
-void lexer_set_mode(struct lexer *lexer, enum lexing_mode mode);
+// Sets the context of the lexer to command beginning
+void lexer_context_begin(struct lexer *lexer);
 
 #endif /* !LEXER_H */
