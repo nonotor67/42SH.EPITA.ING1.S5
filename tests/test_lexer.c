@@ -379,22 +379,12 @@ Test(lexer, lexer_PIPE_NOT){ INIT_LEXER_TEST("! echo Hello | echo World")
                                          EAT_WORD("echo") EAT_WORD("World")
                                              EXPECT(TOKEN_EOF) CLEAR_ALL }
 
-Test(lexer, lexer_no_space)
-{
+Test(lexer, lexer_no_space){
     INIT_LEXER_TEST("echo Hello|echo World&&bonjour hi||guten tag")
-    EAT_WORD("echo")
-    EAT_WORD("Hello")
-    EXPECT(TOKEN_PIPE)
-    EAT_WORD("echo")
-    EAT_WORD("World")
-    EXPECT(TOKEN_AND)
-    EAT_WORD("bonjour")
-    EAT_WORD("hi")
-    EXPECT(TOKEN_OR)
-    EAT_WORD("guten")
-    EAT_WORD("tag")
-    EXPECT(TOKEN_EOF)
-    CLEAR_ALL
+        EAT_WORD("echo") EAT_WORD("Hello") EXPECT(TOKEN_PIPE) EAT_WORD("echo")
+            EAT_WORD("World") EXPECT(TOKEN_AND) EAT_WORD("bonjour")
+                EAT_WORD("hi") EXPECT(TOKEN_OR) EAT_WORD("guten")
+                    EAT_WORD("tag") EXPECT(TOKEN_EOF) CLEAR_ALL
 }
 
 Test(lexer, lexer_keywords)
