@@ -91,7 +91,6 @@ struct Variable getVariable(char *name)
     return (struct Variable){ NULL, NULL, NULL };
 }
 
-
 /**
  * Initialize the environment variables
  * @param argc The number of arguments

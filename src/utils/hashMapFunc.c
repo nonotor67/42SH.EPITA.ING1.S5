@@ -1,11 +1,10 @@
-#include <stdlib.h>
-
 #include "hashMapFunc.h"
-#include <string.h>
-#include "utils.h"
-#include <stdlib.h>
-#include "ast/ast.h"
 
+#include <stdlib.h>
+#include <string.h>
+
+#include "ast/ast.h"
+#include "utils.h"
 
 static struct HashMapFunc global_functions = { { NULL } };
 

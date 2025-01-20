@@ -16,7 +16,6 @@ struct HashMapFunc
  */
 void free_hash_map_func(void);
 
-
 /**
  *  @brief Hash a string
  *  @param str The string to hash
