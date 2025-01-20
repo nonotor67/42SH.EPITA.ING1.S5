@@ -1,5 +1,5 @@
-#ifndef HASHMAP_H
-#define HASHMAP_H
+#ifndef HASHMAPVAR_H
+#define HASHMAPVAR_H
 
 #include "variable.h"
 
@@ -51,4 +51,4 @@ void updateVariable(char *name, char *value);
  */
 void env_init(int argc, char **argv);
 
-#endif /* !HASHMAP_H */
+#endif /* !HASHMAPVAR_H */

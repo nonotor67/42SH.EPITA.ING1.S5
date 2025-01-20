@@ -1,7 +1,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include "hashMap.h"
+#include "hashMapVar.h"
 #include "strings.h"
 #include "variable.h"
 #include "word.h"

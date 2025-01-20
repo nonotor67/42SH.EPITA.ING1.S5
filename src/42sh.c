@@ -8,8 +8,6 @@
 #include <stdlib.h>
 #include <utils/utils.h>
 
-#include "utils/hashMap.h"
-
 #define DEBUG(str)                                                             \
     if (verbose)                                                               \
     printf("%s\n", str)

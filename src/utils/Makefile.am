@@ -7,8 +7,8 @@ libutils_a_SOURCES =  \
   strings.h \
   xmalloc.h \
   xmalloc.c \
-  hashMap.h \
-  hashMap.c \
+  hashMapVar.h \
+  hashMapVar.c \
   variable.h \
   variable.c \
   word.h \
