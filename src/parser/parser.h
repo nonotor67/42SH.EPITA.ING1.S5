@@ -5,6 +5,7 @@
 #include "lexer/lexer.h"
 #include "parser_command.h"
 #include "parser_operator.h"
+#include "parser_shell_command.h"
 #include "parser_struct.h"
 
 struct parser *parser_new(struct lexer *lexer);

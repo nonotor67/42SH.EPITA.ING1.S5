@@ -23,7 +23,10 @@ enum ast_type
     // Operators
     AND,
     NEGATION,
-    OR
+    OR,
+    COMMAND_BLOCK,
+    FUNCTION,
+    SUBSHELL
 };
 
 struct ast
@@ -334,6 +337,77 @@ for i in 1 2 3 ; do echo $i ; done **Simplified**
         right = NULL
     size = 0
     values = NULL
+
+if true; then echo test; fi > out
+    type = CONDITIONS
+    left = SIMPLE_COMMAND
+        size = 1
+        values = ["true", NULL]
+    middle = COMMAND_LIST
+        left = SIMPLE_COMMAND
+            size = 2
+            values = ["echo", "test", NULL]
+        middle = NULL
+        right = NULL
+    right = NULL
+    size = 0
+    values = NULL
+    redir = [">", "out", NULL]
+
+Step 3 :
+
+{ echo hello; echo world; }
+    type = COMMAND_BLOCK
+    left = COMMAND_LIST
+        left = SIMPLE_COMMAND
+            size = 2
+            values = ["echo", "hello", NULL]
+        middle = NULL
+        right = SIMPLE_COMMAND
+            size = 2
+            values = ["echo", "world", NULL]
+        size = 0
+        values = NULL
+    size = 0
+    values = NULL
+
+foo (){ echo hello; echo world; } **Simplified**
+    type = FUNCTION
+    left = COMMAND_BLOCK
+        left = SIMPLE_COMMAND
+            size = 2
+            values = ["echo", "hello", NULL]
+        middle = NULL
+        right = COMMAND_LIST
+            left = SIMPLE_COMMAND
+                size = 2
+                values = ["echo", "world", NULL]
+    values = ["foo", NULL]
+
+a=sh; (a=42; echo -n $a);echo $a **Simplified**
+    type = COMMAND_LIST
+    left = SIMPLE_COMMAND
+        size = 2
+        values = ["a=sh", NULL]
+    middle = NULL
+    right = COMMAND_LIST
+        left = SUBSHELL
+            left = COMMAND_LIST
+                left = SIMPLE_COMMAND
+                    size = 2
+                    values = ["a=42", NULL]
+                middle = NULL
+                right = SIMPLE_COMMAND
+                    size = 2
+                    values = ["echo", "-n", "$a", NULL]
+            middle = NULL
+            right = NULL
+        middle = NULL
+        right = SIMPLE_COMMAND
+            size = 2
+            values = ["echo", "$a", NULL]
+
+
 */
 
 #endif /* !AST_H */

@@ -8,6 +8,8 @@ libexecution_a_SOURCES =  \
   builtins_bool.h \
   exec_echo.c \
   builtins_echo.h \
+  builtins_cd.c \
+  builtins_cd.h \
   exec_exit.c \
   builtins_exit.h \
   execution_conditions.c \
@@ -23,6 +25,11 @@ libexecution_a_SOURCES =  \
   execution_pipeline.c \
   execution_pipeline.h \
   execution_loop.c \
+  execution_loop.h \
+  exec_dot.c \
+  builtins_dot.h \
+  builtins_export.c \
+  builtins_export.h \
   execution_loop.h \
   exec_loop_commands.c \
   builtins_loop.h

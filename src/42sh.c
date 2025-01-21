@@ -8,8 +8,6 @@
 #include <stdlib.h>
 #include <utils/utils.h>
 
-#include "utils/hashMap.h"
-
 #define DEBUG(str)                                                             \
     if (verbose)                                                               \
     printf("%s\n", str)
@@ -88,7 +86,7 @@ int main(int argc, char **argv)
     DEBUG("Done executing loop");
     reader_free(reader);
     lexer_free(lexer);
-    free_hash_map();
+    free_hash_map_var();
 
     return res;
 }
