@@ -1,5 +1,6 @@
 #include "builtins_cd.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -27,8 +28,25 @@ int exec_cd(int argc, char **argv)
         return 0;
     }
 
-    if (chdir(argv[1]) == -1)
+    if (strcmp(argv[1], "-") == 0)
+    {
+        if (getVariable("OLDPWD").value == getVariable("PWD").value)
+        {
+            fprintf(stderr, "cd: OLDPWD not set\n");
+            return 1;
+        }
+        if (chdir(getVariable("OLDPWD").value) == -1)
+        {
+            fprintf(stderr, "cd: No such file or directory\n");
+            return 1;
+        }
+        printf("%s\n", getVariable("OLDPWD").value);
+        update_pwd();
+    }
+    else if (chdir(argv[1]) == -1)
+    {
+        fprintf(stderr, "cd: %s: No such file or directory\n", argv[1]);
         return 1;
-
+    }
     return 0;
 }
