@@ -8,8 +8,8 @@ $test $BIN "Multiple subshell" "(echo hello; echo world)"
 $test $BIN "Complicated subshell" "(echo hello | tr a-z A-Z | rev)"
 
 # Test for variable substitution
-$test $BIN "Test with variable substitution" 'a=sh; (a=42; echo -n $a);echo $a'
-$test $BIN "Test with variable substitution" 'a=sh; (a=42;b=yann; echo -n \$a \$b);echo \$a \$b'
+$test $BIN "Test with variable substitution" "a=sh; (a=42; echo -n $a);echo $a"
+$test $BIN "Test with variable substitution" "a=sh; (a=42;b=yann; echo -n $a $b);echo $a $b"
 
 # Test with multiple subshell
 $test $BIN "Test with multiple subshell" '(echo hello; (echo world))'
