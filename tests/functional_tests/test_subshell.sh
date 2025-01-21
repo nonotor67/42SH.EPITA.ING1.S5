@@ -16,7 +16,7 @@ $test $BIN "Test with multiple subshell" '(echo hello; (echo world))'
 $test $BIN "Test with multiple subshell" '(echo hello; (echo world; echo yann))'
 
 # Test with multiple subshell and variable substitution
-$test $BIN "Test with multiple subshell and variable substitution" 'a=sh; (a=42; echo -n $a);echo $a; (echo hello; (echo world; echo yann))'
+$test $BIN "Test with multiple subshell and variable substitution" 'a=sh; (a=42; echo -n $a);echo $a; (a=yann;echo $a; (echo $a;a=noah;echo $a;b=2);echo $a);echo $a;echo $b'
 
 # Test subshell with cd
 $test $BIN "Test subshell with cd" '(cd /; pwd); pwd'
