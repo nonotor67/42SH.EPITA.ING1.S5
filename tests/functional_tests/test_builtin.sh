@@ -13,3 +13,11 @@ $test $BIN "Complex echo test" "echo -nEeeeee '\\\\\\\\\\\'"
 $test $BIN "Complex echo test" "echo -eeeeeeEEEE '\\\\'"
 $test $BIN "Simple true" "true"
 $test $BIN "Simple false" "false"
+
+# Test cd
+$test $BIN "Simple cd" "cd /;echo $PWD;ls"
+$test $BIN "Simple cd with path" "cd /usr;echo $PWD;ls"
+# Test error
+$test $BIN "Simple cd with error" "cd unexpected_dir;echo $PWD;ls"
+# Test with -
+$test $BIN "Simple cd with -" "cd /usr;cd -"
