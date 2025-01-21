@@ -94,7 +94,8 @@ Test(exec_builtin_export, test_exec_builtin_export)
 
     printf("%s\n", getenv("HELLO"));
 
-    cr_assert_str_eq(getenv("HELLO"), "WORLD", "Expected HELLO to be set to WORLD");
+    cr_assert_str_eq(getenv("HELLO"), "WORLD",
+                     "Expected HELLO to be set to WORLD");
 }
 
 Test(exec_builtin_export_unset, test_exec_builtin_export_unset)
