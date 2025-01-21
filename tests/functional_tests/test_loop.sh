@@ -24,3 +24,12 @@ $test $BIN "Until loop with variable" 'a=false;while $a; do echo Noah;a=true; do
 
 # Test break
 $test $BIN "Until break" 'until false; do echo coucou; break; echo toto fi; done'
+
+# Test while in while
+$test $BIN "Loop in loop" 'while true; do echo toto; while true; do echo tata;break;echo ta mere; done; echo connard; break; echo Salope; done'
+# Test until in until
+$test $BIN "Loop in loop" 'until false; do echo toto; until false; do echo tata;break;echo ta mere; done; echo connard; break; echo Salope; done'
+# Test until in while
+$test $BIN "Loop in loop" 'while true; do echo toto; until false; do echo tata;break;echo ta mere; done; echo connard; break; echo Salope; done'
+# Test while in until
+$test $BIN "Loop in loop" 'until false; do echo toto; while true; do echo tata;break;echo ta mere; done; echo connard; break; echo Salope; done'

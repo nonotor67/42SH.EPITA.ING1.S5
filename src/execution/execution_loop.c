@@ -11,21 +11,23 @@ static void init_loop_status()
     loop_status->occurence = 0;
 }
 
-static void free_loop_status()
+static void free_loop_status(struct loop_status *status_to_free)
 {
-    if (loop_status)
+    if (status_to_free)
     {
-        free(loop_status);
+        free(status_to_free);
     }
 }
 
 int execution_while(struct ast *ast)
 {
     // Store the loop status to restore it after the loop
-    // Could be NULL
     struct loop_status *stored_loop_status = loop_status;
-    if (!loop_status)
-        init_loop_status();
+    init_loop_status();
+
+    loop_status->status = 0;
+    loop_status->occurence = 0;
+
     int status = 0;
     while (execute_node(ast->left) == 0)
     {
@@ -43,16 +45,18 @@ int execution_while(struct ast *ast)
         }
         status = execute_node(ast->right);
     }
-    free_loop_status();
+
+    struct loop_status *current_loop_status = loop_status;
     loop_status = stored_loop_status;
+    free_loop_status(current_loop_status);
     return status;
 }
 
 int execution_until(struct ast *ast)
 {
+    // Store the loop status to restore it after the loop
     struct loop_status *stored_loop_status = loop_status;
-    if (!loop_status)
-        init_loop_status();
+    init_loop_status();
     int status = 0;
     while (execute_node(ast->left) != 0)
     {
@@ -70,16 +74,20 @@ int execution_until(struct ast *ast)
         }
         status = execute_node(ast->right);
     }
-    free_loop_status();
+    struct loop_status *current_loop_status = loop_status;
     loop_status = stored_loop_status;
+    free_loop_status(current_loop_status);
     return status;
 }
 
 int execution_for(struct ast *ast)
 {
+    // Store the loop status to restore it after the loop
     struct loop_status *stored_loop_status = loop_status;
     if (!loop_status)
         init_loop_status();
+    else
+        loop_status = malloc(sizeof(struct loop_status));
     int status = 0;
     int i = 0;
     while (ast->middle && ast->middle->values[i])
@@ -101,7 +109,8 @@ int execution_for(struct ast *ast)
         status = execute_node(ast->right);
         i++;
     }
-    free_loop_status();
+    struct loop_status *current_loop_status = loop_status;
     loop_status = stored_loop_status;
+    free_loop_status(current_loop_status);
     return status;
 }
