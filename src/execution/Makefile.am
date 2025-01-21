@@ -8,6 +8,8 @@ libexecution_a_SOURCES =  \
   builtins_bool.h \
   exec_echo.c \
   builtins_echo.h \
+  builtins_cd.c \
+  builtins_cd.h \
   exec_exit.c \
   builtins_exit.h \
   execution_conditions.c \

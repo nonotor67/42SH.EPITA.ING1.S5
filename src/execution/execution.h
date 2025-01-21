@@ -4,6 +4,7 @@
 #include <ast/ast.h>
 
 #include "builtins_bool.h"
+#include "builtins_cd.h"
 #include "builtins_echo.h"
 #include "builtins_exit.h"
 #include "execution_commands.h"
