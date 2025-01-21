@@ -7,3 +7,7 @@ $test $BIN "Simple echo test" "echo Hello world"
 $test $BIN "Simple echo test with newline" "echo -n Hello world"
 $test $BIN "Simple true" "true"
 $test $BIN "Simple false" "false"
+
+# Test continue and break outside of loop
+$test $BIN "continue outside of loop" "continue 10"
+$test $BIN "break outside of loop" "break"
