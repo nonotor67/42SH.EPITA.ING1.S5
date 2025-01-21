@@ -1,4 +1,3 @@
-#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -6,9 +5,9 @@
 
 #include "utils.h"
 
-static struct HashMap global_variables = { { NULL } };
+static struct HashMapVar global_variables = { { NULL } };
 
-void free_hash_map(void)
+void free_hash_map_var(void)
 {
     // Free the memory allocated for each variable
     for (int i = 0; i < TABLE_SIZE; i++)
@@ -25,7 +24,7 @@ void free_hash_map(void)
     }
 }
 
-unsigned int hash(char *name)
+static unsigned int hash(char *name)
 {
     unsigned int hash = 0;
     for (int i = 0; name[i] != '\0'; i++)
@@ -34,6 +33,24 @@ unsigned int hash(char *name)
     }
 
     return hash % TABLE_SIZE;
+}
+
+static void updateVariable(char *name, char *value)
+{
+    unsigned int index = hash(name);
+    struct Variable *var = global_variables.map[index];
+    // Search for the variable in the linked list
+    while (var != NULL)
+    {
+        if (strcmp(var->name, name) == 0)
+        {
+            // free the old value
+            free(var->value);
+            // allocate memory for the new value and copy it
+            var->value = strcpy(xmalloc(strlen(value) + 1), value);
+        }
+        var = var->next;
+    }
 }
 
 void insertVariable(char *name, char *value)
@@ -72,24 +89,6 @@ struct Variable getVariable(char *name)
     }
 
     return (struct Variable){ NULL, NULL, NULL };
-}
-
-void updateVariable(char *name, char *value)
-{
-    unsigned int index = hash(name);
-    struct Variable *var = global_variables.map[index];
-    // Search for the variable in the linked list
-    while (var != NULL)
-    {
-        if (strcmp(var->name, name) == 0)
-        {
-            // free the old value
-            free(var->value);
-            // allocate memory for the new value and copy it
-            var->value = strcpy(xmalloc(strlen(value) + 1), value);
-        }
-        var = var->next;
-    }
 }
 
 /**
