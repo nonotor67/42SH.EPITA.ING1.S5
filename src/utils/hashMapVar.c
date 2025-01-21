@@ -99,12 +99,7 @@ struct HashMapVar copy_hash_map_var(void)
         struct Variable *var = global_variables.map[i];
         while (var != NULL)
         {
-            char *name_copy = xmalloc(strlen(var->name) + 1);
-            char *value_copy = xmalloc(strlen(var->value) + 1);
-            strcpy(name_copy, var->name);
-            strcpy(value_copy, var->value);
-
-            struct Variable *new_var = create_variable(name_copy, value_copy);
+            struct Variable *new_var = create_variable(var->name, var->value);
             new_var->next = copy.map[i];
             copy.map[i] = new_var;
 
@@ -114,25 +109,10 @@ struct HashMapVar copy_hash_map_var(void)
     return copy;
 }
 
-void restore_hash_map_var(struct HashMapVar copy)
+void setVariableMap(struct HashMapVar copy)
 {
-    for (int i = 0; i < TABLE_SIZE; i++)
-    {
-        struct Variable *var = copy.map[i];
-        while (var != NULL)
-        {
-            insertVariable(var->name, var->value);
-            struct Variable *next = var->next;
-
-            free(var->name);
-            free(var->value);
-            free(var);
-
-            var = next;
-        }
-    }
+    global_variables = copy;
 }
-
 
 /**
  * Initialize the environment variables

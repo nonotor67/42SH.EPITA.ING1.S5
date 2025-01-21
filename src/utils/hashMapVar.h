@@ -39,17 +39,12 @@ struct Variable getVariable(char *name);
 struct HashMapVar copy_hash_map_var(void);
 
 /**
- *  @brief Restore the hash table
- *  @param copy The copy of the hash table
+ *  @brief Clear the hash table
+ *  @param hash_map The hash table
  */
-void restore_hash_map_var(struct HashMapVar copy);
+void clear_hash_map_var(struct HashMapVar *hash_map);
 
-/**
- *  @brief Update the value of a variable in the hash table
- *  @param ht The hash table
- *  @param name The name of the variable to update
- *  @param value The new value of the variable
- */
+void setVariableMap(struct HashMapVar copy);
 
 void env_init(int argc, char **argv);
 
