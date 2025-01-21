@@ -14,7 +14,11 @@ struct ast *simple_command(struct parser *parser);
 // no '&' in step 1
 struct ast *compound_list(struct parser *parser);
 
+// Handle command blocks
 struct ast *command_block(struct parser *parser);
+
+// Handle subshells
+struct ast *subshell(struct parser *parser);
 
 /*
 command =

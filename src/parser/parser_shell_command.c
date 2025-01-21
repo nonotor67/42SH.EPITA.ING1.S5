@@ -218,6 +218,8 @@ struct ast *shell_command(struct parser *parser)
 {
     struct token tok;
     tok = lexer_peek(parser->lexer);
+    if (tok.type == TOKEN_LEFT_PAREN)
+        return subshell(parser);
     const char *keyword = tok.word->value.data;
     if (strcmp(keyword, "if") == 0)
         return rule_if(parser);

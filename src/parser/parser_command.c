@@ -202,7 +202,7 @@ struct ast *command(struct parser *parser)
 {
     struct token token = lexer_peek(parser->lexer);
     struct ast *ast = NULL;
-    if (token.type == TOKEN_KEYWORD
+    if (token.type == TOKEN_KEYWORD || token.type == TOKEN_LEFT_PAREN
         || (token.type == TOKEN_WORD
             && strcmp(token.word->value.data, "{") == 0))
     {
@@ -231,6 +231,8 @@ struct ast *command_block(struct parser *parser)
     word_free(tok.word);
     struct ast *root = ast_new(COMMAND_BLOCK);
     root->left = compound_list(parser);
+    CHECK_STATUS(parser, root,
+                 "Error parsing compound list in command block\n");
     tok = lexer_pop(parser->lexer);
     if (tok.type == TOKEN_WORD && strcmp(tok.word->value.data, "}") == 0)
     {
@@ -238,6 +240,24 @@ struct ast *command_block(struct parser *parser)
         return root;
     }
     fprintf(stderr, "Error: Expected a closing bracket in command block\n");
+    parser->status = PARSER_UNEXPECTED_TOKEN;
+    return NULL;
+}
+
+// Handle shubshells
+struct ast *subshell(struct parser *parser)
+{
+    struct token tok;
+    lexer_pop(parser->lexer);
+    struct ast *root = ast_new(SUBSHELL);
+    root->left = compound_list(parser);
+    CHECK_STATUS(parser, root, "Error parsing compound list in Subshell\n");
+    tok = lexer_pop(parser->lexer);
+    if (tok.type == TOKEN_RIGHT_PAREN)
+    {
+        return root;
+    }
+    fprintf(stderr, "Error: Expected a closing parentesis in subshell\n");
     parser->status = PARSER_UNEXPECTED_TOKEN;
     return NULL;
 }

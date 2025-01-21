@@ -664,3 +664,24 @@ Test(parser, function_rec)
     cr_assert_str_eq(ast->left->left->values[0]->value.data, "encore");
     CLEAR_ALL
 }
+
+Test(parser, subshell)
+{
+    INIT_PARSER("a=sh; (a=42; echo -n $a);echo $a")
+    cr_assert_not_null(ast);
+    cr_assert_eq(ast->type, COMMAND_LIST);
+    cr_assert_not_null(ast->left);
+    cr_assert_not_null(ast->right);
+    cr_assert_eq(ast->left->type, SIMPLE_COMMAND);
+    cr_assert_eq(ast->right->type, COMMAND_LIST);
+    cr_assert_eq(ast->right->left->type, SUBSHELL);
+    cr_assert_eq(ast->right->right->type, COMMAND_LIST);
+    cr_assert_str_eq(ast->left->values[0]->value.data, "a=sh");
+    cr_assert_null(ast->left->values[1]);
+    cr_assert_eq(ast->right->left->left->type, COMMAND_LIST);
+    cr_assert_eq(ast->right->left->left->left->type, SIMPLE_COMMAND);
+    cr_assert_eq(ast->right->left->left->right->type, COMMAND_LIST);
+    cr_assert_eq(ast->right->right->left->type, SIMPLE_COMMAND);
+    cr_assert_null(ast->right->right->right);
+    CLEAR_ALL
+}
