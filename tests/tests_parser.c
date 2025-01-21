@@ -637,3 +637,30 @@ Test(parser, command_block_multiple)
     cr_assert_null(ast->right->left->left->values[2]);
     CLEAR_ALL
 }
+
+Test(parser, function)
+{
+    INIT_PARSER("test () { echo test; echo encore; }")
+    cr_assert_not_null(ast);
+    cr_assert_eq(ast->type, FUNCTION);
+    cr_assert_not_null(ast->left);
+    cr_assert_str_eq(ast->values[0]->value.data, "test");
+    cr_assert_null(ast->values[1]);
+    cr_assert_eq(ast->left->type, COMMAND_BLOCK);
+    CLEAR_ALL
+}
+
+Test(parser, function_rec)
+{
+    INIT_PARSER("test () { encore(){ bouh; } }")
+    cr_assert_not_null(ast);
+    cr_assert_eq(ast->type, FUNCTION);
+    cr_assert_not_null(ast->left);
+    cr_assert_str_eq(ast->values[0]->value.data, "test");
+    cr_assert_null(ast->values[1]);
+    cr_assert_eq(ast->left->type, COMMAND_BLOCK);
+    cr_assert_not_null(ast->left->left);
+    cr_assert_eq(ast->left->left->type, FUNCTION);
+    cr_assert_str_eq(ast->left->left->values[0]->value.data, "encore");
+    CLEAR_ALL
+}
