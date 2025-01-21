@@ -41,7 +41,7 @@ static int lexer_is_word_char(struct lexer *lexer)
     const int c = last_char(lexer);
     if (c == EOF)
         return 0;
-    static const char reserved[] = " \t\n;#|&<>!";
+    static const char reserved[] = " \t\n;|&<>!";
     for (size_t i = 0; i < sizeof(reserved) - 1; i++)
         if (c == reserved[i])
             return 0;
@@ -240,6 +240,12 @@ static struct token lexer_switch(struct lexer *lexer)
     case ';':
         token.type = TOKEN_SEMICOLON;
         break;
+    case '(':
+        token.type = TOKEN_LEFT_PAREN;
+        break;
+    case ')':
+        token.type = TOKEN_RIGHT_PAREN;
+        break;
     case '|':
         token.type = next_char(lexer) == '|' ? TOKEN_OR : TOKEN_PIPE;
         break;
@@ -297,12 +303,13 @@ struct token lexer_next(struct lexer *lexer)
     lexer_skip_comment(lexer);
 
     struct token token;
+    int comment = last_char(lexer) != '#';
     if (last_char(lexer) == EOF)
     {
         token.type = TOKEN_EOF;
         token.word = NULL;
     }
-    else if (lexer_is_word_char(lexer) || lexer->escape_next)
+    else if ((comment && lexer_is_word_char(lexer)) || lexer->escape_next)
     {
         token = lexer_next_handle_word(lexer);
         if (lexer->context == LEXING_COMMAND)

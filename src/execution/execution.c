@@ -77,6 +77,9 @@ int execute_node(struct ast *node)
     EXPAND_VALUES(node->values, node->expanded_values)
     EXPAND_VALUES(node->redir, node->expanded_redir)
 
+    if (node->redir)
+        return exec_redir(node);
+
     for (size_t i = 0; i < table_size; i++)
         if (execute_table[i].type == node->type)
             return execute_table[i].func(node);

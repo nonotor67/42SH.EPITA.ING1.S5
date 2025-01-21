@@ -21,7 +21,7 @@ echo "Percentage of tests passed: $PERCENTAGE%"
 
 if [ -n "$OUTPUT_FILE" ] ; then
   # Write the % of tests passed
-  echo $PERCENTAGE > $OUTPUT_FILE
+  echo $PERCENTAGE > "$OUTPUT_FILE"
 fi
 
 rm -f test_status.sh
