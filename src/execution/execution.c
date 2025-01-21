@@ -23,7 +23,7 @@ static const struct execute_entry execute_table[] = {
     { WHILE_LOOP, execution_while },
     { UNTIL_LOOP, execution_until },
     { FOR_LOOP, execution_for },
-       {SUBSHELL, execute_subshell}
+    { SUBSHELL, execute_subshell }
 };
 
 /*

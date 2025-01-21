@@ -8,4 +8,4 @@
 
 int execute_subshell(struct ast *ast);
 
-#endif //EXECUTION_SUBSHELL_H
+#endif // EXECUTION_SUBSHELL_H
