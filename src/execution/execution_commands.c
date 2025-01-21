@@ -89,6 +89,8 @@ int dispatch_command(struct ast *ast)
         status = exec_false(argc, ast->expanded_values);
     else if (strcmp(ast->expanded_values[0], ".") == 0)
         status = exec_dot(argc, ast->expanded_values);
+    else if (strcmp(ast->expanded_values[0], "cd") == 0)
+        status = exec_cd(argc, ast->expanded_values);
     else
         status = run_command(real_argv);
 

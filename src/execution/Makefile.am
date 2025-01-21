@@ -8,6 +8,8 @@ libexecution_a_SOURCES =  \
   builtins_bool.h \
   exec_echo.c \
   builtins_echo.h \
+  builtins_cd.c \
+  builtins_cd.h \
   exec_exit.c \
   builtins_exit.h \
   execution_conditions.c \
@@ -25,7 +27,9 @@ libexecution_a_SOURCES =  \
   execution_loop.c \
   execution_loop.h \
   exec_dot.c \
-  builtins_dot.h
+  builtins_dot.h \
+  builtins_export.c \
+  builtins_export.h
 
 libexecution_a_CPPFLAGS = -I$(top_srcdir)/src
 

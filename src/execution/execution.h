@@ -5,8 +5,10 @@
 
 #include "builtins_bool.h"
 #include "builtins_dot.h"
+#include "builtins_cd.h"
 #include "builtins_echo.h"
 #include "builtins_exit.h"
+#include "builtins_export.h"
 #include "execution_commands.h"
 #include "execution_conditions.h"
 #include "execution_loop.h"
