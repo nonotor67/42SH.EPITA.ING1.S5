@@ -170,7 +170,8 @@ struct ast *compound_list(struct parser *parser)
         // if the next token is a closing keyword, we stop the compound_list
         if ((tok.type == TOKEN_KEYWORD && is_closing_word(tok.word))
             || (tok.type == TOKEN_WORD
-                && strcmp(tok.word->value.data, "}") == 0))
+                && strcmp(tok.word->value.data, "}") == 0)
+            || tok.type == TOKEN_RIGHT_PAREN)
             break;
         current->right = ast_new(COMMAND_LIST);
         current = current->right;
