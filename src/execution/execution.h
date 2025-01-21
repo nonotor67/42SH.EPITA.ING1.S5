@@ -16,6 +16,7 @@
 #include "execution_negation.h"
 #include "execution_or_and.h"
 #include "execution_pipeline.h"
+#include "execution_subshell.h"
 
 /*
 @description:

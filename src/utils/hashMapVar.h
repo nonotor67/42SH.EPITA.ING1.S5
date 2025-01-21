@@ -30,6 +30,20 @@ void insertVariable(char *name, char *value);
  *  @return The variable
  */
 struct Variable getVariable(char *name);
+
+
+/**
+ *  @brief Copy the hash table
+ *  @return The copy of the hash table
+ */
+struct HashMapVar copy_hash_map_var(void);
+
+/**
+ *  @brief Restore the hash table
+ *  @param copy The copy of the hash table
+ */
+void restore_hash_map_var(struct HashMapVar copy);
+
 /**
  *  @brief Update the value of a variable in the hash table
  *  @param ht The hash table

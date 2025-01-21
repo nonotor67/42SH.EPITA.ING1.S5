@@ -32,7 +32,9 @@ libexecution_a_SOURCES =  \
   builtins_export.h \
   execution_loop.h \
   exec_loop_commands.c \
-  builtins_loop.h
+  builtins_loop.h \
+  execution_subshell.c \
+  execution_subshell.h
 
 libexecution_a_CPPFLAGS = -I$(top_srcdir)/src
 
