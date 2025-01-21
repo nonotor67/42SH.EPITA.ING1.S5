@@ -58,10 +58,17 @@ int exec_dot(int argc, char **argv)
     }
     // Read the whole file
     fseek(file, 0, SEEK_END);
-    long size = ftell(file);
+    size_t size = ftell(file);
     fseek(file, 0, SEEK_SET);
     char *buffer = xmalloc(size + 1);
-    fread(buffer, 1, size, file);
+    size_t read = fread(buffer, 1, size, file);
+    if (read != size)
+    {
+        fprintf(stderr, "Failed to read file: %s\n", filename);
+        free(buffer);
+        fclose(file);
+        return 1;
+    }
     buffer[size] = '\0';
     fclose(file);
 
