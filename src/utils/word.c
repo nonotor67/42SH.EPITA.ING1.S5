@@ -78,23 +78,28 @@ int is_word_valid(struct word *word)
 
 static void eval_subcommand(struct string *str, struct variable *var)
 {
-    // pipe the commands
     int pipefd[2];
-    int status;
     if (pipe(pipefd) == -1)
+    {
+        perror("pipe");
         return;
+    }
     pid_t pid = fork();
-    if (pid == 0) // child
+    if (pid == -1)
+    {
+        perror("fork");
+        return;
+    }
+    if (pid == 0)
     {
         close(pipefd[0]);
         dup2(pipefd[1], STDOUT_FILENO);
         close(pipefd[1]);
-        execute_node(var->commands);
+        execution(var->commands);
         exit(0);
     }
+    waitpid(pid, NULL, 0);
     close(pipefd[1]);
-    waitpid(pid, &status, 0);
-
     char buffer[1024];
     ssize_t read_bytes;
     while ((read_bytes = read(pipefd[0], buffer, 1024)) > 0)
@@ -110,6 +115,7 @@ static void eval_variable(struct string *str, struct variable *var)
     if (var->commands)
     {
         struct string data;
+        string_init(&data);
         eval_subcommand(&data, var);
         value = data.data;
     }

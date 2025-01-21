@@ -1,8 +1,10 @@
 #include "io.h"
 
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #define EXIT_ON_NULL(ptr, message)                                             \
     if (ptr == NULL)                                                           \
@@ -30,9 +32,14 @@ struct reader *reader_from_file(const char *filename)
 
     reader->status = READER_OK;
     reader->type = INPUT_FILE;
-    reader->input.file = fopen(filename, "r");
-    EXIT_ON_NULL(reader->input.file, "Error: Could not open file\n");
-
+    reader->input.file.fd = open(filename, O_RDONLY);
+    if (reader->input.file.fd == -1)
+    {
+        fprintf(stderr, "Error: Could not open file %s\n", filename);
+        exit(1);
+    }
+    reader->input.file.size = 0;
+    reader->input.file.index = 0;
     return reader;
 }
 
@@ -43,15 +50,16 @@ struct reader *reader_from_stdin(void)
 
     reader->status = READER_OK;
     reader->type = INPUT_FILE;
-    reader->input.file = stdin;
-    reader->current = 0;
+    reader->input.file.fd = STDIN_FILENO;
+    reader->input.file.size = 0;
+    reader->input.file.index = 0;
     return reader;
 }
 
 void reader_free(struct reader *reader)
 {
     if (reader->type == INPUT_FILE)
-        fclose(reader->input.file);
+        close(reader->input.file.fd);
     free(reader);
 }
 
@@ -70,7 +78,18 @@ int reader_next(struct reader *reader)
         res = c != '\0' ? c : EOF;
     }
     else
-        res = fgetc(reader->input.file);
+    {
+        struct reader_file *file = &reader->input.file;
+        if (file->index == file->size)
+        {
+            file->size = read(file->fd, file->buffer, BUFFER_SIZE);
+            if (file->size == 0)
+                res = EOF;
+            file->index = 0;
+        }
+        if (res != EOF)
+            res = (int)file->buffer[file->index++];
+    }
 
     if (res == EOF)
         reader->status = READER_EOF;
