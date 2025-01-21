@@ -14,6 +14,9 @@ $test $BIN "Complex echo test" "echo -eeeeeeEEEE '\\\\'"
 $test $BIN "Simple true" "true"
 $test $BIN "Simple false" "false"
 
+# Test continue and break outside of loop
+$test $BIN "continue outside of loop" "continue 10"
+$test $BIN "break outside of loop" "break"
 # Test dot builtin
 
 $test $BIN "Simple dot test" ". ./functional_tests/dot_script/simple_test.sh"

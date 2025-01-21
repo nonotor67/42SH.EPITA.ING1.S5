@@ -87,6 +87,10 @@ int dispatch_command(struct ast *ast)
         status = exec_true(argc, ast->expanded_values);
     else if (strcmp(ast->expanded_values[0], "false") == 0)
         status = exec_false(argc, ast->expanded_values);
+    else if (strcmp(ast->expanded_values[0], "continue") == 0)
+        exec_continue(argc, ast->expanded_values);
+    else if (strcmp(ast->expanded_values[0], "break") == 0)
+        exec_break(argc, ast->expanded_values);
     else if (strcmp(ast->expanded_values[0], ".") == 0)
         status = exec_dot(argc, ast->expanded_values);
     else if (strcmp(ast->expanded_values[0], "cd") == 0)
@@ -104,6 +108,10 @@ int dispatch_command(struct ast *ast)
 
 int execute_command(struct ast *ast)
 {
+    // Check if the command must be executed
+    // If the loop status is set to CONTINUE_LOOP or BREAK_LOOP
+    if (loop_status && loop_status->status != 0)
+        return 0;
     if (ast->redir)
         return exec_redir(ast);
     return dispatch_command(ast);
