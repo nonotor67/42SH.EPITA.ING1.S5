@@ -216,7 +216,11 @@ shell_command =
 */
 struct ast *shell_command(struct parser *parser)
 {
-    const char *keyword = lexer_peek(parser->lexer).word->value.data;
+    struct token tok;
+    tok = lexer_peek(parser->lexer);
+    if (tok.type == TOKEN_LEFT_PAREN)
+        return subshell(parser);
+    const char *keyword = tok.word->value.data;
     if (strcmp(keyword, "if") == 0)
         return rule_if(parser);
     if (strcmp(keyword, "for") == 0)
@@ -225,6 +229,8 @@ struct ast *shell_command(struct parser *parser)
         return rule_while(parser);
     if (strcmp(keyword, "until") == 0)
         return rule_until(parser);
+    if (strcmp(keyword, "{") == 0)
+        return command_block(parser);
     parser->status = PARSER_UNEXPECTED_TOKEN;
     fprintf(stderr, "Error: Expected a shell command (shell_command)\n");
     return NULL;

@@ -240,6 +240,12 @@ static struct token lexer_switch(struct lexer *lexer)
     case ';':
         token.type = TOKEN_SEMICOLON;
         break;
+    case '(':
+        token.type = TOKEN_LEFT_PAREN;
+        break;
+    case ')':
+        token.type = TOKEN_RIGHT_PAREN;
+        break;
     case '|':
         token.type = next_char(lexer) == '|' ? TOKEN_OR : TOKEN_PIPE;
         break;
