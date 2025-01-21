@@ -73,10 +73,30 @@ rm -f actual expected stderr_bash.txt stderr_42sh.txt
 
 if [ $failed_tests -gt 0 ]; then
   echo "❌ $failed_tests tests failed"
-  exit 1
 fi
 
-TOTAL_TEST=$((TOTAL_TEST + 6))
+# Test with if statement
+echo "hello" > test.txt
+bash --posix -c 'if true; then echo test; fi > expected'
+$BIN -c 'if true; then echo test; fi > actual'
+
+if ! diff actual expected; then
+    echo "❌ Test failed: Outputs differ"
+    failed_tests=$((failed_tests + 1))
+fi
+rm -f actual expected test.txt
+
+# Test with while statement
+echo "hello" > test.txt
+bash --posix -c 'a=true;while $a; do cat; a=false; done < test.txt > expected'
+$BIN -c 'a=true;while $a; do cat; a=false; done < test.txt > actual'
+
+if ! diff actual expected; then
+    echo "❌ Test failed: Outputs differ"
+    failed_tests=$((failed_tests + 1))
+fi
+
+TOTAL_TEST=$((TOTAL_TEST + 8))
 FAIL_TEST=$((FAIL_TEST + failed_tests))
 echo "TOTAL_TEST=$TOTAL_TEST" >test_status.sh
 echo "FAIL_TEST=$FAIL_TEST" >>test_status.sh
