@@ -6,7 +6,6 @@
 
 void exec_continue(int argc, char **argv)
 {
-    (void)argc;
     int occurence = 1;
     if (argc == 2)
     {
@@ -23,10 +22,9 @@ void exec_continue(int argc, char **argv)
     }
 }
 
-void exec_break(int argc, char **argv)
+void exec_break(__attribute__((unused)) int argc,
+                __attribute__((unused)) char **argv)
 {
-    (void)argc;
-    (void)argv;
     if (loop_status)
     {
         loop_status->status = BREAK_LOOP;
