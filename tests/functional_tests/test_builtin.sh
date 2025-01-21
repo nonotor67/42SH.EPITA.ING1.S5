@@ -14,6 +14,11 @@ $test $BIN "Complex echo test" "echo -eeeeeeEEEE '\\\\'"
 $test $BIN "Simple true" "true"
 $test $BIN "Simple false" "false"
 
+# Test dot builtin
+
+$test $BIN "Simple dot test" ". ./functional_tests/dot_script/simple_test.sh"
+$test $BIN "Simple variable test" "a=hello;. ./functional_tests/dot_script/variable_test.sh;echo $a; echo $b"
+
 # Test cd
 $test $BIN "Simple cd" "cd /;echo $PWD;ls"
 $test $BIN "Simple cd with path" "cd /usr;echo $PWD;ls"

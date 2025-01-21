@@ -5,6 +5,7 @@
 
 #include "builtins_bool.h"
 #include "builtins_cd.h"
+#include "builtins_dot.h"
 #include "builtins_echo.h"
 #include "builtins_exit.h"
 #include "builtins_export.h"

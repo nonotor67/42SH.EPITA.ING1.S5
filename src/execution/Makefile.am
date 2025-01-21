@@ -26,6 +26,8 @@ libexecution_a_SOURCES =  \
   execution_pipeline.h \
   execution_loop.c \
   execution_loop.h \
+  exec_dot.c \
+  builtins_dot.h \
   builtins_export.c \
   builtins_export.h
 
