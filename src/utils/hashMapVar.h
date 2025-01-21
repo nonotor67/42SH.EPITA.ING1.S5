@@ -31,7 +31,6 @@ void insertVariable(char *name, char *value);
  */
 struct Variable getVariable(char *name);
 
-
 /**
  *  @brief Copy the hash table
  *  @return The copy of the hash table
