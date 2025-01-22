@@ -582,3 +582,106 @@ Test(parser, until_loop_double)
     cr_assert_null(ast->right->right->left->values[1]);
     CLEAR_ALL
 }
+
+Test(parser, command_block_simple)
+{
+    INIT_PARSER("{ echo Hello ; echo World ; }")
+    cr_assert_not_null(ast);
+    cr_assert_eq(ast->type, COMMAND_BLOCK);
+    cr_assert_not_null(ast->left);
+    cr_assert_eq(ast->left->type, COMMAND_LIST);
+    cr_assert_not_null(ast->left->left);
+    cr_assert_not_null(ast->left->right);
+    cr_assert_eq(ast->left->left->type, SIMPLE_COMMAND);
+    cr_assert_eq(ast->left->right->type, COMMAND_LIST);
+    cr_assert_str_eq(ast->left->left->values[0]->value.data, "echo");
+    cr_assert_str_eq(ast->left->left->values[1]->value.data, "Hello");
+    cr_assert_null(ast->left->left->values[2]);
+    cr_assert_eq(ast->left->right->left->type, SIMPLE_COMMAND);
+    cr_assert_str_eq(ast->left->right->left->values[0]->value.data, "echo");
+    cr_assert_str_eq(ast->left->right->left->values[1]->value.data, "World");
+    cr_assert_null(ast->left->right->left->values[2]);
+    cr_assert_null(ast->left->right->right);
+    CLEAR_ALL
+}
+
+Test(parser, command_block_multiple)
+{
+    INIT_PARSER("{ echo Hello ; echo World ; } ; { echo Test ;}")
+    cr_assert_not_null(ast);
+    cr_assert_eq(ast->type, COMMAND_LIST);
+    cr_assert_not_null(ast->left);
+    cr_assert_not_null(ast->right);
+    cr_assert_eq(ast->left->type, COMMAND_BLOCK);
+    cr_assert_eq(ast->right->type, COMMAND_LIST);
+    cr_assert_not_null(ast->left->left);
+    cr_assert_not_null(ast->left->left->left);
+    cr_assert_not_null(ast->left->left->right);
+    cr_assert_eq(ast->left->left->left->type, SIMPLE_COMMAND);
+    cr_assert_eq(ast->left->left->right->type, COMMAND_LIST);
+    cr_assert_str_eq(ast->left->left->left->values[0]->value.data, "echo");
+    cr_assert_str_eq(ast->left->left->left->values[1]->value.data, "Hello");
+    cr_assert_null(ast->left->left->left->values[2]);
+    cr_assert_eq(ast->left->left->right->left->type, SIMPLE_COMMAND);
+    cr_assert_str_eq(ast->left->left->right->left->values[0]->value.data,
+                     "echo");
+    cr_assert_str_eq(ast->left->left->right->left->values[1]->value.data,
+                     "World");
+    cr_assert_null(ast->left->left->right->left->values[2]);
+    cr_assert_null(ast->left->left->right->right);
+    cr_assert_eq(ast->right->left->type, COMMAND_BLOCK);
+    cr_assert_not_null(ast->right->left->left);
+    cr_assert_eq(ast->right->left->left->type, SIMPLE_COMMAND);
+    cr_assert_str_eq(ast->right->left->left->values[0]->value.data, "echo");
+    cr_assert_str_eq(ast->right->left->left->values[1]->value.data, "Test");
+    cr_assert_null(ast->right->left->left->values[2]);
+    CLEAR_ALL
+}
+
+Test(parser, function)
+{
+    INIT_PARSER("test () { echo test; echo encore; }")
+    cr_assert_not_null(ast);
+    cr_assert_eq(ast->type, FUNCTION);
+    cr_assert_not_null(ast->left);
+    cr_assert_str_eq(ast->values[0]->value.data, "test");
+    cr_assert_null(ast->values[1]);
+    cr_assert_eq(ast->left->type, COMMAND_BLOCK);
+    CLEAR_ALL
+}
+
+Test(parser, function_rec)
+{
+    INIT_PARSER("test () { encore(){ bouh; } }")
+    cr_assert_not_null(ast);
+    cr_assert_eq(ast->type, FUNCTION);
+    cr_assert_not_null(ast->left);
+    cr_assert_str_eq(ast->values[0]->value.data, "test");
+    cr_assert_null(ast->values[1]);
+    cr_assert_eq(ast->left->type, COMMAND_BLOCK);
+    cr_assert_not_null(ast->left->left);
+    cr_assert_eq(ast->left->left->type, FUNCTION);
+    cr_assert_str_eq(ast->left->left->values[0]->value.data, "encore");
+    CLEAR_ALL
+}
+
+Test(parser, subshell)
+{
+    INIT_PARSER("a=sh; (a=42; echo -n $a);echo $a")
+    cr_assert_not_null(ast);
+    cr_assert_eq(ast->type, COMMAND_LIST);
+    cr_assert_not_null(ast->left);
+    cr_assert_not_null(ast->right);
+    cr_assert_eq(ast->left->type, SIMPLE_COMMAND);
+    cr_assert_eq(ast->right->type, COMMAND_LIST);
+    cr_assert_eq(ast->right->left->type, SUBSHELL);
+    cr_assert_eq(ast->right->right->type, COMMAND_LIST);
+    cr_assert_str_eq(ast->left->values[0]->value.data, "a=sh");
+    cr_assert_null(ast->left->values[1]);
+    cr_assert_eq(ast->right->left->left->type, COMMAND_LIST);
+    cr_assert_eq(ast->right->left->left->left->type, SIMPLE_COMMAND);
+    cr_assert_eq(ast->right->left->left->right->type, COMMAND_LIST);
+    cr_assert_eq(ast->right->right->left->type, SIMPLE_COMMAND);
+    cr_assert_null(ast->right->right->right);
+    CLEAR_ALL
+}

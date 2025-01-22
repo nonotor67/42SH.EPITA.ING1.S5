@@ -259,7 +259,16 @@ static int has_redir(struct ast *ast)
 static int aux_exec_redir(struct ast *ast)
 {
     if (!ast->expanded_redir[0] || !has_redir(ast))
-        return dispatch_command(ast);
+    {
+        // Free the redirections
+        for (size_t i = 0; ast->redir[i]; i++)
+        {
+            word_free(ast->redir[i]);
+        }
+        free(ast->redir);
+        ast->redir = NULL;
+        return execute_node(ast);
+    }
 
     int io_number = -1;
 

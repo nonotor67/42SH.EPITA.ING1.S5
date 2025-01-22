@@ -12,36 +12,40 @@ bool exec_echo(int argc, char **argv)
     bool nflag = false;
     bool eflag = false;
 
-    while (idx < argc)
+    // Parse options
+    for (int i = 1; i < argc; i++)
     {
-        if (argv[idx][0] != '-')
+        bool flag = false;
+        if (argv[i][0] == '-')
         {
-            break;
-        }
-
-        if (argv[idx][1] == '\0')
-        {
-            break;
-        }
-
-        if (argv[idx][1] == 'n')
-        {
-            nflag = true;
-        }
-        else if (argv[idx][1] == 'e')
-        {
-            eflag = true;
-        }
-        else if (argv[idx][1] == 'E')
-        {
-            eflag = false;
+            for (int j = 1; argv[i][j] != '\0'; j++)
+            {
+                if (argv[i][j] == 'n')
+                {
+                    nflag = true;
+                }
+                else if (argv[i][j] == 'e')
+                {
+                    eflag = true;
+                }
+                else if (argv[i][j] == 'E')
+                {
+                    eflag = false;
+                }
+                else
+                {
+                    flag = true;
+                    break;
+                }
+            }
+            if (flag)
+                break;
+            idx++;
         }
         else
         {
             break;
         }
-
-        idx++;
     }
 
     for (int i = idx; i < argc; i++)
@@ -65,29 +69,38 @@ bool exec_echo(int argc, char **argv)
 
 static void print_argument(const char *arg, bool eflag)
 {
-    if (eflag)
+    const char *p = arg;
+    while (*p)
     {
-        for (const char *p = arg; *p; p++)
+        if (*p == '\\')
         {
-            if (*p == '\\')
+            if (eflag)
             {
                 print_escaped_char(&p);
             }
             else
             {
                 putchar(*p);
+                p++;
             }
         }
-    }
-    else
-    {
-        printf("%s", arg);
+        else
+        {
+            putchar(*p);
+            p++;
+        }
     }
 }
 
 static void print_escaped_char(const char **p)
 {
     (*p)++;
+    if (!*p || !**p || **p == '\0')
+    {
+        putchar('\\');
+        return;
+    }
+
     if (**p == 'n')
     {
         printf("\n");
@@ -96,9 +109,13 @@ static void print_escaped_char(const char **p)
     {
         printf("\t");
     }
+    else if (**p == '\\')
+    {
+        printf("\\");
+    }
     else
     {
-        putchar('\\');
         putchar(**p);
     }
+    (*p)++;
 }

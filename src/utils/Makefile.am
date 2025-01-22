@@ -7,12 +7,17 @@ libutils_a_SOURCES =  \
   strings.h \
   xmalloc.h \
   xmalloc.c \
-  hashMap.h \
-  hashMap.c \
+  hashMapVar.h \
+  hashMapVar.c \
+  hashMapFunc.h \
+  hashMapFunc.c \
   variable.h \
   variable.c \
+  function.h \
+  function.c \
   word.h \
   word.c
+
 
 
 libutils_a_CPPFLAGS = -I$(top_srcdir)/src
