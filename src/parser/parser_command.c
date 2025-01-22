@@ -229,6 +229,7 @@ struct ast *command_block(struct parser *parser)
     tok = lexer_pop(parser->lexer);
     // Is the opening bracket
     word_free(tok.word);
+    lexer_context_begin(parser->lexer);
     struct ast *root = ast_new(COMMAND_BLOCK);
     root->left = compound_list(parser);
     CHECK_STATUS(parser, root,
