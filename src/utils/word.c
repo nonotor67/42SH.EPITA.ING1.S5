@@ -112,7 +112,8 @@ static void eval_subcommand(struct string *str, struct variable *var)
     close(pipefd[0]);
 }
 
-static void eval_variable(struct vector *vect, struct string *str, struct variable *var)
+static void eval_variable(struct vector *vect, struct string *str,
+                          struct variable *var)
 {
     char *value = NULL;
     if (var->commands)

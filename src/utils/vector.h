@@ -16,4 +16,4 @@ void vector_free(struct vector *vector);
 
 void vector_push(struct vector *vector, void *element);
 
-#endif //!INC_42SH_VECTOR_H
+#endif //! INC_42SH_VECTOR_H
