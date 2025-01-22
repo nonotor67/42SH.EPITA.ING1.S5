@@ -5,6 +5,7 @@
 #include "hashMapVar.h"
 #include "strings.h"
 #include "variable.h"
+#include "vector.h"
 #include "word.h"
 #include "xmalloc.h"
 
