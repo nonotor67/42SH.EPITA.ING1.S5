@@ -24,4 +24,4 @@ run_test_script "$path_to_tests/test_pipeline.sh"
 run_test_script "$path_to_tests/test_script_stdin.sh"
 run_test_script "$path_to_tests/test_fails.sh"
 run_test_script "$path_to_tests/test_loop.sh"
-
+run_test_script "$path_to_tests/test_command_block.sh"
