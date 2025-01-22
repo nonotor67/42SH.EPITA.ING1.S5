@@ -18,6 +18,23 @@ static struct ast *create_word(struct token tok)
     return root;
 }
 
+// Loop inside in
+static void rule_for_handle_in(struct parser *parser, struct ast *middle)
+{
+    struct token tok;
+    while (lexer_peek(parser->lexer).type == TOKEN_WORD)
+    {
+        tok = lexer_pop(parser->lexer);
+        if (middle->size >= 16)
+        {
+            middle->values = realloc(middle->values,
+                                     sizeof(struct word *) * middle->size * 2);
+        }
+        middle->values[middle->size++] = tok.word;
+        middle->values[middle->size] = NULL;
+    }
+}
+
 /*
 rule_for =
     'for' WORD ( [';'] | [ {'\n'} 'in' { WORD } ( ';' | '\n' ) ] ) {'\n'} 'do'
@@ -51,18 +68,7 @@ static struct ast *rule_for(struct parser *parser)
             struct ast *middle = ast_new(WORD_COMPONENTS);
             middle->values = malloc(sizeof(struct word *) * 16);
             middle->size = 0;
-            while (lexer_peek(parser->lexer).type == TOKEN_WORD)
-            {
-                tok = lexer_pop(parser->lexer);
-                if (middle->size >= 16)
-                {
-                    middle->values =
-                        realloc(middle->values,
-                                sizeof(struct word *) * middle->size * 2);
-                }
-                middle->values[middle->size++] = tok.word;
-                middle->values[middle->size] = NULL;
-            }
+            rule_for_handle_in(parser, middle);
             root->middle = middle;
             middle->values[middle->size] = NULL;
 
@@ -77,6 +83,7 @@ static struct ast *rule_for(struct parser *parser)
     skip_eol(parser->lexer);
     EXPECT_KEYWORD(parser->lexer, "do", "Expected 'do' (rule_for)\n");
     CHECK_STATUS(parser, root, "Error after parsing word (rule_for)\n");
+    lexer_context_begin(parser->lexer);
     root->right = compound_list(parser);
     CHECK_STATUS(parser, root, "Error after compound_list (rule_for)\n");
     EXPECT_KEYWORD(parser->lexer, "done", "Expected 'done' (rule_for)\n");
@@ -127,6 +134,7 @@ static struct ast *rule_until(struct parser *parser)
 
     EXPECT_KEYWORD(parser->lexer, "do", "Expected 'do' keyword (rule_until)\n");
     CHECK_STATUS(parser, root, "Error bad until\n");
+    lexer_context_begin(parser->lexer);
 
     root->right = compound_list(parser);
     CHECK_STATUS(parser, root,
