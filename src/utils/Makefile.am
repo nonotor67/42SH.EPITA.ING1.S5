@@ -16,9 +16,9 @@ libutils_a_SOURCES =  \
   function.h \
   function.c \
   word.h \
-  word.c
-
-
+  word.c \
+  vector.h \
+  vector.c
 
 libutils_a_CPPFLAGS = -I$(top_srcdir)/src
 
