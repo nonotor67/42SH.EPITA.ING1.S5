@@ -48,7 +48,7 @@ void insertFunction(char *name, struct ast *value)
             // free the old value
             ast_free(func->value);
             // allocate memory for the new value and copy it
-            func->value = value;
+            func->value = ast_copy(value);
             return;
         }
         func = func->next;

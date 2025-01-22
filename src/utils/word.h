@@ -24,6 +24,9 @@ struct word
 struct word *word_new(void);
 void word_free(struct word *word);
 
+// Create a copy of the word
+struct word *word_copy(struct word *word);
+
 // Push a character to the word
 void word_push(struct word *word, char c);
 

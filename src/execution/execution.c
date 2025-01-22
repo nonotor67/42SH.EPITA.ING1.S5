@@ -22,7 +22,8 @@ static const struct execute_entry execute_table[] = {
     { NEGATION, execute_negation },
     { WHILE_LOOP, execution_while },
     { UNTIL_LOOP, execution_until },
-    { FOR_LOOP, execution_for }
+    { FOR_LOOP, execution_for },
+    { FUNCTION, executution_function },
 };
 
 /*

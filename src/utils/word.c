@@ -21,6 +21,32 @@ struct word *word_new(void)
     return word;
 }
 
+struct word *word_copy(struct word *word)
+{
+    struct word *copy = word_new();
+    if (!copy)
+        return NULL;
+    copy->has_escaped = word->has_escaped;
+    copy->valid_assignment = word->valid_assignment;
+    copy->var_length = word->var_length;
+    copy->var_capacity = word->var_capacity;
+    copy->variables = malloc(word->var_capacity * sizeof(struct variable));
+    if (!copy->variables)
+    {
+        free(copy);
+        return NULL;
+    }
+    for (size_t i = 0; i < word->var_length; i++)
+    {
+        copy->variables[i].pos = word->variables[i].pos;
+        copy->variables[i].name = *string_from(word->variables[i].name.data);
+    }
+
+    copy->value = *string_from(word->value.data);
+
+    return copy;
+}
+
 void word_free(struct word *word)
 {
     free(word->value.data);

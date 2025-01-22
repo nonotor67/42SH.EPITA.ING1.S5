@@ -5,7 +5,8 @@
 #include <unistd.h>
 
 #include "execution.h"
-#include "utils/utils.h"
+#include <utils/utils.h>
+#include <utils/hashMapFunc.h>
 
 /*
 @description:
@@ -81,6 +82,8 @@ int dispatch_command(struct ast *ast)
     int argc = 0;
     while (real_argv[argc])
         argc++;
+    if (getFunction(ast->expanded_values[0]))
+        return run_function(argc, ast->expanded_values);
     if (strcmp(ast->expanded_values[0], "echo") == 0)
         status = exec_echo(argc, ast->expanded_values);
     else if (strcmp(ast->expanded_values[0], "true") == 0)
