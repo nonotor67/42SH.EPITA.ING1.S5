@@ -1,9 +1,14 @@
 #include "word.h"
 
+#include <ast/ast.h>
 #include <ctype.h>
+#include <execution/execution.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
 #include "utils/utils.h"
 
@@ -27,7 +32,13 @@ void word_free(struct word *word)
     if (word->variables)
     {
         for (size_t i = 0; i < word->var_length; i++)
-            free(word->variables[i].name.data);
+        {
+            struct variable *var = &word->variables[i];
+            if (var->name.data)
+                free(var->name.data);
+            if (var->commands)
+                ast_free(var->commands);
+        }
         free(word->variables);
     }
     free(word);
@@ -60,9 +71,79 @@ int is_word_valid(struct word *word)
 {
     int valid = 1;
     for (size_t i = 0; i < word->var_length; i++)
-        if (word->variables[i].name.length == 0)
+        if (word->variables[i].name.length == 0 && !word->variables[i].commands)
             valid = 0;
     return valid;
+}
+
+static void eval_subcommand(struct string *str, struct variable *var)
+{
+    int pipefd[2];
+    if (pipe(pipefd) == -1)
+    {
+        perror("pipe");
+        return;
+    }
+    pid_t pid = fork();
+    if (pid == -1)
+    {
+        perror("fork");
+        return;
+    }
+    if (pid == 0)
+    {
+        close(pipefd[0]);
+        dup2(pipefd[1], STDOUT_FILENO);
+        close(pipefd[1]);
+        execution(var->commands);
+        exit(0);
+    }
+    waitpid(pid, NULL, 0);
+    close(pipefd[1]);
+    char buffer[1024];
+    ssize_t read_bytes;
+    while ((read_bytes = read(pipefd[0], buffer, 1024)) > 0)
+        for (ssize_t i = 0; i < read_bytes; i++)
+            string_push(str, buffer[i]);
+
+    close(pipefd[0]);
+}
+
+static void eval_variable(struct string *str, struct variable *var)
+{
+    char *value = NULL;
+    if (var->commands)
+    {
+        struct string data;
+        string_init(&data);
+        eval_subcommand(&data, var);
+        value = data.data;
+    }
+    else
+    {
+        struct Variable retrieved = getVariable(var->name.data);
+        if (retrieved.value)
+            value = retrieved.value;
+    }
+
+    if (value)
+    {
+        int i = 0;
+        while (value[i])
+        {
+            if (isspace(value[i]))
+            {
+                while (isspace(value[i]))
+                    i++;
+                if (value[i])
+                    string_push(str, ' ');
+                continue;
+            }
+            string_push(str, value[i++]);
+        }
+    }
+    if (var->commands)
+        free(value);
 }
 
 char *word_eval(struct word *word)
@@ -75,24 +156,7 @@ char *word_eval(struct word *word)
         if (word->variables && var_idx < word->var_length
             && pos == word->variables[var_idx].pos)
         {
-            struct Variable var =
-                getVariable(word->variables[var_idx].name.data);
-            if (var.value)
-            {
-                char *value = var.value;
-                while (*value)
-                {
-                    if (isspace(*value))
-                    {
-                        while (isspace(*value))
-                            value++;
-                        if (*value)
-                            string_push(&str, ' ');
-                        continue;
-                    }
-                    string_push(&str, *value++);
-                }
-            }
+            eval_variable(&str, &word->variables[var_idx]);
             var_idx++;
         }
         if (pos == word->value.length)
