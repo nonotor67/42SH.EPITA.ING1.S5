@@ -241,6 +241,7 @@ struct ast *command_block(struct parser *parser)
     }
     fprintf(stderr, "Error: Expected a closing bracket in command block\n");
     parser->status = PARSER_UNEXPECTED_TOKEN;
+    ast_free(root);
     return NULL;
 }
 
