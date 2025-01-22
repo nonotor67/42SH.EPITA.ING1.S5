@@ -11,6 +11,7 @@
 #include <unistd.h>
 
 #include "utils/utils.h"
+#include "vector.h"
 
 struct word *word_new(void)
 {
@@ -60,13 +61,6 @@ void word_push_variable(struct word *word, struct variable var)
     word->variables[word->var_length++] = var;
 }
 
-int word_equals(struct word *word1, struct word *word2)
-{
-    if (word1->value.length != word2->value.length)
-        return 0;
-    return strcmp(word1->value.data, word2->value.data) == 0;
-}
-
 int is_word_valid(struct word *word)
 {
     int valid = 1;
@@ -74,6 +68,15 @@ int is_word_valid(struct word *word)
         if (word->variables[i].name.length == 0 && !word->variables[i].commands)
             valid = 0;
     return valid;
+}
+
+void trim_subcommand(struct string *str)
+{
+    int i = (int)str->length - 1;
+    while (i >= 0 && str->data[i] == '\n')
+        i--;
+    str->length = i + 1;
+    str->data[str->length] = '\0';
 }
 
 static void eval_subcommand(struct string *str, struct variable *var)
@@ -105,11 +108,11 @@ static void eval_subcommand(struct string *str, struct variable *var)
     while ((read_bytes = read(pipefd[0], buffer, 1024)) > 0)
         for (ssize_t i = 0; i < read_bytes; i++)
             string_push(str, buffer[i]);
-
+    trim_subcommand(str);
     close(pipefd[0]);
 }
 
-static void eval_variable(struct string *str, struct variable *var)
+static void eval_variable(struct vector *vect, struct string *str, struct variable *var)
 {
     char *value = NULL;
     if (var->commands)
@@ -128,40 +131,56 @@ static void eval_variable(struct string *str, struct variable *var)
 
     if (value)
     {
-        int i = 0;
-        while (value[i])
+        if (var->is_quoted)
+            string_append(str, value);
+        else
         {
-            if (isspace(value[i]))
+            int i = 0;
+            while (value[i])
             {
-                while (isspace(value[i]))
-                    i++;
+                if (isspace(value[i]))
+                {
+                    while (isspace(value[i]))
+                        i++;
+                    struct string copy;
+                    string_init(&copy);
+                    string_append(&copy, str->data);
+                    vector_push(vect, copy.data);
+                    str->length = 0;
+                }
                 if (value[i])
-                    string_push(str, ' ');
-                continue;
+                    string_push(str, value[i++]);
             }
-            string_push(str, value[i++]);
         }
     }
     if (var->commands)
         free(value);
 }
 
-char *word_eval(struct word *word)
+char **word_eval(struct word *word)
 {
-    struct string str;
-    string_init(&str);
+    struct vector words;
+    vector_init(&words);
+    struct string curr_str;
+    string_init(&curr_str);
+
     size_t var_idx = 0;
     for (size_t pos = 0;; pos++)
     {
         if (word->variables && var_idx < word->var_length
             && pos == word->variables[var_idx].pos)
         {
-            eval_variable(&str, &word->variables[var_idx]);
+            eval_variable(&words, &curr_str, &word->variables[var_idx]);
             var_idx++;
         }
         if (pos == word->value.length)
             break;
-        string_push(&str, word->value.data[pos]);
+        string_push(&curr_str, word->value.data[pos]);
     }
-    return str.data;
+    if (!word->has_escaped && curr_str.length == 0)
+        free(curr_str.data);
+    else
+        vector_push(&words, curr_str.data);
+
+    return (char **)words.data;
 }
