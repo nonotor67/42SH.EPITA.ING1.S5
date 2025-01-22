@@ -27,30 +27,37 @@ struct word *word_new(void)
     return word;
 }
 
-struct word *word_copy(struct word *word)
+void word_copy(struct word *word, struct word *copy)
 {
-    struct word *copy = word_new();
-    if (!copy)
-        return NULL;
     copy->has_escaped = word->has_escaped;
     copy->valid_assignment = word->valid_assignment;
     copy->var_length = word->var_length;
     copy->var_capacity = word->var_capacity;
-    copy->variables = malloc(word->var_capacity * sizeof(struct variable));
-    if (!copy->variables)
+    if (word->variables)
     {
-        free(copy);
-        return NULL;
+        copy->variables = malloc(word->var_capacity * sizeof(struct variable));
+        if (!copy->variables)
+            free(copy);
+        for (size_t i = 0; i < word->var_length; i++)
+        {
+            copy->variables[i].pos = word->variables[i].pos;
+            size_t j = 0;
+            while (word->variables[i].name.data[j])
+            {
+                string_push(&copy->variables[i].name,
+                            word->variables[i].name.data[j]);
+                j++;
+            }
+            copy->variables[i].commands = ast_copy(word->variables[i].commands);
+            copy->variables[i].is_quoted = word->variables[i].is_quoted;
+        }
     }
-    for (size_t i = 0; i < word->var_length; i++)
+    size_t i = 0;
+    while (word->value.data[i])
     {
-        copy->variables[i].pos = word->variables[i].pos;
-        copy->variables[i].name = *string_from(word->variables[i].name.data);
+        word_push(copy, word->value.data[copy->value.length]);
+        i++;
     }
-
-    copy->value = *string_from(word->value.data);
-
-    return copy;
 }
 
 void word_free(struct word *word)
