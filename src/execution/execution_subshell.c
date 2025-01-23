@@ -23,7 +23,11 @@ int execute_subshell(struct ast *ast)
     // Restore the current directory
     insertVariable("PWD", pwd);
     insertVariable("OLDPWD", oldpwd);
-    chdir(pwd);
+    if (chdir(pwd) == -1)
+    {
+        perror("chdir");
+        return 1;
+    }
     free(pwd);
     free(oldpwd);
 

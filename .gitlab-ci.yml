@@ -25,7 +25,8 @@ build:
     script:
       -  apt-get update && apt-get install -y autoconf-archive
       - autoreconf --install
-      - ./debug.sh
+      - ./configure
+      - make
     when: on_success
 
 test:
