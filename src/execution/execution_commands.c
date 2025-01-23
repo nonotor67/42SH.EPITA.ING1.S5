@@ -96,7 +96,7 @@ int dispatch_command(struct ast *ast)
     else if (strcmp(ast->expanded_values[0], "cd") == 0)
         status = exec_cd(argc, ast->expanded_values);
     else if (strcmp(ast->expanded_values[0], "exit") == 0)
-        status = exec_exit(argc, ast->expanded_values);
+        exec_exit(argc, ast->expanded_values);
     else
         status = run_command(real_argv);
 
