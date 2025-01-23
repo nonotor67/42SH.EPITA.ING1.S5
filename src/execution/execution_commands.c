@@ -3,10 +3,10 @@
 #include <stdlib.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <utils/hashMapFunc.h>
+#include <utils/utils.h>
 
 #include "execution.h"
-#include <utils/utils.h>
-#include <utils/hashMapFunc.h>
 
 /*
 @description:

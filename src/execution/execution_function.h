@@ -2,10 +2,10 @@
 #define EXECUTION_FUNCTION_H
 
 #include <ast/ast.h>
-
-#include "execution.h"
 #include <utils/hashMapFunc.h>
 #include <utils/hashMapVar.h>
+
+#include "execution.h"
 
 int executution_function(struct ast *ast);
 

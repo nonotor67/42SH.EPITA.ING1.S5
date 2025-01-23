@@ -20,15 +20,16 @@ int run_function(int argc, char *argv[])
         int_tmp = my_itoa(i, int_tmp);
         if (getVariable(my_itoa(i, int_tmp)).value != NULL)
         {
-            saved_variables[i] = malloc(strlen(getVariable(my_itoa(i, int_tmp)).value) + 1);
+            saved_variables[i] =
+                malloc(strlen(getVariable(my_itoa(i, int_tmp)).value) + 1);
             strcpy(saved_variables[i], getVariable(my_itoa(i, int_tmp)).value);
         }
         else
             saved_variables[i] = NULL;
-       insertVariable(my_itoa(i, int_tmp), argv[i]);
-       free(int_tmp);
+        insertVariable(my_itoa(i, int_tmp), argv[i]);
+        free(int_tmp);
     }
-    int status =  execute_node(function);
+    int status = execute_node(function);
     for (int i = 0; i < argc; i++)
     {
         char *int_tmp = xmalloc(256);

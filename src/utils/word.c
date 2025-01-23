@@ -43,8 +43,7 @@ void word_copy(struct word *word, struct word *copy)
             size_t j = 0;
             while (word->variables[i].name.data[j])
             {
-                string_push(&var.name,
-                            word->variables[i].name.data[j]);
+                string_push(&var.name, word->variables[i].name.data[j]);
                 j++;
             }
             var.commands = ast_copy(word->variables[i].commands);
