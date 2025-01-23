@@ -30,7 +30,7 @@ int exec_cd(int argc, char **argv)
 
     if (strcmp(argv[1], "-") == 0)
     {
-        if (getVariable("OLDPWD").value == getVariable("PWD").value)
+        if (getVariable("OLDPWD").value == NULL)
         {
             fprintf(stderr, "cd: OLDPWD not set\n");
             return 1;
@@ -42,6 +42,7 @@ int exec_cd(int argc, char **argv)
         }
         printf("%s\n", getVariable("OLDPWD").value);
         update_pwd();
+
     }
     else if (chdir(argv[1]) == -1)
     {
