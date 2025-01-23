@@ -146,9 +146,9 @@ void env_init(int argc, char **argv)
     char *pwd = getcwd(NULL, 0);
     if (pwd)
     {
-        insertVariable("OLDPWD", "");
         insertVariable("PWD", pwd);
         free(pwd);
     }
+    insertVariable("OLDPWD", "");
     insertVariable("IFS", " \t\n");
 }
