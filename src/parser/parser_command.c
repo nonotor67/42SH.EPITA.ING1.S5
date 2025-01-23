@@ -216,9 +216,10 @@ struct ast *command(struct parser *parser)
         if (ast->redir)
             ast->redir[ast->redir_size] = NULL;
     }
-    else
-        // Handles functions as the first is the same
+    else if (token.type == TOKEN_WORD || token.type == TOKEN_REDIR)
         ast = simple_command(parser);
+    else
+        parser->status = PARSER_UNEXPECTED_TOKEN;
     return ast;
 }
 
