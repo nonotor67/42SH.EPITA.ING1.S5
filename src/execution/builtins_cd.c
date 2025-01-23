@@ -17,12 +17,12 @@ static void update_pwd(void)
 
 int exec_cd(int argc, char **argv)
 {
-    if (argc == 1 && getenv("HOME") == NULL)
+    if (argc == 1 && getVariable("HOME").value == NULL)
         return 1;
 
     if (argc == 1)
     {
-        if (chdir(getenv("HOME")) == -1)
+        if (chdir(getVariable("HOME").value) == -1)
             return 1;
         update_pwd();
         return 0;
