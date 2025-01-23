@@ -3,6 +3,7 @@
 
 #include <ast/ast.h>
 #include <utils/hashMapVar.h>
+#include <utils/hashMapFunc.h>
 
 #include "execution.h"
 

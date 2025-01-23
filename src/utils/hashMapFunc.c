@@ -95,3 +95,26 @@ void updateFunction(char *name, struct ast *value)
         func = func->next;
     }
 }
+
+struct HashMapFunc copy_hash_map_func(void)
+{
+    struct HashMapFunc copy = { { NULL } };
+    for (int i = 0; i < TABLE_SIZE; i++)
+    {
+        struct function *func = global_functions.map[i];
+        while (func != NULL)
+        {
+            struct function *new_func = create_function(func->name, func->value);
+            new_func->next = copy.map[i];
+            copy.map[i] = new_func;
+
+            func = func->next;
+        }
+    }
+    return copy;
+}
+
+void setFunctionMap(struct HashMapFunc copy)
+{
+    global_functions = copy;
+}

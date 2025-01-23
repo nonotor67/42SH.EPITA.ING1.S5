@@ -21,3 +21,10 @@ $test $BIN "Test with multiple subshell and variable substitution" 'a=sh; (a=42;
 # Test subshell with cd
 $test $BIN "Test subshell with cd" '(cd /; pwd); pwd'
 $test $BIN "Test subshell with cd" '(cd /; pwd); pwd; (cd /usr; pwd); pwd'
+
+# Test subshell with function
+$test $BIN "Test subshell with function" '(coucou() { echo hello; }; coucou); coucou'
+$test $BIN "Test subshell with function" '(coucou() { echo hello; }; coucou); coucou; (coucou() { echo world; }; coucou); coucou'
+
+# Test subshell with function and variable substitution
+$test $BIN "Test subshell with function and variable substitution" 'a=sh; (coucou() { echo hello; }; coucou); coucou; (coucou() { echo $a; }; coucou); coucou'
