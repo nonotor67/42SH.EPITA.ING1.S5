@@ -48,5 +48,6 @@ int exec_cd(int argc, char **argv)
         fprintf(stderr, "cd: %s: No such file or directory\n", argv[1]);
         return 1;
     }
+    update_pwd();
     return 0;
 }

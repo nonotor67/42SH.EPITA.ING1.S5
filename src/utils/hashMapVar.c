@@ -81,18 +81,18 @@ struct Variable getVariable(char *name)
     // Search for the variable in the linked list
     while (var != NULL)
     {
-        if (strcmp(var->name, name) == 0)
+        if (strcmp(name, var->name) == 0)
         {
             return *var;
         }
         var = var->next;
     }
 
-    //char *env_value = getenv(name);
-    //if (env_value != NULL)
-    //{
-    //    return (struct Variable){ name, env_value, NULL };
-    //}
+    char *env_value = getenv(name);
+    if (env_value != NULL)
+    {
+        return (struct Variable){ name, env_value, NULL };
+    }
 
     return (struct Variable){ NULL, NULL, NULL };
 }
