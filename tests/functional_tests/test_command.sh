@@ -16,6 +16,37 @@ $test $BIN "Echo lots of newlines" "echo test
 
 echo encore"
 
+# Edge cases
+$test $BIN "Echo with quotes" "echo \"Hello the world\""
+$test $BIN "Echo empty" "echo"
+$test $BIN "Echo empty with double quotes" "echo \"\""
+$test $BIN "Echo empty with single quotes" "echo ''"
+$test $BIN "Echo with quotes and spaces" "echo \"H e l l o   t h e  world\""
+$test $BIN "triple single quotes" "echo '''"
+
+# echo keywords
+$test $BIN "Echo with if" "echo if"
+$test $BIN "Echo with then, elif, fi, else" "echo then ; echo else ; echo elif ; echo fi"
+$test $BIN "Echo with while" "echo while"
+$test $BIN "Echo with do" "echo do"
+$test $BIN "Echo with done" "echo done"
+$test $BIN "Echo with for" "echo for"
+$test $BIN "Echo with in" "echo in"
+# $test $BIN "Echo with !" "echo !"
+
+# Tests quoted keywords
+$test $BIN "Echo with quoted if" "echo \"if\""
+$test $BIN "if quoted" "\"if\" false; then echo \"if\"; fi"
+$test $BIN "if not quoted" "if false; then echo \"if\"; fi"
+$test $BIN "then quoted" "if false; 'then' echo \"then\"; fi"
+$test $BIN "then not quoted" "if false; then echo \"then\"; fi"
+$test $BIN "for quoted" "'for' i in 1 2 3; do echo \$i; done"
+$test $BIN "for not quoted" "for i in 1 2 3; do echo \$i; done"
+$test $BIN "do quoted" "for i in 1 2 3; 'do' echo \$i; done"
+$test $BIN "do not quoted" "for i in 1 2 3; do echo \$i; done"
+$test $BIN "done quoted" "for i in 1 2 3; do echo \$i; 'done'"
+$test $BIN "done not quoted" "for i in 1 2 3; do echo \$i; done"
+
 # Test with binary
 $test $BIN "Simple echo" "/bin/echo Hello world"
 $test $BIN "Simple echo with newline" "/bin/echo -n Hello world"

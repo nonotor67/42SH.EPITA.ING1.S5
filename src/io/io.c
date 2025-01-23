@@ -68,7 +68,7 @@ int reader_next(struct reader *reader)
     if (reader->status == READER_EOF)
     {
         fprintf(stderr, "Error: Reader is at EOF\n");
-        exit(1);
+        exit(2);
     }
     int res = 0;
     if (reader->type == INPUT_STRING)
