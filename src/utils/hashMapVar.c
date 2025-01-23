@@ -88,11 +88,11 @@ struct Variable getVariable(char *name)
         var = var->next;
     }
 
-    char *env_value = getenv(name);
-    if (env_value != NULL)
-    {
-        return (struct Variable){ name, env_value, NULL };
-    }
+    //char *env_value = getenv(name);
+    //if (env_value != NULL)
+    //{
+    //    return (struct Variable){ name, env_value, NULL };
+    //}
 
     return (struct Variable){ NULL, NULL, NULL };
 }
