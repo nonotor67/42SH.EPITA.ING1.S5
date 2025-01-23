@@ -22,7 +22,8 @@ static const struct execute_entry execute_table[] = {
     { NEGATION, execute_negation },
     { WHILE_LOOP, execution_while },
     { UNTIL_LOOP, execution_until },
-    { FOR_LOOP, execution_for }
+    { FOR_LOOP, execution_for },
+    { COMMAND_BLOCK, execute_command_block },
 };
 
 /*
@@ -45,19 +46,21 @@ static int expand_values(char ***target, struct word **source)
             free((*target)[i]);
         free(*target);
     }
-    *target = xmalloc((size + 1) * sizeof(char *));
-    size_t j = 0;
+    struct vector target_vec;
+    vector_init(&target_vec);
     int failed = 0;
     for (size_t i = 0; i < size; i++)
     {
         failed = failed || !is_word_valid(source[i]);
-        char *val = word_eval(source[i]);
-        if (val && (*val != '\0' || source[i - 1]->has_escaped))
-            (*target)[j++] = val;
-        else
-            free(val);
+        char **vals = word_eval(source[i]);
+        if (vals == 0)
+            continue;
+        size_t val_i = 0;
+        while (vals[val_i])
+            vector_push(&target_vec, vals[val_i++]);
+        free(vals);
     }
-    (*target)[j] = NULL;
+    *target = (char **)target_vec.data;
     return failed;
 }
 

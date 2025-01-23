@@ -26,7 +26,7 @@ enum token_type
     TOKEN_OR,
     TOKEN_NEGATION,
     TOKEN_LEFT_PAREN,
-    TOKEN_RIGHT_PAREN
+    TOKEN_RIGHT_PAREN,
 };
 
 struct token
