@@ -1,5 +1,7 @@
 #include "execution_subshell.h"
 
+#include <stdio.h>
+
 int execute_subshell(struct ast *ast)
 {
     // Save the current variables
@@ -25,7 +27,7 @@ int execute_subshell(struct ast *ast)
     insertVariable("OLDPWD", oldpwd);
     if (chdir(pwd) == -1)
     {
-        perror("chdir");
+        fprintf(stderr, "Error: Could not change directory to %s\n", pwd);
         return 1;
     }
     free(pwd);
