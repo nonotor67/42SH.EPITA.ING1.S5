@@ -22,4 +22,11 @@ struct Variable *create_variable(char *name, char *value);
  */
 void free_variable(struct Variable *var);
 
+/*
+    @brief Insert a variable in the environment
+    @param name The name of the variable
+    @param value The value of the variable
+ */
+char *getEnvVariable(char *name);
+
 #endif /* !VARIABLE_H */

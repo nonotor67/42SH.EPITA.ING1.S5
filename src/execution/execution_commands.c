@@ -98,6 +98,12 @@ int dispatch_command(struct ast *ast)
         status = exec_dot(argc, ast->expanded_values);
     else if (strcmp(ast->expanded_values[0], "cd") == 0)
         status = exec_cd(argc, ast->expanded_values);
+    else if (strcmp(ast->expanded_values[0], "exit") == 0)
+        exec_exit(argc, ast->expanded_values);
+    else if (strcmp(ast->expanded_values[0], "export") == 0)
+        status = exec_export(argc, ast->expanded_values);
+    else if (strcmp(ast->expanded_values[0], "unset") == 0)
+        status = exec_unset(argc, ast->expanded_values);
     else
         status = run_command(real_argv);
 
