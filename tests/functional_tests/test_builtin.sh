@@ -29,3 +29,15 @@ $test $BIN "Simple cd with path" "cd /usr;echo $PWD;ls"
 $test $BIN "Simple cd with error" "cd unexpected_dir;echo $PWD;ls"
 # Test with -
 $test $BIN "Simple cd with -" "cd /usr;cd -"
+
+# Test exit
+$test $BIN "Simple exit" "exit 0"
+$test $BIN "Simple exit with code" "exit 1"
+$test $BIN "Simple exit with code" "exit 255"
+
+export truc=1
+$test $BIN "Simple export" "echo \$truc"
+unset truc
+
+# Test export
+$test $BIN "Simple export" "export truc=1;echo \$truc; unset truc"
