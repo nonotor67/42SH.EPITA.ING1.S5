@@ -187,6 +187,7 @@ static int lexer_try_variable(struct lexer *lexer, struct word *word)
     next_char(lexer);
     struct variable var;
     var.is_quoted = lexer->mode == LEXING_DOUBLE_QUOTED;
+    var.commands = NULL;
     size_t length = word->value.length;
     if (length > 0 && word->value.data[length - 1] == '\\')
         // replace the backslash with '$'
