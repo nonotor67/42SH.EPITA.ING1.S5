@@ -30,7 +30,7 @@ int exec_cd(int argc, char **argv)
 
     if (strcmp(argv[1], "-") == 0)
     {
-        if (getVariable("OLDPWD").value == NULL)
+        if (strcmp(getVariable("OLDPWD").value, "") == 0)
         {
             fprintf(stderr, "cd: OLDPWD not set\n");
             return 1;
