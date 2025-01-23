@@ -42,7 +42,6 @@ int exec_cd(int argc, char **argv)
         }
         printf("%s\n", getVariable("OLDPWD").value);
         update_pwd();
-
     }
     else if (chdir(argv[1]) == -1)
     {
