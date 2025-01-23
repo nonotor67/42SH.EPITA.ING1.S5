@@ -170,7 +170,8 @@ struct ast *compound_list(struct parser *parser)
         // if the next token is a closing keyword, we stop the compound_list
         if ((tok.type == TOKEN_KEYWORD && is_closing_word(tok.word))
             || (tok.type == TOKEN_WORD
-                && strcmp(tok.word->value.data, "}") == 0))
+                && strcmp(tok.word->value.data, "}") == 0)
+            || tok.type == TOKEN_RIGHT_PAREN)
             break;
         current->right = ast_new(COMMAND_LIST);
         current = current->right;
@@ -215,9 +216,10 @@ struct ast *command(struct parser *parser)
         if (ast->redir)
             ast->redir[ast->redir_size] = NULL;
     }
-    else
-        // Handles functions as the first is the same
+    else if (token.type == TOKEN_WORD || token.type == TOKEN_REDIR)
         ast = simple_command(parser);
+    else
+        parser->status = PARSER_UNEXPECTED_TOKEN;
     return ast;
 }
 
@@ -228,6 +230,7 @@ struct ast *command_block(struct parser *parser)
     tok = lexer_pop(parser->lexer);
     // Is the opening bracket
     word_free(tok.word);
+    lexer_context_begin(parser->lexer);
     struct ast *root = ast_new(COMMAND_BLOCK);
     root->left = compound_list(parser);
     CHECK_STATUS(parser, root,
@@ -240,6 +243,7 @@ struct ast *command_block(struct parser *parser)
     }
     fprintf(stderr, "Error: Expected a closing bracket in command block\n");
     parser->status = PARSER_UNEXPECTED_TOKEN;
+    ast_free(root);
     return NULL;
 }
 

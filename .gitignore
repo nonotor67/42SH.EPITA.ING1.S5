@@ -30,3 +30,6 @@ autom4te.cache
 */*.gcno
 */*.gcov
 *.gcno
+tests/actual
+tests/expected
+tests/test.txt

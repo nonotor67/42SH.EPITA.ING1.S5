@@ -1,7 +1,9 @@
 #ifndef IO_H
 #define IO_H
 
-#include <stdio.h>
+#include <unistd.h>
+
+#define BUFFER_SIZE 4096
 
 enum reader_status
 {
@@ -15,6 +17,14 @@ enum input_type
     INPUT_FILE,
 };
 
+struct reader_file
+{
+    int fd;
+    char buffer[BUFFER_SIZE];
+    ssize_t size;
+    int index;
+};
+
 struct reader
 {
     enum reader_status status;
@@ -22,7 +32,7 @@ struct reader
     int current;
     union
     {
-        FILE *file;
+        struct reader_file file;
         char *string;
     } input;
 };

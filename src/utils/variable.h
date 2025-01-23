@@ -15,6 +15,7 @@ struct Variable
     @return A pointer to the newly created variable
  */
 struct Variable *create_variable(char *name, char *value);
+
 /*
     @brief Free the memory allocated for a variable
     @param var The variable to free

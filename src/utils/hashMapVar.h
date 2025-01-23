@@ -37,6 +37,9 @@ struct Variable getVariable(char *name);
  */
 struct HashMapVar copy_hash_map_var(void);
 
+
+void removeVariable(char *name);
+
 /**
  *  @brief Clear the hash table
  *  @param hash_map The hash table
