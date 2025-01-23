@@ -6,18 +6,51 @@
 #include "ast/ast.h"
 #include "utils.h"
 
-static struct ast *ast_copy(struct ast *ast)
+struct ast *ast_copy(struct ast *ast)
 {
     if (ast == NULL)
     {
         return NULL;
     }
 
-    struct ast *copy = xmalloc(sizeof(struct ast));
-    copy->type = ast->type;
-    copy->values = ast->values;
+    struct ast *copy = ast_new(ast->type);
     copy->left = ast_copy(ast->left);
+    copy->middle = ast_copy(ast->middle);
     copy->right = ast_copy(ast->right);
+    copy->size = ast->size;
+    copy->redir_size = ast->redir_size;
+
+    if (ast->values)
+    {
+        // Copy values
+        size_t var_size = 0;
+        while (ast->values[var_size])
+            var_size++;
+        copy->values = xmalloc((var_size + 1) * sizeof(struct word *));
+        for (size_t i = 0; i < var_size; i++)
+        {
+            struct word *copy_word = word_new();
+            word_copy(ast->values[i], copy_word);
+            copy->values[i] = copy_word;
+        }
+        copy->values[var_size] = NULL;
+    }
+
+    if (ast->redir)
+    {
+        // Copy redirections
+        size_t redir_size = 0;
+        while (ast->redir[redir_size])
+            redir_size++;
+        copy->redir = xmalloc((redir_size + 1) * sizeof(struct word *));
+        for (size_t i = 0; i < redir_size; i++)
+        {
+            struct word *copy_word = word_new();
+            word_copy(ast->redir[i], copy_word);
+            copy->redir[i] = copy_word;
+        }
+        copy->redir[redir_size] = NULL;
+    }
 
     return copy;
 }

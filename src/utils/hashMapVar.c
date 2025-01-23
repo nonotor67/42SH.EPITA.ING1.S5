@@ -5,7 +5,7 @@
 
 #include "utils.h"
 
-static struct HashMapVar global_variables = { { NULL } };
+struct HashMapVar global_variables = { { NULL } };
 
 void free_hash_map_var(void)
 {
@@ -74,6 +74,32 @@ void insertBlindVariable(char *name, char *value)
     global_variables.map[index] = var;
 }
 
+void removeVariable(char *name)
+{
+    unsigned int index = hash(name);
+    struct Variable *var = global_variables.map[index];
+    struct Variable *prev = NULL;
+    // Search for the variable in the linked list
+    while (var != NULL)
+    {
+        if (strcmp(var->name, name) == 0)
+        {
+            if (prev == NULL)
+            {
+                global_variables.map[index] = var->next;
+            }
+            else
+            {
+                prev->next = var->next;
+            }
+            free_variable(var);
+            return;
+        }
+        prev = var;
+        var = var->next;
+    }
+}
+
 static char rand_buf[16];
 
 struct Variable getVariable(char *name)
@@ -103,6 +129,29 @@ struct Variable getVariable(char *name)
     }
 
     return (struct Variable){ NULL, NULL, NULL };
+}
+
+struct HashMapVar copy_hash_map_var(void)
+{
+    struct HashMapVar copy = { { NULL } };
+    for (int i = 0; i < TABLE_SIZE; i++)
+    {
+        struct Variable *var = global_variables.map[i];
+        while (var != NULL)
+        {
+            struct Variable *new_var = create_variable(var->name, var->value);
+            new_var->next = copy.map[i];
+            copy.map[i] = new_var;
+
+            var = var->next;
+        }
+    }
+    return copy;
+}
+
+void setVariableMap(struct HashMapVar copy)
+{
+    global_variables = copy;
 }
 
 /**
