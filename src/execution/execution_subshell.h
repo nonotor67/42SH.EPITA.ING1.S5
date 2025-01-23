@@ -2,8 +2,8 @@
 #define EXECUTION_SUBSHELL_H
 
 #include <ast/ast.h>
-#include <utils/hashMapVar.h>
 #include <utils/hashMapFunc.h>
+#include <utils/hashMapVar.h>
 
 #include "execution.h"
 

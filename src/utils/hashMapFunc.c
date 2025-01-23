@@ -104,7 +104,8 @@ struct HashMapFunc copy_hash_map_func(void)
         struct function *func = global_functions.map[i];
         while (func != NULL)
         {
-            struct function *new_func = create_function(func->name, func->value);
+            struct function *new_func =
+                create_function(func->name, func->value);
             new_func->next = copy.map[i];
             copy.map[i] = new_func;
 
