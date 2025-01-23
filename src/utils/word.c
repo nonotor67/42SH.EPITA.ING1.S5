@@ -31,25 +31,25 @@ void word_copy(struct word *word, struct word *copy)
 {
     copy->has_escaped = word->has_escaped;
     copy->valid_assignment = word->valid_assignment;
-    copy->var_length = word->var_length;
-    copy->var_capacity = word->var_capacity;
+    copy->var_length = 0;
+    copy->var_capacity = 0;
     if (word->variables)
     {
-        copy->variables = malloc(word->var_capacity * sizeof(struct variable));
-        if (!copy->variables)
-            free(copy);
         for (size_t i = 0; i < word->var_length; i++)
         {
-            copy->variables[i].pos = word->variables[i].pos;
+            struct variable var;
+            var.pos = word->variables[i].pos;
+            string_init(&var.name);
             size_t j = 0;
             while (word->variables[i].name.data[j])
             {
-                string_push(&copy->variables[i].name,
+                string_push(&var.name,
                             word->variables[i].name.data[j]);
                 j++;
             }
-            copy->variables[i].commands = ast_copy(word->variables[i].commands);
-            copy->variables[i].is_quoted = word->variables[i].is_quoted;
+            var.commands = ast_copy(word->variables[i].commands);
+            var.is_quoted = word->variables[i].is_quoted;
+            word_push_variable(copy, var);
         }
     }
     size_t i = 0;
