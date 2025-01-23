@@ -46,4 +46,8 @@ void updateFunction(char *name, struct ast *value);
  */
 void func_init(int argc, char **argv);
 
+struct HashMapFunc copy_hash_map_func(void);
+
+void setFunctionMap(struct HashMapFunc copy);
+
 #endif /* !HASHMAPFUNC_H */

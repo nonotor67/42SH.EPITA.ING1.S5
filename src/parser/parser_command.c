@@ -230,6 +230,7 @@ struct ast *command_block(struct parser *parser)
     tok = lexer_pop(parser->lexer);
     // Is the opening bracket
     word_free(tok.word);
+    lexer_context_begin(parser->lexer);
     struct ast *root = ast_new(COMMAND_BLOCK);
     root->left = compound_list(parser);
     CHECK_STATUS(parser, root,
@@ -242,6 +243,7 @@ struct ast *command_block(struct parser *parser)
     }
     fprintf(stderr, "Error: Expected a closing bracket in command block\n");
     parser->status = PARSER_UNEXPECTED_TOKEN;
+    ast_free(root);
     return NULL;
 }
 

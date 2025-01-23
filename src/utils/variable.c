@@ -19,3 +19,8 @@ void free_variable(struct Variable *var)
     free(var->value);
     free(var);
 }
+
+char *getEnvVariable(char *name)
+{
+    return getenv(name);
+}

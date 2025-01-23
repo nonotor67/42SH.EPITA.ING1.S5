@@ -685,3 +685,22 @@ Test(parser, subshell)
     cr_assert_null(ast->right->right->right);
     CLEAR_ALL
 }
+
+Test(parser, for_in_for)
+{
+    INIT_PARSER("for i in 1 2 3; do for j in 1 2 3; do echo i j; done; done")
+    cr_assert_not_null(ast);
+    cr_assert_eq(ast->type, FOR_LOOP);
+    cr_assert_not_null(ast->left);
+    cr_assert_not_null(ast->middle);
+    cr_assert_not_null(ast->right);
+    struct ast *r = ast->right;
+    cr_assert_eq(r->type, FOR_LOOP);
+    cr_assert_not_null(r->right);
+    cr_assert_eq(r->right->type, SIMPLE_COMMAND);
+    cr_assert_str_eq(r->right->values[0]->value.data, "echo");
+    cr_assert_str_eq(r->right->values[1]->value.data, "i");
+    cr_assert_str_eq(r->right->values[2]->value.data, "j");
+    cr_assert_null(r->right->values[3]);
+    CLEAR_ALL
+}

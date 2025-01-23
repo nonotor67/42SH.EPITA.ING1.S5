@@ -27,6 +27,38 @@ struct word *word_new(void)
     return word;
 }
 
+void word_copy(struct word *word, struct word *copy)
+{
+    copy->has_escaped = word->has_escaped;
+    copy->valid_assignment = word->valid_assignment;
+    copy->var_length = 0;
+    copy->var_capacity = 0;
+    if (word->variables)
+    {
+        for (size_t i = 0; i < word->var_length; i++)
+        {
+            struct variable var;
+            var.pos = word->variables[i].pos;
+            string_init(&var.name);
+            size_t j = 0;
+            while (word->variables[i].name.data[j])
+            {
+                string_push(&var.name, word->variables[i].name.data[j]);
+                j++;
+            }
+            var.commands = ast_copy(word->variables[i].commands);
+            var.is_quoted = word->variables[i].is_quoted;
+            word_push_variable(copy, var);
+        }
+    }
+    size_t i = 0;
+    while (word->value.data[i])
+    {
+        word_push(copy, word->value.data[copy->value.length]);
+        i++;
+    }
+}
+
 void word_free(struct word *word)
 {
     free(word->value.data);

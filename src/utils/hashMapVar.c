@@ -5,7 +5,7 @@
 
 #include "utils.h"
 
-static struct HashMapVar global_variables = { { NULL } };
+struct HashMapVar global_variables = { { NULL } };
 
 void free_hash_map_var(void)
 {
@@ -66,6 +66,40 @@ void insertVariable(char *name, char *value)
     global_variables.map[index] = var;
 }
 
+void insertBlindVariable(char *name, char *value)
+{
+    unsigned int index = hash(name);
+    struct Variable *var = create_variable(name, value);
+    var->next = global_variables.map[index];
+    global_variables.map[index] = var;
+}
+
+void removeVariable(char *name)
+{
+    unsigned int index = hash(name);
+    struct Variable *var = global_variables.map[index];
+    struct Variable *prev = NULL;
+    // Search for the variable in the linked list
+    while (var != NULL)
+    {
+        if (strcmp(var->name, name) == 0)
+        {
+            if (prev == NULL)
+            {
+                global_variables.map[index] = var->next;
+            }
+            else
+            {
+                prev->next = var->next;
+            }
+            free_variable(var);
+            return;
+        }
+        prev = var;
+        var = var->next;
+    }
+}
+
 static char rand_buf[16];
 
 struct Variable getVariable(char *name)
@@ -81,14 +115,43 @@ struct Variable getVariable(char *name)
     // Search for the variable in the linked list
     while (var != NULL)
     {
-        if (strcmp(var->name, name) == 0)
+        if (strcmp(name, var->name) == 0)
         {
             return *var;
         }
         var = var->next;
     }
 
+    char *env_value = getenv(name);
+    if (env_value != NULL)
+    {
+        return (struct Variable){ name, env_value, NULL };
+    }
+
     return (struct Variable){ NULL, NULL, NULL };
+}
+
+struct HashMapVar copy_hash_map_var(void)
+{
+    struct HashMapVar copy = { { NULL } };
+    for (int i = 0; i < TABLE_SIZE; i++)
+    {
+        struct Variable *var = global_variables.map[i];
+        while (var != NULL)
+        {
+            struct Variable *new_var = create_variable(var->name, var->value);
+            new_var->next = copy.map[i];
+            copy.map[i] = new_var;
+
+            var = var->next;
+        }
+    }
+    return copy;
+}
+
+void setVariableMap(struct HashMapVar copy)
+{
+    global_variables = copy;
 }
 
 /**
@@ -114,35 +177,35 @@ void env_init(int argc, char **argv)
         argument_list[actual_list_size] = ' ';
         actual_list_size++;
         char *int_tmp = xmalloc(256);
-        insertVariable(my_itoa(i, int_tmp), argv[i]);
+        insertBlindVariable(my_itoa(i, int_tmp), argv[i]);
         free(int_tmp);
     }
 
-    insertVariable("0", argv[0]);
+    insertBlindVariable("0", argv[0]);
 
     if (actual_list_size > 0)
     {
         argument_list[actual_list_size - 1] = '\0';
-        insertVariable("@", argument_list);
-        insertVariable("*", argument_list);
+        insertBlindVariable("@", argument_list);
+        insertBlindVariable("*", argument_list);
     }
     free(argument_list);
 
     // InsertVariables allocate a new string, so we can free or use the old one
     char *int_tmp = xmalloc(256);
-    insertVariable("#", my_itoa(argc, int_tmp));
-    insertVariable("$", my_itoa(getpid(), int_tmp));
-    insertVariable("UID", my_itoa(getuid(), int_tmp));
+    insertBlindVariable("#", my_itoa(argc, int_tmp));
+    insertBlindVariable("$", my_itoa(getpid(), int_tmp));
+    insertBlindVariable("UID", my_itoa(getuid(), int_tmp));
     free(int_tmp);
 
-    insertVariable("?", "0");
+    insertBlindVariable("?", "0");
 
     char *pwd = getcwd(NULL, 0);
     if (pwd)
     {
-        insertVariable("OLDPWD", pwd);
-        insertVariable("PWD", pwd);
+        insertBlindVariable("PWD", pwd);
         free(pwd);
     }
-    insertVariable("IFS", " \t\n");
+    insertBlindVariable("OLDPWD", "");
+    insertBlindVariable("IFS", " \t\n");
 }
