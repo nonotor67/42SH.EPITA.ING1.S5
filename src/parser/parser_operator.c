@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include "parser.h"
 
 /*
@@ -17,6 +19,12 @@ struct ast *pipeline(struct parser *parser)
     if (tok.type == TOKEN_NEGATION)
     {
         lexer_pop(parser->lexer);
+        negate = 1;
+    }
+    if (tok.type == TOKEN_WORD && strcmp(tok.word->value.data, "!") == 0)
+    {
+        lexer_pop(parser->lexer);
+        word_free(tok.word);
         negate = 1;
     }
     struct ast *root = ast_new(PIPELINE);

@@ -369,8 +369,7 @@ Test(lexer,
 Test(lexer, lexer_NEGATION){ // echo !Hello does an error in posix
                              // But it's the parser that will handle it
                              INIT_LEXER_TEST("echo !Hello") EAT_WORD("echo")
-                                 EXPECT(TOKEN_NEGATION) EAT_WORD("Hello")
-                                     EXPECT(TOKEN_EOF) CLEAR_ALL
+                                 EAT_WORD("!Hello") EXPECT(TOKEN_EOF) CLEAR_ALL
 }
 
 Test(lexer, lexer_PIPE_NOT){ INIT_LEXER_TEST("! echo Hello | echo World")
