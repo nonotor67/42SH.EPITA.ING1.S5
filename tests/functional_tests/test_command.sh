@@ -75,3 +75,7 @@ $test $BIN "Simple \$?" "echo \$?"
 $test $BIN "Complexe \$?" "if true; then false || echo \$?; fi"
 $test $BIN "Complexe \$?" "if true; then true && echo \$?; fi"
 $test $BIN "Complexe \$?" "if echo $?; then echo \$?; true; echo \$?; fi"
+
+# Empty command block
+
+$test $BIN "Empty command block" "{ }"
