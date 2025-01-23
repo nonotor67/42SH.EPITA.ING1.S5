@@ -31,14 +31,21 @@ void insertVariable(char *name, char *value);
  */
 struct Variable getVariable(char *name);
 
+/**
+ *  @brief Copy the hash table
+ *  @return The copy of the hash table
+ */
+struct HashMapVar copy_hash_map_var(void);
+
 void removeVariable(char *name);
 
 /**
- *  @brief Update the value of a variable in the hash table
- *  @param ht The hash table
- *  @param name The name of the variable to update
- *  @param value The new value of the variable
+ *  @brief Clear the hash table
+ *  @param hash_map The hash table
  */
+void clear_hash_map_var(struct HashMapVar *hash_map);
+
+void setVariableMap(struct HashMapVar copy);
 
 void env_init(int argc, char **argv);
 

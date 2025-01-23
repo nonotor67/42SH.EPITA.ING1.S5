@@ -407,7 +407,6 @@ a=sh; (a=42; echo -n $a);echo $a **Simplified**
             size = 2
             values = ["echo", "$a", NULL]
 
-
 */
 
 #endif /* !AST_H */
