@@ -87,6 +87,7 @@ int main(int argc, char **argv)
     reader_free(reader);
     lexer_free(lexer);
     free_hash_map_var();
+    free_hash_map_func();
 
     return res;
 }

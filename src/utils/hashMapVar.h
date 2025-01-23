@@ -30,6 +30,9 @@ void insertVariable(char *name, char *value);
  *  @return The variable
  */
 struct Variable getVariable(char *name);
+
+void removeVariable(char *name);
+
 /**
  *  @brief Update the value of a variable in the hash table
  *  @param ht The hash table

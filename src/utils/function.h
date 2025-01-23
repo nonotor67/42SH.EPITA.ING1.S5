@@ -9,6 +9,13 @@ struct function
 };
 
 /**
+ *  @brief Copy an AST
+ *  @param ast The AST to copy
+ *  @return A pointer to the copied AST
+ */
+struct ast *ast_copy(struct ast *ast);
+
+/**
  *  @brief Create a new function
  *  @param name The name of the function
  *  @param value The value of the function

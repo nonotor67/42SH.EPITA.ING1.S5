@@ -13,6 +13,7 @@
 #include "execution_command_block.h"
 #include "execution_commands.h"
 #include "execution_conditions.h"
+#include "execution_function.h"
 #include "execution_loop.h"
 #include "execution_negation.h"
 #include "execution_or_and.h"
