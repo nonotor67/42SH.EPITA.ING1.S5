@@ -1,6 +1,8 @@
 #ifndef PARSER_SHELL_COMMAND_H
 #define PARSER_SHELL_COMMAND_H
 
+#include "parser_struct.h"
+
 /*
 shell_command =
     '{' compound_list '}'
