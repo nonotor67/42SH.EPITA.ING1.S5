@@ -285,53 +285,62 @@ static struct token lexer_next_handle_word(struct lexer *lexer)
 
 static struct token lexer_switch(struct lexer *lexer)
 {
-    struct token token;
-    token.word = NULL;
-    switch (last_char(lexer))
+    struct token token = { .word = NULL, .type = TOKEN_UNKNOWN };
+
+    if (last_char(lexer) == '\n')
     {
-    case '\n':
         token.type = TOKEN_EOL;
-        break;
-    case ';':
+    }
+    else if (last_char(lexer) == ';')
+    {
         token.type = TOKEN_SEMICOLON;
-        break;
-    case '(':
+    }
+    else if (last_char(lexer) == '(')
+    {
         token.type = TOKEN_LEFT_PAREN;
-        break;
-    case ')':
+    }
+    else if (last_char(lexer) == ')')
+    {
         token.type = TOKEN_RIGHT_PAREN;
-        break;
-    case '|':
-        token.type = next_char(lexer) == '|' ? TOKEN_OR : TOKEN_PIPE;
-        break;
-    case '&':
-        token.type = next_char(lexer) == '&' ? TOKEN_AND : TOKEN_UNKNOWN;
-        break;
-    case '!':
+    }
+    else if (last_char(lexer) == '|')
+    {
+        token.type = (next_char(lexer) == '|') ? TOKEN_OR : TOKEN_PIPE;
+    }
+    else if (last_char(lexer) == '&')
+    {
+        token.type = (next_char(lexer) == '&') ? TOKEN_AND : TOKEN_UNKNOWN;
+    }
+    else if (last_char(lexer) == '!')
+    {
         token.type = TOKEN_NEGATION;
-        break;
-    case '\'':
+    }
+    else if (last_char(lexer) == '\'')
+    {
         lexer->mode = LEXING_QUOTED;
         lexer->current_char = UNITIALIZED_CHAR;
         return lexer_next_handle_word(lexer);
-    case '"':
+    }
+    else if (last_char(lexer) == '"')
+    {
         lexer->mode = LEXING_DOUBLE_QUOTED;
         lexer->current_char = UNITIALIZED_CHAR;
         return lexer_next_handle_word(lexer);
-    case '#':
+    }
+    else if (last_char(lexer) == '#')
+    {
         lexer->mode = LEXING_COMMENT;
         lexer->current_char = UNITIALIZED_CHAR;
         return lexer_next(lexer);
-    case '>':
-    case '<':
-        // redirections are handled in lexer_next_handle_word
-        return lexer_next_handle_word(lexer);
-    default:
-        token.type = TOKEN_UNKNOWN;
-        break;
     }
+    else if (last_char(lexer) == '>' || last_char(lexer) == '<')
+    {
+        return lexer_next_handle_word(lexer);
+    }
+
     if (token.type != TOKEN_PIPE)
         lexer->current_char = UNITIALIZED_CHAR;
+
     return token;
 }
 
