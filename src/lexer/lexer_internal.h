@@ -1,5 +1,5 @@
-#ifndef LEXER_UTILS_H
-#define LEXER_UTILS_H
+#ifndef LEXER_INTERNAL_H
+#define LEXER_INTERNAL_H
 
 #include "lexer.h"
 
@@ -8,4 +8,4 @@
 // Get the next token
 struct token lexer_next(struct lexer *lexer);
 
-#endif // !LEXER_UTILS_H
+#endif // !LEXER_INTERNAL_H
