@@ -1,5 +1,5 @@
-#ifndef INC_42SH_VECTOR_H
-#define INC_42SH_VECTOR_H
+#ifndef VECTOR_H
+#define VECTOR_H
 
 #include <stddef.h>
 
@@ -16,4 +16,4 @@ void vector_free(struct vector *vector);
 
 void vector_push(struct vector *vector, void *element);
 
-#endif //! INC_42SH_VECTOR_H
+#endif //! VECTOR_H
