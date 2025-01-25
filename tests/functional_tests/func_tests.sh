@@ -27,4 +27,5 @@ run_test_script "$path_to_tests/test_loop.sh"
 run_test_script "$path_to_tests/test_command_block.sh"
 run_test_script "$path_to_tests/test_function.sh"
 run_test_script "$path_to_tests/test_subshell.sh"
+run_test_script "$path_to_tests/test_quotes.sh"
 

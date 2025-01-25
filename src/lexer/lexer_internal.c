@@ -188,11 +188,7 @@ static int lexer_try_variable(struct lexer *lexer, struct word *word)
     struct variable var;
     var.is_quoted = lexer->mode == LEXING_DOUBLE_QUOTED;
     var.commands = NULL;
-    size_t length = word->value.length;
-    if (length > 0 && word->value.data[length - 1] == '\\')
-        // replace the backslash with '$'
-        word->value.data[length - 1] = '$';
-    else if (lexer_lex_variable(lexer, &var))
+    if (lexer_lex_variable(lexer, &var))
     {
         var.pos = word->value.length;
         word_push_variable(word, var);
@@ -212,6 +208,27 @@ static int open_quoting(struct lexer *lexer, char c)
         return 0;
     lexer->current_char = UNITIALIZED_CHAR;
     return 1;
+}
+
+static int try_double_quote_escaped(struct lexer *lexer)
+{
+    if (last_char(lexer) != '\\' || lexer->mode != LEXING_DOUBLE_QUOTED)
+        return 0;
+    static const char escaped_chars[] = "\\\"$";
+    next_char(lexer);
+    char c = (char)last_char(lexer);
+    for (size_t i = 0; i < sizeof(escaped_chars) - 1; i++)
+        if (c == escaped_chars[i])
+        {
+            lexer->escape_next = 1;
+            return 1;
+        }
+    if (c == '\n')
+    {
+        next_char(lexer);
+        return 1;
+    }
+    return 0;
 }
 
 static int close_quoting(struct lexer *lexer, char c)
@@ -267,6 +284,7 @@ static struct token lexer_next_handle_word(struct lexer *lexer)
         BLIND_PUSH_WHEN(lexer->escape_next);
         SKIP_WHEN(close_quoting(lexer, c));
         BLIND_PUSH_WHEN(lexer->mode == LEXING_QUOTED);
+        SKIP_WHEN(try_double_quote_escaped(lexer));
         SKIP_WHEN(lexer_try_variable(lexer, word));
         BLIND_PUSH_WHEN(lexer->mode == LEXING_DOUBLE_QUOTED);
         SKIP_WHEN(open_quoting(lexer, c));

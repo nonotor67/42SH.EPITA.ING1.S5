@@ -65,7 +65,7 @@ $test $BIN "Simple echo with variable" "echo \$toto"
 $test $BIN "Simple for" "for i in 1 2 3; do echo \$i; done"
 $test $BIN "Simple for" "for i in 1; do echo \$i; done"
 $test $BIN "Bad for" "for i in 1 2; do echo \$i"
-# TODO: fix test_functional "Bad for" "for i in 1 2; do echo \$i; done; done"
+$test $BIN "Bad for" "for i in 1 2; do echo \$i; done; done"
 $test $BIN "Bad for" "for i in 1 2; do echo \$i done"
 
 # Test variables
@@ -74,7 +74,11 @@ $test $BIN "Simple variable" "toto=42; echo \$toto"
 $test $BIN "Simple \$?" "echo \$?"
 $test $BIN "Complexe \$?" "if true; then false || echo \$?; fi"
 $test $BIN "Complexe \$?" "if true; then true && echo \$?; fi"
-$test $BIN "Complexe \$?" "if echo $?; then echo \$?; true; echo \$?; fi"
+$test $BIN "Complexe \$?" "if echo \$?; then echo \$?; true; echo \$?; fi"
+$test $BIN "Sticky variable" "toto=42; echo \$toto; toto=43; echo \$toto\$toto\$toto"
+$test $BIN "Sticky variable" "toto=42; echo \$toto; toto=43; echo \$toto\$toto\$toto; toto=44; echo \$toto\$toto\$toto"
+$test $BIN "Hard sticky variable" "(VAR='Hello World'; echo $(echo \$VAR\$VAR | wc -c))"
+$test $BIN "Hard sticky variable" "ARR='a b c'; echo $(echo \$ARR\ARR | wc -w)"
 
 # Empty command block
 
