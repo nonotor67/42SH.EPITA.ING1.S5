@@ -1,6 +1,7 @@
 #ifndef PARSER_SHELL_COMMAND_H
 #define PARSER_SHELL_COMMAND_H
 
+#include "parser.h"
 #include "parser_struct.h"
 
 /*
