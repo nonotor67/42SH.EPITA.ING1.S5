@@ -201,7 +201,7 @@ char **word_eval(struct word *word)
     for (size_t pos = 0;; pos++)
     {
         while (word->variables && var_idx < word->var_length
-            && pos == word->variables[var_idx].pos)
+               && pos == word->variables[var_idx].pos)
         {
             eval_variable(&words, &curr_str, &word->variables[var_idx]);
             var_idx++;
