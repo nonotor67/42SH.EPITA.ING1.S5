@@ -76,6 +76,8 @@ static int expand_values(char ***target, struct word **source)
 
 int execute_node(struct ast *node)
 {
+    if (loop_status && loop_status->status != 0)
+        return 0;
     static const size_t table_size =
         sizeof(execute_table) / sizeof(execute_table[0]);
 

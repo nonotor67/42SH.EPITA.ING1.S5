@@ -4,7 +4,7 @@
 
 struct loop_status *loop_status = NULL;
 
-static void init_loop_status()
+static void init_loop_status(void)
 {
     loop_status = malloc(sizeof(struct loop_status));
     loop_status->status = 0;
