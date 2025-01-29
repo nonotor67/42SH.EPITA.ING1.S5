@@ -167,6 +167,10 @@ static int fd_redir(int fd, int io_number, struct ast *ast)
         io_number = STDOUT_FILENO;
     }
     int saved_fd = dup(io_number);
+    if (saved_fd == -1)
+    {
+        return 1;
+    }
     // Redirect the file descriptor
     if (dup2(fd, io_number) == -1)
     {
@@ -196,6 +200,10 @@ static int fd_input_redir(int fd, int io_number, struct ast *ast)
         io_number = STDIN_FILENO;
     }
     int saved_fd = dup(io_number);
+    if (saved_fd == -1)
+    {
+        return 1;
+    }
     // Redirect the file descriptor
     if (dup2(fd, io_number) == -1)
     {
