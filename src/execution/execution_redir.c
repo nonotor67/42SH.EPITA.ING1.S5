@@ -60,7 +60,6 @@ static int simple_redir(char *filename, int io_number, struct ast *ast)
     return status;
 }
 
-
 // Handle <
 static int input_redir(char *filename, int io_number, struct ast *ast)
 {
