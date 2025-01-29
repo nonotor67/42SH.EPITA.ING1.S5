@@ -8,6 +8,7 @@
 #include <string.h>
 #include <utils/hashMapVar.h>
 
+#include "utils/hashMapVar.c"
 #include "utils/xmalloc.h"
 
 int exec_export(__attribute__((unused)) int argc, char **argv)
@@ -20,6 +21,7 @@ int exec_export(__attribute__((unused)) int argc, char **argv)
     strncpy(name, argv[1], tmp - argv[1]);
     name[tmp - argv[1]] = '\0';
 
+    insertVariable(name, tmp + 1);
     setenv(name, tmp + 1, 1);
     free(name);
 
@@ -30,7 +32,7 @@ int exec_unset(__attribute__((unused)) int argc, char **argv)
 {
     if (getenv(argv[1]) == NULL)
         return 1;
-    unsetenv(argv[1]);
     removeVariable(argv[1]);
+    unsetenv(argv[1]);
     return 0;
 }
