@@ -31,3 +31,12 @@ $test $BIN "Test with or" "{ false || echo b; }"
 # Test command block with negation
 $test $BIN "Test with negation" "{ ! false; }"
 $test $BIN "Test with negation" "{ ! true; }"
+
+# Test command block with parenthesis
+$test $BIN "Test with parenthesis" "{ (echo a); }"
+$test $BIN "Test with parenthesis" "{ (echo a && echo b); }"
+
+# Test command block with redirection
+$test $BIN "Test with redirection" "{ echo a > file; }"
+$test $BIN "Test with redirection" "{ echo a > file; cat file; }"
+rm -f file
