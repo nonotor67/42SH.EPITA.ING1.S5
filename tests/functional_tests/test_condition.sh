@@ -27,3 +27,10 @@ $test $BIN "Bad if 7 " "if echo test
 then
 fi"
 $test $BIN "ACU" "if true then echo encore; fi"
+
+# Test embedded if
+$test $BIN "Embedded if" "if true; then if true; then echo \"true\"; fi; fi"
+$test $BIN "Embedded if with else" "if true; then if false; then echo \"true\"; else echo \"false\"; fi; fi"
+$test $BIN "Embedded if condition" "if if true; then echo \"true\"; fi; then echo \"true\"; fi"
+$test $BIN "Embedded if recursive if" "if true; then if true; then if true; then echo \"true\"; fi; fi; fi"
+$test $BIN "Embedded if recursive condition" "if if if if true; then echo \"true\"; fi; then echo \"true\"; fi; then echo \"true\"; fi"

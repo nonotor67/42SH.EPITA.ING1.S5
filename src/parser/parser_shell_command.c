@@ -187,6 +187,7 @@ static struct ast *rule_if(struct parser *parser)
 
     struct ast *root = ast_new(CONDITIONS);
 
+    lexer_context_begin(parser->lexer);
     root->left = compound_list(parser);
     IS_BAD_IF(parser);
     CHECK_STATUS(parser, root, "Error after parsing compound_list (if)\n");
@@ -228,17 +229,20 @@ struct ast *shell_command(struct parser *parser)
     tok = lexer_peek(parser->lexer);
     if (tok.type == TOKEN_LEFT_PAREN)
         return subshell(parser);
-    const char *keyword = tok.word->value.data;
-    if (strcmp(keyword, "if") == 0)
-        return rule_if(parser);
-    if (strcmp(keyword, "for") == 0)
-        return rule_for(parser);
-    if (strcmp(keyword, "while") == 0)
-        return rule_while(parser);
-    if (strcmp(keyword, "until") == 0)
-        return rule_until(parser);
-    if (strcmp(keyword, "{") == 0)
-        return command_block(parser);
+    if (tok.type == TOKEN_KEYWORD || tok.type == TOKEN_WORD)
+    {
+        const char *keyword = tok.word->value.data;
+        if (strcmp(keyword, "if") == 0)
+            return rule_if(parser);
+        if (strcmp(keyword, "for") == 0)
+            return rule_for(parser);
+        if (strcmp(keyword, "while") == 0)
+            return rule_while(parser);
+        if (strcmp(keyword, "until") == 0)
+            return rule_until(parser);
+        if (strcmp(keyword, "{") == 0)
+            return command_block(parser);
+    }
     parser->status = PARSER_UNEXPECTED_TOKEN;
     fprintf(stderr, "Error: Expected a shell command (shell_command)\n");
     return NULL;

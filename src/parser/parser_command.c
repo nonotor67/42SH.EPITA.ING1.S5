@@ -77,6 +77,9 @@ static struct ast *handle_func(struct parser *parser, struct ast *node,
     }
     fprintf(stderr, "Error: Expected a right parenthesis in function\n");
     parser->status = PARSER_UNEXPECTED_TOKEN;
+    ast_free(func);
+    if (tok.type == TOKEN_WORD)
+        word_free(tok.word);
     return NULL;
 }
 
