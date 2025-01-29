@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <utils/hashMapVar.h>
 
 #include "execution.h"
 
@@ -20,6 +21,6 @@ void exec_exit(int argc, char **argv)
     }
     else
     {
-        exit(0);
+        exit(getVariable("?").value == NULL ? 0 : atoi(getVariable("?").value));
     }
 }

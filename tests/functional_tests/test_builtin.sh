@@ -34,6 +34,10 @@ $test $BIN "Simple cd with -" "cd /usr;cd -"
 $test $BIN "Simple exit" "exit 0"
 $test $BIN "Simple exit with code" "exit 1"
 $test $BIN "Simple exit with code" "exit 255"
+$test $BIN "Simple exit with code" "exit"
+$test $BIN "Test with other command" "exit 0;echo Hello"
+$test $BIN "Test with other command" "exit 1;echo Hello"
+$test $BIN "Test with other command" "false; exit"
 
 export truc=1
 $test $BIN "Simple export" "echo \$truc"
