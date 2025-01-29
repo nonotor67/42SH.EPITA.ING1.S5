@@ -8,7 +8,6 @@
 #include <string.h>
 #include <utils/utils.h>
 
-
 #include "builtins_dot.h"
 
 /*
@@ -56,7 +55,8 @@ int exec_dot(int argc, char **argv)
     // Check if the file contains ./ or ../
     if (strstr(argv[1], "./") == NULL && strstr(argv[1], "../") == NULL)
     {
-        fprintf(stderr, "Error: %s: Matheo said that is not allowed!\n", argv[1]);
+        fprintf(stderr, "Error: %s: Matheo said that is not allowed!\n",
+                argv[1]);
         return 1;
     }
     const char *filename = argv[1];
@@ -97,4 +97,3 @@ int exec_dot(int argc, char **argv)
     free(buffer);
     return res;
 }
-
