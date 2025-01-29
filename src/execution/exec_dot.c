@@ -1,9 +1,13 @@
+#define _POSIX_C_SOURCE 200809L
+
 #include <execution/execution.h>
 #include <io/io.h>
 #include <lexer/lexer.h>
 #include <parser/parser.h>
 #include <stdio.h>
+#include <string.h>
 #include <utils/utils.h>
+
 
 #include "builtins_dot.h"
 
@@ -49,30 +53,48 @@ int exec_dot(int argc, char **argv)
         fprintf(stderr, "Usage: . filename\n");
         return 2;
     }
-    char *filename = argv[1];
+    // Check if the file contains ./ or ../
+    if (strstr(argv[1], "./") == NULL && strstr(argv[1], "../") == NULL)
+    {
+        fprintf(stderr, "Error: %s: Matheo said that is not allowed!\n", argv[1]);
+        return 1;
+    }
+    const char *filename = argv[1];
     FILE *file = fopen(filename, "r");
     if (file == NULL)
     {
         fprintf(stderr, "Failed to open file: %s\n", filename);
         return 1;
     }
-    // Read the whole file
-    fseek(file, 0, SEEK_END);
-    size_t size = ftell(file);
-    fseek(file, 0, SEEK_SET);
-    char *buffer = xmalloc(size + 1);
-    size_t read = fread(buffer, 1, size, file);
-    if (read != size)
+
+    char *buffer = NULL;
+    size_t size = 0;
+    FILE *stream = open_memstream(&buffer, &size);
+    if (!stream)
     {
-        fprintf(stderr, "Failed to read file: %s\n", filename);
-        free(buffer);
+        fprintf(stderr, "Failed to open memstream\n");
         fclose(file);
         return 1;
     }
-    buffer[size] = '\0';
+
+    char line[1024];
+    while ((fgets(line, sizeof(line), file)) != NULL)
+    {
+        fputs(line, stream);
+    }
+
     fclose(file);
+    fflush(stream);
+    fclose(stream);
+
+    if (!buffer)
+    {
+        fprintf(stderr, "Failed to read file: %s\n", filename);
+        return 1;
+    }
 
     int res = exec_file(buffer);
     free(buffer);
     return res;
 }
+
