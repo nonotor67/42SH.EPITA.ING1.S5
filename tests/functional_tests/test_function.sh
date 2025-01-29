@@ -15,3 +15,6 @@ $test $BIN "Multiple functions with arguments" 'toto() { echo $1; }; titi() { ec
 # Test function in function
 $test $BIN "Function in function" 'toto() { titi() { echo "coucou"; }; titi; }; toto'
 $test $BIN "Function in function with arguments" 'toto() { titi() { echo $1; }; titi coucou; echo $1; }; toto tata; echo $1'
+
+# Test function with multiple arguments
+$test $BIN "Function with multiple arguments" 'toto() { echo $1 $2 $3; echo $#; }; toto coucou tata titi; echo $1 $2 $3; echo $#'

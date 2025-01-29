@@ -193,7 +193,7 @@ void env_init(int argc, char **argv)
 
     // InsertVariables allocate a new string, so we can free or use the old one
     char *int_tmp = xmalloc(256);
-    insertBlindVariable("#", my_itoa(argc, int_tmp));
+    insertBlindVariable("#", my_itoa(argc - 1, int_tmp));
     insertBlindVariable("$", my_itoa(getpid(), int_tmp));
     insertBlindVariable("UID", my_itoa(getuid(), int_tmp));
     free(int_tmp);
