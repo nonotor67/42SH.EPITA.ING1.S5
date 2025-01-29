@@ -17,10 +17,13 @@ $test $BIN "Simple false" "false"
 # Test continue and break outside of loop
 $test $BIN "continue outside of loop" "continue 10"
 $test $BIN "break outside of loop" "break"
+
 # Test dot builtin
 
 $test $BIN "Simple dot test" ". ./functional_tests/dot_script/simple_test.sh"
 $test $BIN "Simple variable test" "a=hello;. ./functional_tests/dot_script/variable_test.sh;echo $a; echo $b"
+$test $BIN "Test with error" "cd functional_tests/dot_script/; . simple_test.sh"
+$test $BIN "None existing file" ". ./functional_tests/dot_script/bob.sh"
 
 # Test cd
 $test $BIN "Simple cd" "cd /;echo $PWD;ls"
@@ -41,3 +44,5 @@ unset truc
 
 # Test export
 $test $BIN "Simple export" "export truc=1;echo \$truc; unset truc"
+$test $BIN "Simple export" "export truc=1;echo \$truc; unset truc; echo \$truc"
+$test $BIN "Simple export" "export truc=1;echo \$truc; unset truc; echo \$truc; export truc=2; echo \$truc; unset truc; echo \$truc"

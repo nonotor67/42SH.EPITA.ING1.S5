@@ -18,3 +18,6 @@ $test $BIN "Function in function with arguments" 'toto() { titi() { echo $1; }; 
 
 # Test function with multiple arguments
 $test $BIN "Function with multiple arguments" 'toto() { echo $1 $2 $3; echo $#; }; toto coucou tata titi; echo $1 $2 $3; echo $#'
+# Test bad function
+$test $BIN "Bad function missing )" 'toto( { echo "coucou"; }'
+$test $BIN "Bad function no body" 'toto() echo'

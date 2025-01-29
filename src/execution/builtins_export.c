@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <utils/hashMapVar.h>
 
 #include "utils/xmalloc.h"
 
@@ -30,5 +31,6 @@ int exec_unset(__attribute__((unused)) int argc, char **argv)
     if (getenv(argv[1]) == NULL)
         return 1;
     unsetenv(argv[1]);
+    removeVariable(argv[1]);
     return 0;
 }
