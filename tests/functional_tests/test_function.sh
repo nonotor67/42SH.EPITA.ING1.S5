@@ -15,3 +15,7 @@ $test $BIN "Multiple functions with arguments" 'toto() { echo $1; }; titi() { ec
 # Test function in function
 $test $BIN "Function in function" 'toto() { titi() { echo "coucou"; }; titi; }; toto'
 $test $BIN "Function in function with arguments" 'toto() { titi() { echo $1; }; titi coucou; echo $1; }; toto tata; echo $1'
+
+# Test bad function
+$test $BIN "Bad function missing )" 'toto( { echo "coucou"; }'
+$test $BIN "Bad function no body" 'toto() echo'
