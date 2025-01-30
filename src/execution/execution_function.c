@@ -14,6 +14,11 @@ int run_function(int argc, char *argv[])
     if (function == NULL)
         return 0;
     char **saved_variables = xmalloc(sizeof(char *) * argc);
+    int saved_variables_size =
+        getVariable("#").value == NULL ? 0 : atoi(getVariable("#").value);
+    char *int_tmp = xmalloc(256);
+    int_tmp = my_itoa(argc - 1, int_tmp);
+    insertVariable("#", int_tmp);
     for (int i = 0; i < argc; i++)
     {
         char *int_tmp = xmalloc(256);
@@ -43,6 +48,9 @@ int run_function(int argc, char *argv[])
         }
         free(int_tmp);
     }
+    int_tmp = my_itoa(saved_variables_size, int_tmp);
+    insertVariable("#", int_tmp);
+    free(int_tmp);
     free(saved_variables);
     return status;
 }

@@ -59,6 +59,8 @@ $test $BIN "Simple echo with variable" "echo \$PWD"
 $test $BIN "Simple echo with variable" "echo \$@"
 $test $BIN "Simple echo with variable" "echo \$?"
 $test $BIN "Simple echo with variable" "echo \$1"
+$test $BIN "Simple echo with variable" "echo \$2"
+$test $BIN "Simple echo with variable" "echo \$#"
 $test $BIN "Simple echo with variable" "echo \$toto"
 
 # Test with for
