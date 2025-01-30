@@ -48,5 +48,7 @@ unset truc
 
 # Test export
 $test $BIN "Simple export" "export truc=1;echo \$truc; unset truc"
+$test $BIN "Complex export" "toto=tata; export toto=feur; echo \$toto"
+$test $BIN "Complex export" "toto=tata; export toto=feur; echo \$toto; unset toto; echo \$toto"
 $test $BIN "Simple export" "export truc=1;echo \$truc; unset truc; echo \$truc"
 $test $BIN "Simple export" "export truc=1;echo \$truc; unset truc; echo \$truc; export truc=2; echo \$truc; unset truc; echo \$truc"
