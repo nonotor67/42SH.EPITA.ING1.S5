@@ -25,34 +25,37 @@ static int simple_redir(char *filename, int io_number, struct ast *ast)
     {
         io_number = STDOUT_FILENO;
     }
-    // Remove the file if it exists
-    if (access(filename, F_OK) != -1)
+
+    int saved_fd = dup(io_number);
+    if (saved_fd == -1)
     {
-        remove(filename);
+        return 1;
     }
-    // Create and open the file
+
     int fd = open(filename, O_CREAT | O_WRONLY | O_TRUNC, 0644);
     if (fd == -1)
     {
+        close(saved_fd);
         return 1;
     }
-    // Redirect the file descriptor
+
     if (dup2(fd, io_number) == -1)
     {
         close(fd);
+        close(saved_fd);
         return 1;
     }
-    // Close the file descriptor
     close(fd);
-    // Remove the redirection from the AST
+
     removeRedir(ast);
-    // Execute the command
     int status = aux_exec_redir(ast);
-    // Restore the file descriptor
-    if (dup2(STDOUT_FILENO, io_number) == -1)
+
+    if (dup2(saved_fd, io_number) == -1)
     {
+        close(saved_fd);
         return 1;
     }
+    close(saved_fd);
 
     return status;
 }
@@ -64,29 +67,42 @@ static int input_redir(char *filename, int io_number, struct ast *ast)
     {
         io_number = STDIN_FILENO;
     }
-    // Open the file
+
+    // Sauvegarder l'état initial du descripteur de fichier
+    int saved_fd = dup(io_number);
+    if (saved_fd == -1)
+    {
+        return 1;
+    }
+
+    // Ouvrir le fichier en lecture seule
     int fd = open(filename, O_RDONLY);
     if (fd == -1)
     {
+        close(saved_fd);
         return 1;
     }
-    // Redirect the file descriptor
+
+    // Rediriger io_number vers fd
     if (dup2(fd, io_number) == -1)
     {
         close(fd);
+        close(saved_fd);
         return 1;
     }
-    // Close the file descriptor
     close(fd);
-    // Remove the redirection from the AST
+
+    // Exécuter la commande
     removeRedir(ast);
-    // Execute the command
     int status = aux_exec_redir(ast);
-    // Restore the file descriptor
-    if (dup2(STDIN_FILENO, io_number) == -1)
+
+    // Restaurer l'état initial de io_number
+    if (dup2(saved_fd, io_number) == -1)
     {
+        close(saved_fd);
         return 1;
     }
+    close(saved_fd);
 
     return status;
 }
@@ -150,6 +166,11 @@ static int fd_redir(int fd, int io_number, struct ast *ast)
     {
         io_number = STDOUT_FILENO;
     }
+    int saved_fd = dup(io_number);
+    if (saved_fd == -1)
+    {
+        return 1;
+    }
     // Redirect the file descriptor
     if (dup2(fd, io_number) == -1)
     {
@@ -163,7 +184,7 @@ static int fd_redir(int fd, int io_number, struct ast *ast)
     // Execute the command
     int status = aux_exec_redir(ast);
     // Restore the file descriptor
-    if (dup2(STDOUT_FILENO, io_number) == -1)
+    if (dup2(saved_fd, io_number) == -1)
     {
         return 1;
     }
@@ -178,6 +199,11 @@ static int fd_input_redir(int fd, int io_number, struct ast *ast)
     {
         io_number = STDIN_FILENO;
     }
+    int saved_fd = dup(io_number);
+    if (saved_fd == -1)
+    {
+        return 1;
+    }
     // Redirect the file descriptor
     if (dup2(fd, io_number) == -1)
     {
@@ -191,7 +217,7 @@ static int fd_input_redir(int fd, int io_number, struct ast *ast)
     // Execute the command
     int status = aux_exec_redir(ast);
     // Restore the file descriptor
-    if (dup2(STDIN_FILENO, io_number) == -1)
+    if (dup2(saved_fd, io_number) == -1)
     {
         return 1;
     }
