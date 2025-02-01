@@ -8,7 +8,6 @@
 #include <string.h>
 #include <utils/hashMapVar.h>
 
-#include "utils/hashMapVar.c"
 #include "utils/xmalloc.h"
 
 int exec_export(__attribute__((unused)) int argc, char **argv)
